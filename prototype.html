@@ -1,0 +1,1635 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>TEF Handbook Builder</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=Sarabun:wght@400;500;700&display=swap">
+<style>
+/* Layout: sticky app bar with four views; the builder is a form rail on the left and A4 "paper" pages on the right, stacking on phones */
+:root{
+  --bg:#E6EBF2; --surface:#E6EBF2; --surface-2:#DCE2EA; --ink:#2A3443; --ink-2:#4A5566; --ink-3:#5D687A; --line:#CDD5E0;
+  --accent:#0A7383; --accent-2:#13B5C6; --accent-soft:rgba(31,240,214,.18); --on-accent:#04343C;
+  --grad:linear-gradient(135deg,#1FF0D6,#2BC2E3); --glow:0 8px 18px -8px rgba(32,200,214,.75);
+  --field:#E6EBF2; --field-hi:#EEF2F7; --line-strong:#B3BDCB; --edge:rgba(255,255,255,.6);
+  --sh-dark:rgba(163,177,198,.78); --sh-light:rgba(255,255,255,.95);
+  --raise:7px 7px 16px var(--sh-dark),-7px -7px 16px var(--sh-light); --raise-sm:3px 3px 8px var(--sh-dark),-3px -3px 8px var(--sh-light);
+  --press:inset 3px 3px 7px var(--sh-dark),inset -3px -3px 7px var(--sh-light);
+  --lock:#B42318; --lock-soft:#FCE9E7; --fill:#8A6A00; --fill-strong:#F2C200; --fill-soft:#FFF5C4;
+  --value:#0D6A70; --value-soft:#DCF0EF; --prop:#6236C9; --prop-soft:#EEE8FC;
+  --ok:#1D7445; --ok-soft:#E0F2E7; --warn:#A44C06; --warn-soft:#FDEFDF;
+  --dr:#0E8E9C; --jp:#2E7D4A; --ev:#A35F14;
+  --paper:#FFFFFF; --paper-ink:#151515; --paper-muted:#6B6F76; --paper-line:#C9CDD3; --paper-red:#C8102E;
+  --paper-lock:#FCE4E1; --paper-lock-rule:#D92D20; --paper-fill:#FFE53B; --paper-fill-soft:#FFF6B8; --paper-fill-rule:#D9B200;
+  --paper-prop:#7B4DFF; --paper-prop-soft:#F1ECFF; --paper-ok:#1D7445; --paper-chg:#E8590C; --paper-shadow:rgba(20,30,48,.13); --paper-sel:#12A7B8;
+  --font-ui:"FEI","Sukhumvit Set","IBM Plex Sans Thai","Noto Sans Thai",system-ui,-apple-system,sans-serif; /* English = FEI, Thai = Sukhumvit Set */
+  --font-doc:"FEI","Sukhumvit Set","Sarabun","Noto Sans Thai",sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1F252D; --surface:#1F252D; --surface-2:#262D37; --ink:#E4E9F0; --ink-2:#AEB8C6; --ink-3:#8E99A9; --line:#303843;
+  --accent:#3FE0D0; --accent-2:#2BC2E3; --accent-soft:rgba(31,240,214,.13); --on-accent:#04343C;
+  --grad:linear-gradient(135deg,#1FF0D6,#2BC2E3); --glow:0 8px 18px -8px rgba(31,240,214,.45);
+  --field:#1F252D; --field-hi:#262E38; --line-strong:#3C4652; --edge:rgba(255,255,255,.03);
+  --sh-dark:rgba(8,10,14,.72); --sh-light:rgba(54,64,77,.5);
+  --lock:#F28B80; --lock-soft:#3A1E1C; --fill:#F0CE5A; --fill-strong:#F2C200; --fill-soft:#383014;
+  --value:#62C9CC; --value-soft:#133639; --prop:#B7A0FF; --prop-soft:#2A2148;
+  --ok:#62C690; --ok-soft:#163626; --warn:#F2A65A; --warn-soft:#3A2814;
+  --dr:#3FD0D6; --jp:#7FC792; --ev:#E3A35F; --paper-shadow:rgba(0,0,0,.55); color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#1F252D; --surface:#1F252D; --surface-2:#262D37; --ink:#E4E9F0; --ink-2:#AEB8C6; --ink-3:#8E99A9; --line:#303843;
+  --accent:#3FE0D0; --accent-2:#2BC2E3; --accent-soft:rgba(31,240,214,.13); --on-accent:#04343C;
+  --grad:linear-gradient(135deg,#1FF0D6,#2BC2E3); --glow:0 8px 18px -8px rgba(31,240,214,.45);
+  --field:#1F252D; --field-hi:#262E38; --line-strong:#3C4652; --edge:rgba(255,255,255,.03);
+  --sh-dark:rgba(8,10,14,.72); --sh-light:rgba(54,64,77,.5);
+  --lock:#F28B80; --lock-soft:#3A1E1C; --fill:#F0CE5A; --fill-strong:#F2C200; --fill-soft:#383014;
+  --value:#62C9CC; --value-soft:#133639; --prop:#B7A0FF; --prop-soft:#2A2148;
+  --ok:#62C690; --ok-soft:#163626; --warn:#F2A65A; --warn-soft:#3A2814;
+  --dr:#3FD0D6; --jp:#7FC792; --ev:#E3A35F; --paper-shadow:rgba(0,0,0,.55); color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-ui);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2,h3{text-wrap:balance;line-height:1.3;margin:0}
+.gut{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.shell{max-width:1480px;margin:0 auto}
+
+/* top bar */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--surface);border-bottom:1px solid var(--line)}
+.top-in{display:flex;align-items:center;gap:12px 20px;flex-wrap:wrap;padding-block:10px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brand .seal{flex:none;width:34px;height:34px;border-radius:8px;background:var(--accent);color:var(--on-accent);display:grid;place-items:center;font:600 11px/1 var(--font-mono);letter-spacing:.06em}
+.brand b{display:block;font-size:15px}
+.brand small{display:block;color:var(--ink-3);font-size:12px}
+.tag{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:999px;padding:1px 8px;font-size:11.5px;color:var(--ink-2);background:var(--surface-2);white-space:nowrap}
+.tabs{display:flex;gap:2px;margin-left:auto;overflow-x:auto;max-width:100%}
+.tabs a{padding:7px 12px;border-radius:8px;color:var(--ink-2);text-decoration:none;font-weight:500;white-space:nowrap;font-size:14px}
+.tabs a:hover{background:var(--surface-2);color:var(--ink)}
+.tabs a[aria-current="page"]{background:var(--accent-soft);color:var(--accent)}
+main{padding-block:18px 56px}
+
+/* builder controls */
+.bar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;margin-bottom:12px}
+.seg{display:inline-flex;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:3px;gap:2px;flex-wrap:wrap}
+.seg button{border:0;background:transparent;border-radius:7px;padding:6px 12px;cursor:pointer;display:flex;align-items:center;gap:8px;color:var(--ink-2);font-weight:500}
+.seg button .dot{width:9px;height:9px;border-radius:50%;background:var(--c)}
+.seg button small{color:var(--ink-3);font-weight:400;font-size:12.5px}
+.seg button[aria-pressed="true"]{background:var(--accent-soft);color:var(--ink)}
+.opts{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+.sw{display:inline-flex;align-items:center;gap:7px;font-size:13.5px;color:var(--ink-2);cursor:pointer;user-select:none}
+.sw input{accent-color:var(--accent);width:16px;height:16px}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:6px 12px;cursor:pointer;font-weight:500;font-size:13.5px;color:var(--ink)}
+.btn:hover{border-color:var(--ink-3)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.primary:hover{background:var(--accent-2)}
+.btn.sim{border-style:dashed;color:var(--ink-2)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;font-size:13px;color:var(--ink-2);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin-bottom:14px}
+.legend b{font-weight:600;color:var(--ink)}
+.sw-chip{display:inline-flex;align-items:center;gap:6px}
+.sw-chip i{display:inline-block;width:22px;height:14px;border-radius:3px;font-style:normal;font:500 10px/14px var(--font-mono);text-align:center;color:#151515}
+.k-lock{background:var(--paper-lock);box-shadow:inset 3px 0 var(--paper-lock-rule)}
+.k-fill{background:var(--paper-fill)}
+.k-colon{background:var(--paper-fill-soft);border-bottom:2px solid var(--paper-fill-rule)}
+.k-x{background:var(--paper-fill-soft);border-bottom:2px solid var(--paper-fill-rule)}
+.k-prop{background:var(--paper-prop-soft);outline:1.5px dashed var(--paper-prop);outline-offset:-1.5px}
+
+.work{display:grid;grid-template-columns:minmax(330px,410px) minmax(0,1fr);gap:20px;align-items:start}
+.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 72px);max-height:calc(100vh - 92px);overflow:auto;display:flex;flex-direction:column;gap:10px;padding-right:4px;padding-bottom:8px;scrollbar-width:thin}
+@media (max-width:980px){.work{grid-template-columns:minmax(0,1fr)}.rail{position:static;max-height:none;overflow:visible;padding-right:0}}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.prog{padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.prog-row{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.prog-row b{font-size:22px;font-variant-numeric:tabular-nums}
+.prog-row span{color:var(--ink-3);font-size:13px}
+.meter{height:7px;border-radius:99px;background:var(--surface-2);overflow:hidden;border:1px solid var(--line)}
+.meter i{display:block;height:100%;background:var(--fill-strong);border-radius:99px;transition:width .25s}
+.meter.done i{background:var(--ok)}
+.miss{border-top:1px dashed var(--line);padding-top:8px;font-size:13px;display:flex;flex-direction:column;gap:6px}
+.miss b{color:var(--warn)}
+.miss ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:5px}
+.miss button{border:1px solid var(--line);background:var(--fill-soft);border-radius:6px;padding:2px 8px;font-size:12.5px;cursor:pointer;color:var(--ink)}
+.banner{padding:10px 12px;border-radius:10px;font-size:13.5px;border:1px solid var(--line);background:var(--surface)}
+.banner.warn{background:var(--warn-soft);border-color:transparent}
+.banner.ok{background:var(--ok-soft);border-color:transparent}
+.banner.info{background:var(--accent-soft);border-color:transparent}
+.banner b{display:block;margin-bottom:2px}
+
+fieldset{border:0;margin:0;padding:0;min-width:0;display:flex;flex-direction:column;gap:10px}
+details.sec{background:var(--surface);border:1px solid var(--line);border-radius:12px}
+details.sec>summary{list-style:none;cursor:pointer;padding:11px 14px;display:flex;align-items:center;gap:10px;font-weight:600}
+details.sec>summary::-webkit-details-marker{display:none}
+details.sec>summary::after{content:"";width:8px;height:8px;border-right:2px solid var(--ink-3);border-bottom:2px solid var(--ink-3);transform:rotate(45deg);margin-left:4px;transition:transform .15s}
+details.sec[open]>summary::after{transform:rotate(-135deg)}
+.sum-t{flex:1;min-width:0}
+.cnt{font:500 12px var(--font-mono);padding:1px 8px;border-radius:99px;background:var(--fill-soft);color:var(--fill);font-variant-numeric:tabular-nums}
+.cnt.done{background:var(--ok-soft);color:var(--ok)}
+.cnt.lk{background:var(--lock-soft);color:var(--lock)}
+.sec-body{padding:2px 14px 14px;display:flex;flex-direction:column;gap:12px;border-top:1px solid var(--line);padding-top:12px}
+.fld{display:flex;flex-direction:column;gap:5px;min-width:0}
+.fld>label,.fld .lab{font-size:13px;font-weight:500;color:var(--ink-2);display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.mk{font:500 10.5px/1.5 var(--font-mono);padding:0 6px;border-radius:4px;white-space:nowrap}
+.mk-fill{background:var(--fill-soft);color:var(--fill)}
+.mk-colon{background:var(--fill-soft);color:var(--fill)}
+.mk-x{background:var(--value-soft);color:var(--value)}
+.mk-prop{background:var(--prop-soft);color:var(--prop);outline:1px dashed var(--prop);outline-offset:-1px}
+.mk-auto{background:var(--accent-soft);color:var(--accent)}
+.mk-own{background:var(--warn-soft);color:var(--warn)}
+.cover-row{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;justify-content:space-between}
+.v[data-cover]{white-space:pre-line}
+.inp{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:7px 10px;font-size:14.5px;min-width:0}
+.inp:focus{border-color:var(--accent);outline:2px solid var(--accent-soft);outline-offset:0}
+.inp.need{box-shadow:inset 3px 0 var(--fill-strong)}
+textarea.inp{resize:vertical;min-height:64px;line-height:1.5}
+.unit{display:flex;align-items:center;gap:8px}
+.unit span{font-size:13px;color:var(--ink-3);white-space:nowrap}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pair label{font-size:12px;color:var(--ink-3)}
+.hint{font-size:12px;color:var(--ink-3)}
+.derived{font-size:13.5px;background:var(--surface-2);border:1px dashed var(--line);border-radius:8px;padding:7px 10px;color:var(--ink-2)}
+.prow{display:flex;gap:6px;align-items:center}
+.prow .n{font:500 11px var(--font-mono);color:var(--ink-3);width:16px;text-align:right;flex:none}
+.rm{flex:none;border:1px solid var(--line);background:var(--surface);width:30px;height:32px;border-radius:7px;cursor:pointer;color:var(--ink-3)}
+.rm:hover{color:var(--lock);border-color:var(--lock)}
+.add{align-self:flex-start;border:1px dashed var(--line);background:transparent;border-radius:7px;padding:3px 10px;font-size:12.5px;cursor:pointer;color:var(--accent)}
+.lockcard{display:flex;flex-direction:column;gap:6px;font-size:13.5px;color:var(--ink-2)}
+.lockcard ul{margin:0;padding-left:18px}
+.lockcard li.px{color:var(--prop)}
+.cmt{font-size:12.5px;background:var(--warn-soft);border-radius:8px;padding:6px 9px;color:var(--ink)}
+.cmt b{color:var(--warn)}
+fieldset:disabled .add,fieldset:disabled .rm{display:none}
+fieldset:disabled .inp{background:var(--surface-2);color:var(--ink-2)}
+
+/* status track above the paper */
+.docwrap{min-width:0;display:flex;flex-direction:column;gap:12px}
+.status{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.track{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:13px}
+.track .st{display:flex;align-items:center;gap:6px;color:var(--ink-3);white-space:nowrap}
+.track .st i{width:18px;height:18px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font:600 10px var(--font-mono);font-style:normal}
+.track .st.done{color:var(--ok)} .track .st.done i{border-color:var(--ok);background:var(--ok);color:var(--surface)}
+.track .st.cur{color:var(--ink);font-weight:600} .track .st.cur i{border-color:var(--accent);color:var(--accent)}
+.track .st.ret{color:var(--warn);font-weight:600} .track .st.ret i{border-color:var(--warn);color:var(--warn)}
+.track .ln{width:18px;height:2px;background:var(--line)}
+.acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.ver{font:500 12px var(--font-mono);color:var(--ink-3)}
+
+/* the paper */
+.doc{display:flex;flex-direction:column;align-items:center;gap:20px}
+.page{position:relative;width:100%;max-width:794px;aspect-ratio:210/297;background:var(--paper);color:var(--paper-ink);box-shadow:0 1px 2px var(--paper-shadow),0 10px 28px var(--paper-shadow);padding:44px 58px 22px;display:flex;flex-direction:column;font-family:var(--font-doc);font-size:16px;line-height:1.5}
+.page .body{flex:1}
+.pfoot{margin-top:28px;border-top:1px solid var(--paper-line);padding-top:6px;display:flex;justify-content:flex-end;gap:16px;font-size:.78em;color:var(--paper-muted)}
+.pfoot .pn{font-variant-numeric:tabular-nums}
+.cover .body{display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:.25em}
+.d-title{font-size:2em;font-weight:700;line-height:1.35}
+.d-title.en{font-family:var(--font-doc);font-size:1.75em}
+.d-disc{margin-top:1.4em;font-size:1.15em;font-weight:500;padding:.15em .8em;border-radius:3px}
+.d-h{font-weight:700;text-align:center;text-decoration:underline;text-underline-offset:3px;margin:1.1em 0 .35em;font-size:1.04em}
+.d-h:first-child{margin-top:0}
+.d-sh{font-weight:700;text-decoration:underline;text-underline-offset:3px;margin:.7em 0 .15em}
+.d-h3{font-weight:700;margin:1em 0 .15em}
+.kv{display:grid;grid-template-columns:minmax(0,20.5em) 1.1em minmax(0,1fr);align-items:baseline}
+.kv .c{text-align:center}
+.kv.li .k{padding-left:1.6em;text-indent:-1.3em}
+.d-p{margin:.1em 0 .45em;text-indent:2.4em}
+.d-note{color:var(--paper-red);margin:.05em 0}
+.d-ol{margin:.2em 0 .4em;padding-left:2.2em}
+.d-ol li{margin:.05em 0}
+.coc-t{font-weight:700;text-align:center;margin:.9em 0 0}
+.coc-en{font-weight:700;text-align:center;margin:0 0 .4em}
+.coc-sec{font-weight:700;margin:.6em 0 .05em}
+.coc-item{font-weight:700;margin:.25em 0 0 1.4em}
+.coc-p{margin:0 0 .15em 1.4em}
+.coc-cite{font-style:italic;font-size:.9em;margin-top:.6em}
+.lockblk{position:relative;margin:.4em 0}
+.lk-tag{display:none}
+.v{border-radius:2px}
+.v.empty{color:var(--paper-muted)}
+
+/* template marks: shown when "แสดงสีแม่แบบ" is on */
+.doc.marks .lockblk{background:var(--paper-lock);box-shadow:inset 3px 0 var(--paper-lock-rule);padding:.5em .9em .5em 1.1em}
+.doc.marks .lk-tag{display:inline-flex;position:absolute;top:-.85em;right:.6em;align-items:center;gap:4px;background:var(--paper-lock-rule);color:#fff;font:500 10.5px/1 var(--font-ui);padding:3px 7px;border-radius:99px}
+.doc.marks .v{background:var(--paper-fill-soft);box-shadow:inset 0 -2px var(--paper-fill-rule);padding:0 .15em;cursor:pointer}
+.doc.marks .v.empty{background:var(--paper-fill);box-shadow:none;color:#5B4A00}
+.doc.marks .v:hover{outline:1.5px solid var(--paper-ink)}
+.doc.marks .v.m-prop{background:var(--paper-prop-soft);box-shadow:none;outline:1.5px dashed var(--paper-prop);outline-offset:-1px}
+.doc.marks .v.m-prop.empty{color:var(--paper-prop)}
+.doc.marks .propblk{outline:1.5px dashed var(--paper-prop);outline-offset:2px;background:var(--paper-prop-soft);border-radius:2px;position:relative}
+.doc.marks .d-ol li.px{background:var(--paper-prop-soft);outline:1.5px dashed var(--paper-prop);outline-offset:1px}
+.doc.marks .chg{box-shadow:-10px 0 0 -6px var(--paper-chg)}
+.doc.marks .kv.chg,.doc.marks .d-p.chg{box-shadow:-12px 0 0 -8px var(--paper-chg)}
+.v.hot{outline:2px solid var(--accent-2)!important;outline-offset:2px}
+.v:not(.empty){color:inherit}
+.doc:not(.marks) .v{cursor:pointer}
+.stamp{position:absolute;top:44px;right:46px;transform:rotate(-8deg);border:2.5px solid var(--paper-ok);color:var(--paper-ok);font:700 13px/1.25 var(--font-ui);padding:6px 12px;border-radius:6px;text-align:center;letter-spacing:.02em;background:var(--paper)}
+.stamp small{display:block;font-weight:500;font-size:11px}
+@media (max-width:640px){
+  .page{padding:22px 18px 14px;font-size:13px;aspect-ratio:auto;min-height:0}
+  .kv{grid-template-columns:minmax(0,1fr) .9em minmax(0,1.15fr)}
+  .d-title{font-size:1.6em}
+  .stamp{top:14px;right:12px;font-size:11px}
+}
+
+/* reading views */
+.read{max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+.lead{max-width:72ch;color:var(--ink-2);font-size:16px;margin:.4em 0 0}
+.eyebrow{font:500 12px var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.read h1{font-size:28px;margin-top:4px}
+.read h2{font-size:20px;margin-bottom:10px}
+.read p{max-width:75ch}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;vertical-align:top;padding:9px 12px;border-bottom:1px solid var(--line)}
+th{font-weight:600;color:var(--ink-2);background:var(--surface-2);font-size:13px;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.num{font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:860px){.grid3{grid-template-columns:minmax(0,1fr)}}
+.opt{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.opt.rec{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.opt h3{font-size:16px}
+.opt .pill{align-self:flex-start;font-size:11.5px;font-weight:600;padding:1px 8px;border-radius:99px;background:var(--accent);color:var(--on-accent)}
+.opt ul{margin:0;padding-left:18px;font-size:14px;color:var(--ink-2)}
+.opt .pro{color:var(--ok);font-weight:600;font-size:13px}
+.opt .con{color:var(--warn);font-weight:600;font-size:13px}
+.list{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+.list li{max-width:85ch}
+.q{counter-reset:q;list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+.q li{counter-increment:q;display:grid;grid-template-columns:28px 1fr;gap:8px;align-items:start}
+.q li::before{content:counter(q);font:600 12px/24px var(--font-mono);text-align:center;width:24px;height:24px;border-radius:50%;background:var(--accent-soft);color:var(--accent)}
+.disc-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:baseline}
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+.chip{font-size:12.5px;padding:1px 8px;border-radius:6px;background:var(--surface-2);border:1px solid var(--line)}
+.chip.px{background:var(--prop-soft);border:1px dashed var(--prop);color:var(--prop)}
+
+/* workflow */
+.lanes{display:grid;grid-template-columns:150px repeat(8,minmax(150px,1fr));min-width:1380px;font-size:13px}
+.lanes .hd{font-weight:600;padding:8px 10px;border-bottom:2px solid var(--line);color:var(--ink-2);display:flex;flex-direction:column;gap:2px}
+.lanes .hd small{font:500 11px var(--font-mono);color:var(--ink-3)}
+.lanes .ln-name{padding:10px;font-weight:600;border-bottom:1px solid var(--line);background:var(--surface-2);display:flex;flex-direction:column;gap:2px}
+.lanes .ln-name small{font-weight:400;color:var(--ink-3);font-size:12px}
+.lanes .cell{padding:8px 6px;border-bottom:1px solid var(--line);border-left:1px dashed var(--line)}
+.wcard{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 9px;display:flex;flex-direction:column;gap:4px;height:100%}
+.wcard .ph{align-self:flex-start;font:500 10.5px var(--font-mono);padding:0 6px;border-radius:4px}
+.ph-mvp{background:var(--accent);color:var(--on-accent)}
+.ph-2{background:var(--accent-soft);color:var(--accent)}
+.ph-3{background:var(--value-soft);color:var(--value)}
+.ph-4{background:var(--surface-2);color:var(--ink-2);border:1px solid var(--line)}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.flow .s{padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:var(--surface);font-weight:500;font-size:14px}
+.flow .s small{display:block;font:400 11.5px var(--font-mono);color:var(--ink-3)}
+.flow .s.k1{border-color:var(--fill-strong);background:var(--fill-soft)}
+.flow .s.k2{border-color:var(--accent);background:var(--accent-soft)}
+.flow .s.k3{border-color:var(--warn);background:var(--warn-soft)}
+.flow .s.k4{border-color:var(--ok);background:var(--ok-soft)}
+.flow .ar{color:var(--ink-3)}
+.timeline{position:relative;margin:8px 0 4px;padding-top:6px}
+.tl-axis{position:relative;height:2px;background:var(--line);margin:34px 8px 54px}
+.tl-pt{position:absolute;top:-6px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:4px;width:130px;text-align:center}
+.tl-pt i{width:14px;height:14px;border-radius:50%;background:var(--surface);border:3px solid var(--accent)}
+.tl-pt.ev i{background:var(--accent)}
+.tl-pt span{font-size:12.5px;line-height:1.3;color:var(--ink-2)}
+.tl-pt b{position:absolute;bottom:22px;font:500 11.5px var(--font-mono);color:var(--ink-3);white-space:nowrap}
+
+/* roadmap */
+.phases{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+@media (max-width:1100px){.phases{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:620px){.phases{grid-template-columns:minmax(0,1fr)}}
+.phase{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.phase.now{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.phase .pn{font:500 12px var(--font-mono);color:var(--ink-3)}
+.phase h3{font-size:16px}
+.phase ul{margin:0;padding-left:18px;font-size:13.5px;color:var(--ink-2);display:flex;flex-direction:column;gap:3px}
+.ent{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media (max-width:1000px){.ent{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:520px){.ent{grid-template-columns:minmax(0,1fr)}}
+.ent div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13px;color:var(--ink-2)}
+.ent b{display:block;font:600 13px var(--font-mono);color:var(--ink);margin-bottom:3px}
+/* signed-in user + roles */
+.who{display:flex;align-items:center;gap:8px}
+.who .av{flex:none;width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-weight:600;font-size:14px}
+.who-t{display:flex;flex-direction:column;line-height:1.25;min-width:0}
+.who-t b{font-size:13px} .who-t small{font-size:11.5px;color:var(--ink-3)}
+.sel{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:5px 8px;font-size:13px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.wait{font-size:13px;color:var(--ink-3)}
+.work.pub{grid-template-columns:minmax(0,1fr)} .work.pub .rail{display:none}
+#v-builder.pub .legend{display:none} #v-builder.pub .v{cursor:default}
+.login-row{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:24px;align-items:start}
+@media (max-width:860px){.login-row{grid-template-columns:minmax(0,1fr)}}
+.login-mock{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:24px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
+.login-mock .seal{width:52px;height:52px;border-radius:12px;background:var(--accent);color:var(--on-accent);display:grid;place-items:center;font:600 15px/1 var(--font-mono);letter-spacing:.06em}
+.login-mock h3{font-size:19px;margin-top:4px}
+.login-mock p{margin:0;color:var(--ink-2);font-size:14px}
+.login-mock small{color:var(--ink-3);font-size:12px}
+.gbtn{width:100%;padding:10px 14px;font-size:15px;margin-top:8px}
+.demo{width:100%;border-top:1px dashed var(--line);margin-top:10px;padding-top:10px;display:flex;flex-direction:column;gap:6px;text-align:left}
+#demo-accounts{display:flex;flex-direction:column;gap:6px}
+.acct{border:1px solid var(--line);background:var(--surface-2);border-radius:8px;padding:6px 10px;text-align:left;cursor:pointer;display:flex;flex-direction:column;color:var(--ink)}
+.acct:hover{border-color:var(--accent)}
+.acct small{color:var(--ink-3);font-size:12px}
+.demo.flash .acct{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+.steps{counter-reset:s;list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.steps li{counter-increment:s;display:grid;grid-template-columns:30px minmax(0,1fr);column-gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:14px;color:var(--ink-2)}
+.steps li::before{content:counter(s);grid-row:span 2;font:600 13px/26px var(--font-mono);width:26px;height:26px;border-radius:50%;text-align:center;background:var(--accent-soft);color:var(--accent)}
+.steps li b{color:var(--ink)}
+.role-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:900px){.role-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:520px){.role-grid{grid-template-columns:minmax(0,1fr)}}
+.rcard{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:4px;font-size:14px;color:var(--ink-2)}
+.rcard b{color:var(--ink);font-size:15px} .rcard small{color:var(--ink-3);font-size:12.5px}
+.rcard.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+table.perm td.c,table.perm th:not(:first-child){text-align:center}
+table.perm .hl{background:var(--accent-soft)}
+.perm .ok{color:var(--ok);font-weight:700} .perm .no{color:var(--ink-3)} .perm .part{font-size:12.5px;color:var(--warn);white-space:nowrap}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:860px){.grid2{grid-template-columns:minmax(0,1fr)}}
+.panel.parked{border-style:dashed}
+
+/* ---- soft UI layer: neumorphic surfaces raised from one pale grey, turquoise accent ---- */
+body{background:var(--bg)}
+.top{background:var(--bg);border-bottom:0;box-shadow:0 8px 18px -12px var(--sh-dark)}
+.brand .seal,.login-mock .seal{background:var(--surface);color:var(--accent);border-radius:50%;box-shadow:var(--raise-sm)}
+.brand .seal{width:40px;height:40px}
+.login-mock .seal{width:60px;height:60px}
+.brand small{letter-spacing:.04em}
+.tabs,.seg{background:var(--surface);border:0;border-radius:999px;padding:5px;box-shadow:var(--press)}
+.tabs a,.seg button{border-radius:999px;padding:6px 14px}
+.tabs a:hover{background:transparent;color:var(--accent)}
+.tabs a[aria-current="page"],.seg button[aria-pressed="true"]{background:var(--surface);color:var(--accent);box-shadow:var(--raise-sm)}
+.seg button[aria-pressed="true"]{color:var(--ink)}
+.card,details.sec,.status,.legend,.panel,.opt,.phase,.rcard,.login-mock,.tbl-wrap,.steps li{background:var(--surface);border:1px solid var(--edge);box-shadow:var(--raise)}
+.ent div,.wcard,.acct{background:var(--surface);border:1px solid var(--edge);box-shadow:var(--raise-sm)}
+.card,details.sec,.status,.opt,.phase,.rcard,.steps li,.tbl-wrap,.legend{border-radius:20px}
+.panel,.login-mock{border-radius:24px}
+.ent div,.wcard,.acct{border-radius:14px}
+.bar,.legend{margin-bottom:18px}
+.work{gap:28px}
+.rail{gap:16px;padding:12px 14px 18px 12px;margin:-12px -14px -18px -12px}
+fieldset{gap:16px}
+.docwrap{gap:20px}
+.sec-body{border-top-color:var(--line)}
+.btn{border:0;border-radius:999px;padding:7px 15px;background:var(--surface);color:var(--ink-2);box-shadow:var(--raise-sm)}
+.btn:hover{color:var(--accent)}
+.btn:active{box-shadow:var(--press)}
+.btn.primary,.btn.primary:hover{background:var(--grad);color:var(--on-accent);font-weight:600;box-shadow:var(--raise-sm),var(--glow)}
+.btn.primary:hover{filter:brightness(1.05)}
+.btn.sim{background:transparent;box-shadow:none;border:1.5px dashed var(--line-strong)}
+.inp,.sel{background:var(--field);border:1px solid transparent;box-shadow:var(--press)}
+.inp{border-radius:14px}
+.sel{border-radius:999px;padding:6px 12px}
+.inp.need{box-shadow:var(--press),inset 3px 0 var(--fill-strong)}
+.inp:focus{border-color:var(--accent-2);outline:0;box-shadow:var(--press),0 0 0 3px var(--accent-soft)}
+.rm{border:0;border-radius:12px;background:var(--surface);box-shadow:var(--raise-sm)}
+.rm:active,.add:active{box-shadow:var(--press)}
+.add{border:0;border-radius:999px;padding:5px 13px;background:var(--surface);color:var(--accent);box-shadow:var(--raise-sm)}
+.banner{border-radius:16px;border:0}
+.tag{background:var(--surface);border:0;box-shadow:var(--press)}
+.meter{height:10px;background:var(--surface);border:0;box-shadow:var(--press)}
+.meter i{background:var(--grad)}
+.meter.done i{background:var(--ok)}
+.sw input{accent-color:var(--accent-2)}
+.who .av{background:var(--surface);color:var(--accent);box-shadow:var(--raise-sm)}
+.opt.rec,.phase.now,.rcard.on{border-color:var(--accent-2);box-shadow:var(--raise),0 0 0 2px var(--accent-2)}
+.opt .pill,.ph-mvp{background:var(--grad);color:var(--on-accent)}
+.q li::before,.steps li::before{background:var(--surface);color:var(--accent);box-shadow:var(--raise-sm)}
+.track .st.cur i{border-color:var(--accent-2);color:var(--accent)}
+.miss button,.chip,.flow .s{border-radius:999px}
+.eyebrow{font-family:var(--font-ui);letter-spacing:.02em}
+.page{border-radius:6px;box-shadow:8px 8px 22px var(--sh-dark),-6px -6px 18px var(--sh-light)}
+@media (max-width:980px){.rail{padding:0;margin:0}}
+.tabs{scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}
+@media (max-width:640px){.seg{display:flex;flex-direction:column;align-items:stretch;border-radius:26px}.seg button{justify-content:flex-start}}
+@media (max-width:640px){.page.cover{aspect-ratio:210/297}}
+
+
+/* ---- logo slots on the cover: unlimited, drag to move, corner handle to resize ---- */
+.page.cover{overflow:hidden}
+.logos{position:absolute;inset:0;pointer-events:none;z-index:1}
+.stamp{z-index:3}
+.logo{position:absolute;pointer-events:auto;display:grid;place-items:center;border-radius:8px;touch-action:none;user-select:none;-webkit-user-select:none}
+.logo img{width:100%;height:100%;object-fit:contain;display:block;pointer-events:none}
+.logo.empty{border:1.5px dashed var(--paper-prop);background:var(--paper-prop-soft);color:var(--paper-prop);font:500 10px/1.25 var(--font-ui);text-align:center;padding:4px;overflow:hidden}
+.logo.empty b{display:block;font:600 11px/1.4 var(--font-mono);letter-spacing:.16em}
+.logos.edit .logo{cursor:grab}
+.logos.edit .logo:hover{outline:1.5px solid var(--paper-sel);outline-offset:3px}
+.logo.sel{outline:2px solid var(--paper-sel)!important;outline-offset:3px}
+.logo.drag{cursor:grabbing;opacity:.88}
+.logo .lx,.logo .lr,.logo .ltag{display:none;position:absolute}
+.logo .lx{top:-12px;right:-12px;width:24px;height:24px;border-radius:50%;border:2px solid var(--paper);background:var(--paper-ink);color:var(--paper);font:600 13px/1 var(--font-ui);cursor:pointer;padding:0}
+.logo .lr{right:-8px;bottom:-8px;width:16px;height:16px;border-radius:50%;background:var(--paper);border:2.5px solid var(--paper-sel);cursor:nwse-resize}
+.logo .ltag{left:-2px;bottom:calc(100% + 8px);white-space:nowrap;font:500 10.5px/1 var(--font-ui);background:var(--paper-sel);color:var(--paper);padding:4px 8px;border-radius:999px}
+.logo.sel .lx,.logo.sel .lr,.logo.sel .ltag{display:block}
+.guide{position:absolute;top:0;bottom:0;left:50%;border-left:1px dashed var(--paper-sel);display:none}
+.logos.snap .guide{display:block}
+.page.cover.drop{outline:2px dashed var(--paper-sel);outline-offset:-12px}
+.logo-list{display:flex;flex-direction:column;gap:6px}
+.lrow{display:grid;grid-template-columns:48px minmax(0,1fr) auto 30px;gap:6px;align-items:center;border-radius:12px}
+.lthumb{width:48px;height:34px;border-radius:9px;border:1px dashed var(--line-strong);background:var(--field);display:grid;place-items:center;overflow:hidden;font:600 9px var(--font-mono);letter-spacing:.12em;color:var(--ink-3);cursor:pointer;padding:2px}
+.lthumb.has{border-style:solid;border-color:var(--line);background:var(--paper)}
+.lthumb img{width:100%;height:100%;object-fit:contain}
+.lrow.on .lthumb{outline:2px solid var(--accent-2);outline-offset:1px}
+.btn.up{padding:5px 11px;font-size:12.5px;white-space:nowrap}
+.logo-add{display:flex;flex-wrap:wrap;gap:6px}
+fieldset:disabled .btn.up{display:none}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+
+<header class="top">
+  <div class="shell gut top-in">
+    <div class="brand"><div class="seal">TEF</div><div><b>Technical Handbook Builder</b><small>TEF Platform · ต้นแบบ (mockup) v0.1</small></div></div>
+    <nav class="tabs" aria-label="มุมมอง">
+      <a href="#builder" data-v="builder">สร้างคู่มือ</a>
+      <a href="#proposal" data-v="proposal">ข้อเสนอ</a>
+      <a href="#workflow" data-v="workflow">Workflow</a>
+      <a href="#roles" data-v="roles">สิทธิ์ผู้ใช้</a>
+      <a href="#roadmap" data-v="roadmap">แผนพัฒนา</a>
+    </nav>
+    <div class="who" id="who"></div>
+  </div>
+</header>
+
+<main class="shell gut">
+<!-- ================= BUILDER ================= -->
+<section id="v-builder">
+  <div class="bar">
+    <div class="seg" id="seg" aria-label="ประเภทการแข่งขัน"></div>
+    <div class="opts">
+      <label class="sw"><input type="checkbox" id="opt-marks" checked> แสดงสีแม่แบบ</label>
+      <label class="sw"><input type="checkbox" id="opt-thai" checked> ตัวเลขไทย</label>
+      <button class="btn" id="btn-reset" type="button">โหลดข้อมูลตัวอย่างใหม่</button>
+    </div>
+  </div>
+  <div class="legend" aria-label="คำอธิบายสี">
+    <b>สีในเอกสาร</b>
+    <span class="sw-chip"><i class="k-lock"></i>แดง = ข้อความล็อก แก้ได้เฉพาะ TEF Admin</span>
+    <span class="sw-chip"><i class="k-fill"></i>เหลืองเข้ม = ยังไม่ได้กรอก</span>
+    <span class="sw-chip"><i class="k-colon"></i>เหลืองอ่อน = กรอกแล้ว (ช่องเหลือง, “ :”, xxxx)</span>
+    <span class="sw-chip"><i class="k-prop"></i>เส้นประม่วง = ส่วนที่เสนอเพิ่ม รอ TEF ยืนยัน</span>
+    <span class="tag">ข้อมูลในหน้านี้เป็นตัวอย่าง</span>
+  </div>
+  <div class="work">
+    <aside class="rail" id="rail" aria-label="แบบฟอร์มกรอกข้อมูล"></aside>
+    <div class="docwrap">
+      <div class="status" id="status"></div>
+      <div class="doc marks" id="doc" aria-label="ตัวอย่างเอกสาร"></div>
+    </div>
+  </div>
+  <datalist id="registry"></datalist>
+  <input type="file" id="logo-file" accept="image/*" hidden>
+</section>
+
+<!-- ================= PROPOSAL ================= -->
+<section id="v-proposal" hidden>
+  <div class="read">
+    <div>
+      <div class="eyebrow">ข้อเสนอ · จากไฟล์ Draft Technical Handbook.docx</div>
+      <h1>เปลี่ยนคู่มือ Word เป็นแม่แบบ 3 ฉบับบน TEF Platform</h1>
+      <p class="lead">ใช้ไฟล์ร่างของสมาคมเป็นต้นแบบ แยกเป็นคู่มือ Dressage, Jumping และ Eventing ที่ใช้โครงเดียวกัน ผู้จัดการแข่งขันกรอกเฉพาะช่องที่กำหนดผ่านหน้าเว็บ ข้อความที่ไฮไลต์แดงถูกล็อกไว้ ทุกรายการจึงออกมาหน้าตาเดียวกัน แนวทางเดียวกับที่ FEI ให้ผู้จัดส่งตารางการแข่งขัน Jumping และ Eventing ผ่าน FEI Schedules Dashboard แทนการส่งไฟล์ Word</p>
+    </div>
+
+    <div>
+      <h2>สีในไฟล์ต้นฉบับ กลายเป็นชนิดช่องในระบบ</h2>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>ในไฟล์ Word</th><th>ชนิดในระบบ</th><th>ใครแก้ได้</th><th>วิธีกรอก</th><th>ตัวอย่างจากต้นฉบับ</th></tr></thead>
+        <tbody>
+          <tr><td><span class="sw-chip"><i class="k-lock"></i>ไฮไลต์แดง</span></td><td>ข้อความล็อก</td><td>TEF Admin เท่านั้น ออกเป็นเวอร์ชัน เช่น v2027.1</td><td>ผู้จัดเห็นแต่แก้ไม่ได้</td><td>กฎ กติกาที่ใช้ในการแข่งขัน, จรรยาบรรณ FEI</td></tr>
+          <tr><td><span class="sw-chip"><i class="k-fill"></i>ไฮไลต์เหลือง</span></td><td>ช่องกรอก</td><td>ผู้จัดการแข่งขัน</td><td>แยกย่อหน้าเหลืองเป็นช่องย่อยตามชนิดข้อมูล: ข้อความ อีเมล วันที่และเวลา เลขบัญชี</td><td>อีเมลจองคอก, กำหนดชำระเงิน, บัญชีธนาคาร</td></tr>
+          <tr><td><span class="sw-chip"><i class="k-colon"></i>“ :” ที่เว้นว่าง</span></td><td>ช่องรายชื่อ หรือข้อมูลหลังหัวข้อ</td><td>ผู้จัดการแข่งขัน</td><td>เลือกจากทะเบียนบุคลากร TEF หรือพิมพ์ชื่อใหม่ เพิ่มหรือลดบรรทัดได้</td><td>ประธานกรรมการตัดสิน, สนามแข่งขัน</td></tr>
+          <tr><td><span class="sw-chip"><i class="k-x">x</i>xxxx</span></td><td>ช่องตัวเลขพร้อมหน่วย</td><td>ผู้จัดการแข่งขัน</td><td>ใส่ตัวเลข หน่วยถูกล็อกไว้ ระบบจัดรูปแบบให้ (คั่นหลักพัน, เลขไทย)</td><td>ขนาดคอก (เมตร), ค่าคอก (บาท/วัน)</td></tr>
+          <tr><td>ข้อความปกติ</td><td>ข้อความมาตรฐานของแม่แบบ</td><td>TEF Admin</td><td>—</td><td>หัวข้อ, หมายเหตุคอกม้า</td></tr>
+          <tr><td><span class="sw-chip"><i class="k-prop"></i>ใหม่</span></td><td>ส่วนที่เสนอเพิ่ม</td><td>รอ TEF ยืนยัน</td><td>—</td><td>บุคลากรและกฎของ Eventing, เงินประกันการประท้วง</td></tr>
+        </tbody>
+      </table></div>
+      <p class="hint" style="margin-top:8px">ช่องที่กรอกจะถูกเก็บเป็นข้อมูล ไม่ใช่แค่ข้อความในไฟล์ เช่น ชื่อรายการที่กรอกครั้งเดียวจะไปปรากฏทั้งหน้าปก รายละเอียดการแข่งขัน และท้ายกระดาษ บรรทัด “ณ … วันที่ … โดย …” บนปกสร้างจากช่องสถานที่ วันที่ และผู้จัดอัตโนมัติ และผู้จัดพิมพ์แก้เองได้ถ้าต้องการข้อความอื่น</p>
+    </div>
+
+    <div>
+      <h2>แยก 3 ฉบับอย่างไร: โครงร่วมกับโมดูลตามประเภท</h2>
+      <p id="shared-note"></p>
+      <div class="tbl-wrap" style="margin-top:10px"><table id="diff-table"></table></div>
+      <div class="tbl-wrap" style="margin-top:12px"><table id="inv-table"></table></div>
+    </div>
+
+    <div>
+      <h2>ทางเลือกการพัฒนา</h2>
+      <div class="grid3">
+        <div class="opt"><h3>A · Word + ช่องแทนค่า</h3><p style="margin:0;font-size:14px;color:var(--ink-2)">เก็บไฟล์ Word เดิม ใส่รหัสแทนค่า เช่น {{ชื่อรายการ}} แล้วเติมข้อมูลจากฟอร์ม</p><span class="pro">ข้อดี</span><ul><li>เริ่มได้เร็วที่สุด</li><li>หน้าตาเหมือนต้นฉบับทุกจุด</li></ul><span class="con">ข้อจำกัด</span><ul><li>ล็อกข้อความแดงไม่ได้จริง ใครเปิดไฟล์ก็แก้ได้</li><li>รายชื่อที่จำนวนบรรทัดไม่แน่นอนจัดยาก</li><li>ไม่มีหน้าเว็บให้นักกีฬาเปิดดู</li></ul></div>
+        <div class="opt rec"><span class="pill">แนะนำ</span><h3>B · แม่แบบโครงสร้างบนเว็บ</h3><p style="margin:0;font-size:14px;color:var(--ink-2)">แปลงคู่มือเป็นบล็อก 5 ชนิดตามตารางด้านบน แบบที่เห็นในแท็บ “สร้างคู่มือ”</p><span class="pro">ข้อดี</span><ul><li>ล็อกข้อความได้จริง และเปลี่ยนเวอร์ชันได้ที่เดียว</li><li>ตรวจความครบก่อนส่ง</li><li>ข้อมูลใช้ต่อในการสมัคร จองคอก ชำระเงิน</li><li>ออกได้ทั้ง PDF และหน้าเว็บ</li></ul><span class="con">ข้อจำกัด</span><ul><li>ต้องสร้างแม่แบบครั้งแรก (ทำแล้วในต้นแบบนี้)</li></ul></div>
+        <div class="opt"><h3>C · ผสม B กับ Word</h3><p style="margin:0;font-size:14px;color:var(--ink-2)">ใช้ B เป็นแหล่งข้อมูลหลัก แล้วส่งออกเป็น DOCX จากแม่แบบ Word ด้วย</p><span class="pro">ข้อดี</span><ul><li>มีไฟล์ Word สำหรับเก็บเอกสารหรือส่งหน่วยงานที่ขอ</li></ul><span class="con">ข้อจำกัด</span><ul><li>ต้องดูแลแม่แบบสองที่ ควรเพิ่มทีหลังเมื่อ B นิ่งแล้ว</li></ul></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>สิ่งที่พบในไฟล์ต้นฉบับ</h2>
+      <p style="margin:0 0 10px;color:var(--ink-2)">ข้อความแดงในต้นแบบนี้คงไว้ตามต้นฉบับทุกตัวอักษร จุดด้านล่างควรให้ TEF Admin แก้ในแม่แบบหลัก</p>
+      <ul class="list">
+        <li>รายการกฎทั้งหมดอ้างฉบับปี 2024 ควรตรวจ edition ปัจจุบันก่อนใช้งานจริง ตรงนี้คือเหตุผลที่ข้อความล็อกต้องมีระบบเวอร์ชัน</li>
+        <li>เลข edition ไม่ตรงกัน: รายการกฎเขียน FEI Jumping Rules “27th edition effective 1 January 2022” แต่ท้ายจรรยาบรรณเขียน “27th edition, effective 1 January 2024”</li>
+        <li>คำผิดในข้อความแดง: “จำดัก” (น่าจะเป็น “กำจัด”) และหัวข้อ “c) การเกษียณม้า” ซ้ำลำดับ (น่าจะเป็น e)</li>
+        <li>ข้อความปกติ: “สหพันธ์ขี่ม้านานาชาติn” และ “เวลปิดคอก” ในหมายเหตุคอกม้า (แก้แล้วทั้งสองจุดในต้นแบบ)</li>
+        <li>รายการกฎมี FEI Endurance ซึ่งไม่อยู่ใน 3 ประเภท จึงไม่ใส่ในฉบับใดเลย</li>
+        <li>ย่อหน้ากติกาการแข่งขันและการประท้วงอ้างถึง “กีฬาระหว่างโรงเรียน ประจำปีการศึกษา ๒๕๖๗” และระเบียบกรมพลศึกษา ซึ่งเป็นข้อมูลเฉพาะรายการ จึงเสนอให้เป็นช่องกรอก</li>
+        <li>เอกสารใช้เลขไทยและเลขอารบิกปนกัน ระบบจัดให้เหมือนกันทั้งเล่มด้วยสวิตช์ “ตัวเลขไทย”</li>
+        <li>บรรทัด “ :” บางบรรทัดในต้นฉบับไม่มีหัวข้อ (เป็นบรรทัดต่อของรายชื่อ) ระบบตีความเป็น “เพิ่มรายชื่อในตำแหน่งเดียวกัน”</li>
+      </ul>
+    </div>
+
+    <div class="panel">
+      <h2>เรื่องที่ TEF ต้องตัดสินใจก่อนเริ่มเฟส 1</h2>
+      <ol class="q">
+        <li><span>ตำแหน่งบุคลากรและกฎของ Eventing ที่เสนอไว้ (Technical Delegate, ผู้ออกแบบสนามครอสคันทรี, FEI Eventing Rules) ตรงกับที่ TEF ใช้หรือไม่ และ Eventing ควรอ้าง Dressage Rules หรือ Jumping Rules ด้วยหรือไม่</span></li>
+        <li><span>กำหนดส่งคู่มือฉบับร่างกี่สัปดาห์ก่อนวันแข่ง (USEF ใช้ 16 สัปดาห์ และเริ่มแจ้งเตือนที่ 20 สัปดาห์)</span></li>
+        <li><span>ย่อหน้าข้อความปกติที่มีข้อมูลเฉพาะรายการ (ระเบียบที่อ้าง, เงินประกันการประท้วง) ให้เป็นช่องกรอกหรือไม่</span></li>
+        <li><span>ใช้เลขไทยทั้งเล่มเป็นค่าเริ่มต้นหรือไม่</span></li>
+        <li><span>ยืนยันว่าใครถือบทบาทผู้ตรวจ ผู้อนุมัติ และ TEF Admin (ร่างไว้ในแท็บ “สิทธิ์ผู้ใช้”)</span></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- ================= WORKFLOW ================= -->
+<section id="v-workflow" hidden>
+  <div class="read" style="max-width:1400px">
+    <div>
+      <div class="eyebrow">Workflow ฉบับร่าง · ปรับจาก FEI Competition Manager Quick Guide</div>
+      <h1>เส้นทางของคู่มือ ตั้งแต่ขอจัดจนถึงประกาศผล</h1>
+      <p class="lead">คู่มือหนึ่งเล่มผ่าน 5 บทบาท ผู้จัดกรอก ผู้ตรวจตรวจ ผู้อนุมัติอนุมัติ ระบบล็อกฉบับที่อนุมัติแล้วเผยแพร่ให้นักกีฬาและสโมสร การแก้ไขหลังอนุมัติออกเป็นฉบับใหม่พร้อมบันทึกการเปลี่ยนแปลง ทุกขั้นอยู่ในระบบเดียว ไม่ต้องส่งอีเมลไปมา</p>
+    </div>
+
+    <div class="panel">
+      <h2>สถานะของคู่มือ</h2>
+      <div class="flow">
+        <span class="s k1">ร่าง<small>Draft</small></span><span class="ar">→</span>
+        <span class="s k2">ส่งตรวจ<small>Submitted</small></span><span class="ar">→</span>
+        <span class="s k3">ส่งกลับแก้ไข<small>Returned ↺ ร่าง</small></span><span class="ar">→</span>
+        <span class="s k2">ตรวจแล้ว รออนุมัติ<small>Reviewed · ผู้อนุมัติ</small></span><span class="ar">→</span>
+        <span class="s k4">อนุมัติ v1.0<small>Approved · ล็อกฉบับ</small></span><span class="ar">→</span>
+        <span class="s k4">เผยแพร่<small>Published · PDF + เว็บ</small></span><span class="ar">→</span>
+        <span class="s k1">ขอแก้ไข v1.1<small>Amendment · บันทึกการเปลี่ยนแปลง</small></span>
+      </div>
+      <p class="hint" style="margin-top:10px">ลองได้ในแท็บ “สร้างคู่มือ” โดยสลับบทบาทที่มุมขวาบน</p>
+    </div>
+
+    <div>
+      <h2>ใครทำอะไร ในแต่ละขั้น</h2>
+      <div class="tbl-wrap" style="border-radius:12px"><div class="lanes" id="lanes"></div></div>
+      <p class="hint" style="margin-top:8px">ป้ายสีบอกเฟสที่พัฒนา: <span class="tag" style="background:var(--grad);color:var(--on-accent);border:0;box-shadow:none">MVP</span> <span class="tag">เฟส 2–4</span> เลื่อนตารางไปทางขวาได้</p>
+    </div>
+
+    <div class="panel">
+      <h2>กำหนดเวลา</h2>
+      <p style="margin:0;color:var(--ink-2)">ตัวเลขด้านล่างเป็นของ USEF/FEI ใช้เป็นจุดเริ่ม TEF ตั้งค่าเองได้ในระบบ และระบบส่งแจ้งเตือนให้อัตโนมัติ</p>
+      <div style="overflow-x:auto"><div class="timeline" style="min-width:760px"><div class="tl-axis" id="tl"></div></div></div>
+    </div>
+
+    <div>
+      <h2>สิ่งที่นำมาจาก FEI Competition Manager Quick Guide</h2>
+      <div class="tbl-wrap"><table>
+        <thead><tr><th>ขั้นใน FEI / USEF</th><th>ใน TEF Platform</th><th>เฟส</th></tr></thead>
+        <tbody id="fei-map"></tbody>
+      </table></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ROLES ================= -->
+<section id="v-roles" hidden>
+  <div class="read" style="max-width:1400px">
+    <div>
+      <div class="eyebrow">สิทธิ์ผู้ใช้ · ร่างให้ TEF ยืนยัน</div>
+      <h1>เข้าสู่ระบบด้วย Google แล้วทำได้ตามบทบาท</h1>
+      <p class="lead">ทุกคนใช้บัญชี Google ที่มีอยู่แล้ว ระบบไม่เก็บรหัสผ่าน สิทธิ์มาจากบทบาทที่ TEF Admin กำหนดให้แต่ละอีเมล ผู้จัดเห็นและแก้ได้เฉพาะรายการของตัวเอง การอนุมัติแยกเป็นสองชั้น คือผู้ตรวจและผู้อนุมัติ</p>
+    </div>
+    <div class="login-row">
+      <div class="login-mock">
+        <div class="seal">TEF</div>
+        <h3>TEF Platform</h3>
+        <p>ระบบคู่มือการแข่งขัน สมาคมกีฬาขี่ม้าแห่งประเทศไทย</p>
+        <button type="button" class="btn primary gbtn" id="gbtn">เข้าสู่ระบบด้วย Google</button>
+        <small id="gnote">ใช้บัญชี Google ของคุณ ระบบไม่เห็นรหัสผ่าน</small>
+        <div class="demo" id="demo"><span class="eyebrow">บัญชีทดลอง (จำลอง) · คลิกเพื่อเข้าในบทบาทนั้น</span><div id="demo-accounts"></div></div>
+      </div>
+      <ol class="steps">
+        <li><b>กด “เข้าสู่ระบบด้วย Google”</b>Google ยืนยันตัวตน แล้วส่งชื่อกับอีเมลกลับมา ระบบไม่เห็นรหัสผ่าน</li>
+        <li><b>ระบบเทียบอีเมลกับรายชื่อที่ TEF Admin เชิญไว้</b>พบแล้วได้บทบาทและขอบเขต เช่น สโมสรหรือรายการที่ดูแล</li>
+        <li><b>อีเมลที่ไม่อยู่ในรายชื่อ</b>เห็นได้แค่คู่มือที่เผยแพร่แล้ว และกดขอสิทธิ์ให้ Admin พิจารณา</li>
+        <li><b>ทุกการกระทำถูกบันทึก</b>ใคร ทำอะไร กับคู่มือเล่มไหน เมื่อไหร่ เก็บตั้งแต่วันแรกที่เปิดใช้</li>
+      </ol>
+    </div>
+    <div><h2>6 บทบาท</h2><div class="role-grid" id="role-cards"></div></div>
+    <div>
+      <h2>ใครทำอะไรได้</h2>
+      <div class="tbl-wrap"><table id="perm-table" class="perm"></table></div>
+      <p class="hint" style="margin-top:8px">* ทุกครั้งที่ Admin แก้แทนหรืออนุมัติแทน ต้องระบุเหตุผล และระบบบันทึกไว้ · คอลัมน์ที่ไฮไลต์คือบทบาทที่เลือกอยู่มุมขวาบน</p>
+    </div>
+    <div class="panel">
+      <h2>กติกาการอนุมัติ</h2>
+      <ul class="list">
+        <li>อนุมัติสองชั้น ผู้ตรวจดูความครบและความถูกต้องแล้วส่งต่อ ผู้อนุมัติตัดสินใจและสั่งเผยแพร่</li>
+        <li>คนที่ส่งคู่มือ อนุมัติคู่มือของตัวเองไม่ได้ ผู้ตรวจกับผู้อนุมัติของเล่มเดียวกันต้องเป็นคนละคน</li>
+        <li>การส่งกลับแก้ไขต้องมีคอมเมนต์อย่างน้อยหนึ่งช่อง ผู้จัดจะเห็นว่าต้องแก้ตรงไหน</li>
+        <li>อนุมัติแล้วฉบับนั้นถูกล็อก แก้ได้ทางเดียวคือขอแก้ไข ระบบออกฉบับใหม่แล้ววนกลับมาตรวจ</li>
+      </ul>
+    </div>
+    <div class="grid2">
+      <div class="panel">
+        <h2>สิ่งที่ต้องขอจาก IT</h2>
+        <ul class="list">
+          <li>โปรเจกต์ Google Cloud ของสมาคม พร้อมหน้า OAuth consent (ชื่อแอป โลโก้ อีเมลติดต่อ)</li>
+          <li>OAuth Client ID แบบ Web application และ redirect URL ของเว็บจริง</li>
+          <li>โดเมนของระบบ เช่น platform.tefthailand.com</li>
+          <li>สมาคมใช้ Google Workspace กับโดเมน tefthailand.com หรือไม่ ถ้าใช้ จำกัดบทบาทเจ้าหน้าที่ให้เฉพาะอีเมลโดเมนนี้ได้</li>
+          <li>รายชื่อ TEF Admin คนแรก 1–2 คน</li>
+          <li>นโยบาย PDPA สำหรับข้อมูลที่เก็บ ได้แก่ ชื่อ อีเมล รูปโปรไฟล์ และบันทึกการใช้งาน</li>
+        </ul>
+      </div>
+      <div class="panel parked">
+        <span class="tag">พักไว้ก่อน</span>
+        <h2 style="margin-top:8px">ประวัติการทำงานสำหรับผู้อนุมัติ</h2>
+        <p style="margin:0;color:var(--ink-2)">ให้ผู้อนุมัติเห็นประวัติของคนทำงาน เช่น ส่งคู่มือมาแล้วกี่เล่ม ถูกส่งกลับบ่อยแค่ไหน แก้อะไรไปบ้าง ส่วนนี้ต้องทำร่วมกับ AI automation workflow และตอนนี้รอฝั่ง IT อยู่</p>
+        <p style="margin:8px 0 0;color:var(--ink-2)">ระหว่างนี้ระบบเก็บบันทึกทุกการกระทำตั้งแต่ MVP เมื่อเริ่มทำส่วนนี้ ข้อมูลย้อนหลังจะพร้อมใช้ทันที</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ROADMAP ================= -->
+<section id="v-roadmap" hidden>
+  <div class="read" style="max-width:1400px">
+    <div>
+      <div class="eyebrow">แผนพัฒนา · ค่อยเป็นค่อยไป</div>
+      <h1>สร้าง TEF Platform ทีละส่วน เริ่มจากคู่มือการแข่งขัน</h1>
+      <p class="lead">คู่มือการแข่งขันเป็นจุดเริ่มที่ดี เพราะข้อมูลที่กรอก (วันที่ สถานที่ ค่าคอก บัญชีธนาคาร รายชื่อกรรมการ) เป็นฐานของการสมัคร การจองคอก และผลการแข่งขันในเฟสถัดไป</p>
+    </div>
+    <div class="phases">
+      <div class="phase now"><span class="pn">เฟส 0 · ตอนนี้</span><h3>ต้นแบบและยืนยันแม่แบบ</h3><ul><li>ต้นแบบหน้านี้</li><li>คุณสุขุมาลี มณีใส ตรวจ requirement และแม่แบบ 3 ฉบับ</li><li>ตอบคำถาม 5 ข้อในแท็บข้อเสนอ</li><li>แก้ข้อความล็อกที่พบปัญหา</li></ul></div>
+      <div class="phase"><span class="pn">เฟส 1 · MVP</span><h3>คู่มือการแข่งขันออนไลน์</h3><ul><li>เครื่องมือแม่แบบ 5 ชนิดบล็อก</li><li>แม่แบบ Dressage, Jumping, Eventing</li><li>ทะเบียนบุคลากร (กรรมการ สัตวแพทย์ ผู้ออกแบบสนาม)</li><li>เข้าสู่ระบบด้วย Google และสิทธิ์ 6 บทบาท</li><li>ส่งตรวจ คอมเมนต์รายช่อง อนุมัติสองชั้น</li><li>PDF และหน้าเว็บสาธารณะ</li><li>ประวัติเวอร์ชันและการแก้ไข</li><li><b>เปิดใช้จริงกับ Dressage ก่อน</b> แล้วตามด้วย Jumping และ Eventing</li></ul></div>
+      <div class="phase"><span class="pn">เฟส 2</span><h3>ปฏิทินและการขอจัด</h3><ul><li>ยื่นขอจัดการแข่งขัน</li><li>ปฏิทินการแข่งขัน TEF</li><li>กำหนดส่งและแจ้งเตือนอัตโนมัติ</li><li>คำขอเปลี่ยนวันที่ สถานที่ ระดับ</li><li>ส่งออก DOCX (ทางเลือก C)</li></ul></div>
+      <div class="phase"><span class="pn">เฟส 3</span><h3>สมัครและจองคอก</h3><ul><li>สโมสรจองคอกในระบบ แทนการส่งอีเมล</li><li>แนบสลิปและตรวจการชำระเงิน</li><li>สมัครแข่ง ถอนตัว สมัครล่าช้า</li><li>ตรวจเอกสารม้าตามข้อกำหนดสัตวแพทย์</li></ul></div>
+      <div class="phase"><span class="pn">เฟส 4</span><h3>ระหว่างและหลังแข่ง</h3><ul><li>ลำดับการแข่งขัน (start list)</li><li>บันทึกและประกาศผล</li><li>บันทึกม้าเข้าออกสนาม</li><li>สถิติรายปี</li></ul></div>
+    </div>
+    <div>
+      <h2>ข้อมูลหลักที่ระบบต้องเก็บ</h2>
+      <div class="ent">
+        <div><b>Template</b>ประเภท เวอร์ชัน วันที่มีผล รายการบล็อก</div>
+        <div><b>Block</b>ชนิด (ล็อก ช่องกรอก รายชื่อ ตัวเลข ข้อความ) เนื้อหา ประเภทที่ใช้</div>
+        <div><b>Event</b>ชื่อรายการ ประเภท วันที่ สถานที่ ผู้จัด สถานะในปฏิทิน</div>
+        <div><b>Handbook</b>รายการ เวอร์ชัน ค่าที่กรอก สถานะ ผู้อนุมัติ วันที่อนุมัติ</div>
+        <div><b>Person</b>ชื่อไทยและอังกฤษ FEI ID คุณวุฒิ วันหมดอายุใบอนุญาต</div>
+        <div><b>Assignment</b>คู่มือ ตำแหน่ง บุคคล ลำดับบรรทัด</div>
+        <div><b>Comment</b>คู่มือ ช่องที่อ้างถึง ผู้เขียน ข้อความ แก้แล้วหรือยัง</div>
+        <div><b>ChangeLog</b>เวอร์ชัน ช่อง ค่าเดิม ค่าใหม่ เหตุผล</div>
+      </div>
+    </div>
+    <div class="panel">
+      <h2>เทคโนโลยีที่เสนอ</h2>
+      <ul class="list">
+        <li>เว็บแอปเดียว เข้าสู่ระบบด้วย Google แยกสิทธิ์ 6 บทบาท (ดูแท็บสิทธิ์ผู้ใช้) ทำได้ด้วย Supabase Auth</li><li>บังคับสิทธิ์ที่ฐานข้อมูลด้วย Row Level Security ไม่ใช่แค่ซ่อนปุ่มในหน้าเว็บ คนที่ไม่มีสิทธิ์จึงอ่านหรือแก้ข้อมูลไม่ได้แม้เรียกตรง</li>
+        <li>ฐานข้อมูล Postgres เก็บแม่แบบเป็นบล็อก และเก็บค่าที่กรอกแยกจากแม่แบบ จึงเปลี่ยนแม่แบบได้โดยไม่กระทบคู่มือที่อนุมัติแล้ว</li>
+        <li>สร้าง PDF จากหน้า HTML เดียวกับที่เห็นในต้นแบบ ใช้ฟอนต์ Sarabun (ตระกูลเดียวกับ TH Sarabun ในไฟล์ Word)</li>
+        <li>ส่งออก DOCX ทีหลังในเฟส 2 ถ้ายังต้องการไฟล์ Word</li>
+      </ul>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+(function(){
+"use strict";
+const LOCKED = {"rules_head": "กฎ กติกา ที่ใช้ในการแข่งขัน", "rules": ["FEI General Regulations, 24th edition 1 January 2020 Updates effective 1 January 2024", "FEI Jumping Rules, 27th edition effective 1 January 2022 Updates effective 1 January 2024", "FEI Jumping Guidelines for Use of Saddlery, Equipment and Dress 1st Edition September 2022", "TEF National Jumping Rules 2024", "FEI Dressage Rules, 26th edition updates effective 1 January 2024", "FEI Endurance 12th Edition, effective 1 January 2024", "FEI Veterinary Regulation 2024 15th Edition effective 1 January 2024", "2024 Veterinary Regulation Recognition of the Thailand Equestrian Federation (Temporary Implementation from January-June 2024)"], "coc": [["title", "จรรยาบรรณ เพื่อสวัสดิภาพของม้าโดย FEI"], ["title-en", "THE FEI CODE OF CONDUCT FOR THE WELFARE OF THE HORSES"], ["p", "FEI ต้องการให้ใครก็ตามที่มีส่วนเกี่ยวข้องกับกีฬาขี่ม้าระดับนานาชาติต้องทำตามกฎจรรยาบรรณเพื่อสวัสดิภาพม้านี้ และให้รับทราบและยอมรับตลอดเวลาว่าสวัสดิภาพม้าเป็นสิ่งที่สำคัญสูงสุด สวัสดิภาพของม้าต้องไม่เป็นรองอิทธิพลด้านการแข่งขันหรือการค้า จุดสำคัญต่อไปนี้ต้องได้รับการยึดถือเป็นพิเศษ"], ["sec", "1. สวัสดิภาพทั่วๆ ไป"], ["item", "a) การจัดการม้าที่ดี"], ["p", "การจัดการเรื่องคอกและอาหารต้องให้เป็นไปตามการจัดการม้าที่ดีที่สุด ที่ปฏิบัติกันอยู่ หญ้าแห้ง อาหาร คุณภาพดี และน้ำที่สะอาดต้องมีให้ม้าเสมอ"], ["item", "b) วิธีการฝึกม้า"], ["p", "ม้าจะต้องได้รับการฝึกที่เหมาะสมกับความสามารถทางกายภาพม้า และเหมาะกับขั้นตอนของการเจริญเติบโตของม้า สำหรับแต่ละประเภทกีฬา (Disciplines) ม้าต้องไม่ถูกฝึกด้วยวิธีที่เป็นการทารุณม้า หรือทำให้ม้าเกิดความกลัว"], ["item", "c) การตอกเกือกและเครื่องอาน"], ["p", "การดูแลกีบและการตอกเกือกม้าต้องทำด้วยมาตรฐานที่สูง เครื่องอานต้องออกแบบและวัดขนาดให้พอดีกับม้า โดยหลีกเลี่ยงความเสี่ยงต่อการเจ็บปวดและการบาดเจ็บ"], ["item", "d) การเดินทาง"], ["p", "ในระหว่างการขนย้ายม้า ม้าต้องได้รับการป้องกันจากการบาดเจ็บ และจากความเสี่ยงต่อสุขภาพม้าด้านอื่นๆ ยานพาหนะต้องปลอดภัย อากาศถ่ายเทได้ดี ได้รับการดูแลรักษาด้วยมาตรฐานสูง ทำความสะอาดฆ่าเชื้อโรคอยู่สม่ำเสมอ และคนขับต้องมีความสามารถพอ ต้องมีคนจัดการดูแลม้าที่มีความสามารถอยู่ด้วยเสมอ"], ["item", "e) การพักระหว่างการเดินทาง"], ["p", "การเดินทางทุกครั้งต้องมีการวางแผนอย่างระมัดระวัง ม้าต้องได้หยุดพักอย่างสม่ำเสมอ โดยให้ม้าสามารถเข้าถึงอาหารและน้ำได้ โดยให้เป็นไปตามคำแนะนำของ FEI (FEI Guidelines)"], ["sec", "2. ความแข็งแรงพอสำหรับการแข่งขัน"], ["p", "a) ความแข็งแรงและความสามารถการเข้าร่วมการแข่งขันต้องถูกจำกัดไว้เฉพาะม้าที่แข็งแรงพอ และนักกีฬาที่พิสูจน์แล้วว่ามีความสามารถพอ ม้าต้องได้ช่วงเวลาพักผ่อนที่เหมาะสม ระหว่างการฝึกซ้อมกับการแข่งขัน และควรได้รับช่วงเวลาที่พักผ่อนเพิ่มหลังจากการเดินทาง"], ["item", "b) สถานภาพของสุขภาพ"], ["p", "ม้าที่เห็นว่าไม่แข็งแรงพอที่จะเข้าแข่งขันต้องไม่เข้าแข่งขัน หรือ แข่งขันต่อ ควรปรึกษาสัตวแพทย์เมื่อใดก็ตามที่มีความสงสัย"], ["item", "c) การใช้สารกระตุ้น และการใช้ยา"], ["p", "จะไม่มีการอดทนต่อการกระทำใดๆ หรือความตั้งใจใดๆ ที่ใช้สารกระตุ้นและการใช้ยาอย่างเป็นอันตรายซึ่งก่อให้เกิดปัญหาด้านสวัสดิภาพม้าอย่างร้ายแรง หลังการรักษาโดยสัตวแพทย์ ต้องให้ม้าได้พักอย่างเต็มที่ก่อนจะเริ่มการแข่งขันอีกครั้งหนึ่ง"], ["item", "d) ขั้นตอนการผ่าตัด"], ["p", "ต้องไม่อนุญาตให้มีการผ่าตัดใดๆ ที่อาจทำร้ายสวัสดิภาพม้าที่จะเข้าแข่งขัน หรือ มีผลต่อความปลอดภัยของม้าอื่นๆ และ/หรือของนักกีฬา"], ["item", "e) ม้าท้อง/ม้าที่เพิ่งคลอด"], ["p", "แม่ม้าต้องไม่เข้าแข่งขันหลังท้อง 4 เดือนไปแล้ว หรือเมื่อลูกม้ายังอยู่ติดกับแม่ม้า"], ["item", "f) การใช้เครื่องมือขี่ (Aids) ผิด"], ["p", "จะไม่อดทนต่อการทารุณม้าโดยใช้เครื่องมือขี่ทั้งแบบธรรมชาติหรือเครื่องมือที่ทำขึ้น (เช่น แส้ สเปอร์ และอื่นๆ)"], ["sec", "3. การแข่งขันต้องไม่กระทบสวัสดิภาพม้า"], ["item", "a) บริเวณแข่งขัน"], ["p", "ม้าต้องได้รับการฝึกและเข้าแข่งขันบนพื้นสนามที่เหมาะสมและปลอดภัย เครื่องกีดขวางทั้งหมดและสภาพแวดล้อมของการแข่งขันต้องถูกออกแบบโดยคำนึงถึงความปลอดภัยของม้า"], ["item", "b) พื้นสนาม"], ["p", "พื้นสนามทุกแห่งที่ม้าเดิน ฝึก หรือเข้าแข่งขันต้องออกแบบและดูแลรักษาเพื่อจำดักสิ่งใดก็ตามที่อาจนำไปสู่การบาดเจ็บ"], ["item", "c) สภาพอากาศรุนแรง"], ["p", "การแข่งขันต้องไม่เกิดขึ้นในสภาพอากาศรุนแรง เพื่อสวัสดิภาพและความปลอดภัยของม้า ต้องจัดให้มีการคูลม้า (Cooling) และมีอุปกรณ์พร้อมในการคูลม้าหลังการแข่งขัน"], ["item", "d) คอกม้า ณ สถานที่แข่งขัน"], ["p", "คอกม้าต้องปลอดภัย สะอาด สะดวกสบาย อากาศถ่ายเทสะดวก และมีขนาดที่พอเหมาะกับประเภทและนิสัยของม้าบริเวณอาบน้ำชำระล้างม้าและน้ำต้องมีอย่างพอเพียงเสมอ"], ["sec", "4. การดูแลม้าอย่างมีมนุษยธรรม"], ["item", "a) การดูแลรักษาโดยสัตวแพทย์"], ["p", "ต้องมีสัตวแพทย์ที่เชี่ยวชาญเสมอ ณ สนามแข่งขัน ถ้าม้าได้รับบาดเจ็บหรือหมดแรงระหว่างการแข่งขันนักกีฬาต้องหยุดแข่งและต้องมีการประเมินจากสัตวแพทย์"], ["item", "b) ศูนย์ส่งต่อม้า"], ["p", "เมื่อมีความจำเป็น ม้าจะต้องถูกนำขึ้นรถพยาบาล และนำไปที่ศูนย์การรักษาที่เกี่ยวข้องที่ใกล้ที่สุด เพื่อการประเมินและการรักษาม้าที่บาดเจ็บต้องได้รับการช่วยเหลือดูแลรักษาอย่างเต็มที่ก่อนจะมีการเดินทาง"], ["item", "c) การบาดเจ็บจากการแข่งขัน"], ["p", "เหตุการณ์การบาดเจ็บที่เกิดขึ้นในการแข่งขัน ควรได้รับการสังเกตการณ์ ควรมีการตรวจสภาพพื้นสนาม ความถี่ของการแข่งขัน และปัจจัยเสี่ยงอื่นๆ อย่างระมัดระวัง เพื่อหาวิธีที่จะทำให้เกิดการบาดเจ็บน้อยที่สุด"], ["p", "d) Euthanasia (การฆ่าหรือช่วยให้ม้าที่ทุกข์ทรมานจากโรค หรืออาการบาดเจ็บที่รักษาไม่ได้ ตายอย่างไม่เจ็บปวด)"], ["p", "ถ้าการบาดเจ็บรุนแรงมากจริงๆ อาจต้องมีการการุณยฆาต (Euthanasia) โดยอยู่บนพื้นฐานของมนุษยธรรม โดยให้ทำโดยสัตวแพทย์ให้เร็วที่สุดเพื่อจุดประสงค์เดียวคือให้ม้าทรมานน้อยที่สุด"], ["item", "c) การเกษียณม้า (Retirement)"], ["p", "ม้าที่เกษียณจากการแข่งขันต้องได้รับการปฏิบัติด้วยความเห็นอกเห็นใจและมีมนุษยธรรม"], ["sec", "5. การศึกษา"], ["p", "FEI กระตุ้นให้ทุกคนที่เกี่ยวข้องกับกีฬาขี่ม้าให้ศึกษาด้านที่ตนเองมีความชำนาญที่เกี่ยวข้องกับการดูแลม้าและการจัดการม้าที่เข้าแข่งขัน โดยให้ศึกษาให้สูงที่สุดเท่าที่เป็นไปได้"], ["p", "จรรยาบรรณเพื่อสวัสดิภาพม้านี้อาจมีการปรับเปลี่ยนบ้างเป็นบางคราว FEI ยินดีรับฟังความคิดเห็นจากทุกคน จะมีการให้ความสนใจเป็นพิเศษกับการค้นพบในการวิจัยใหม่ๆ และ FEI ส่งเสริมให้ทุนและการสนับสนุนการศึกษาด้านสวัสดิภาพม้าต่อไป"], ["cite", "(Full Copy From FEI JUMPING RULES, 27th edition,  effective 1 January 2024 pages 8-9)"]]};
+const ALL = ['dressage','jumping','eventing'];
+const DISC = {
+  dressage:{th:'ศิลปะบังคับม้า', en:'Dressage', c:'var(--dr)'},
+  jumping:{th:'กระโดดข้ามเครื่องกีดขวาง', en:'Jumping', c:'var(--jp)'},
+  eventing:{th:'อีเว้นติ้ง', en:'Eventing', c:'var(--ev)'}
+};
+/* Rules list: source order kept; each item scoped to the disciplines it belongs to */
+const RULE_SCOPE = [ALL, ['jumping'], ['jumping'], ['jumping'], ['dressage'], [], ALL, ALL];
+const RULES = LOCKED.rules.map((t,i)=>({t, only:RULE_SCOPE[i]}));
+RULES.splice(5,0,{t:'FEI Eventing Rules (ฉบับปัจจุบัน TEF Admin ระบุ edition)', only:['eventing'], prop:true});
+
+/* Field types: text | textnum (digits follow the Thai-numeral switch) | email | money | daterange | datetime | textarea
+   Marks: fill = yellow highlight, colon = blank after ":", x = xxxx value, prop = proposed */
+const F = {
+  event_name:{label:'ชื่อการแข่งขัน', type:'text', mark:'fill', req:true, hint:'ใช้ทั้งหน้าปก รายละเอียดการแข่งขัน และท้ายกระดาษ'},
+  event_dates:{label:'วันที่', type:'daterange', mark:'colon', req:true},
+  venue:{label:'สถานที่', type:'text', mark:'colon', req:true},
+  stable_open:{label:'การอนุญาตนำม้าเข้า (Stable open on)', type:'textnum', mark:'fill', req:true, ph:'เช่น 08.00 – 18.00 น. ของวันที่ 11 มีนาคม 2570'},
+  box_size:{label:'ขนาดคอก (Size of boxes)', type:'textnum', mark:'x', unit:'เมตร', req:true, ph:'3 x 3'},
+  fee_perm:{label:'ค่าคอกม้าถาวร', type:'money', mark:'x', unit:'บาท/วัน', req:true},
+  fee_temp:{label:'ค่าคอกม้าชั่วคราว', type:'money', mark:'x', unit:'บาท/วัน', req:true},
+  fee_tack:{label:'ค่าห้องเก็บอุปกรณ์ (Tacks Box)', type:'money', mark:'x', unit:'บาท/1 ช่อง', req:true},
+  booking_email:{label:'อีเมลรับแบบฟอร์มจองคอก', type:'email', mark:'fill', req:true},
+  booking_deadline:{label:'กำหนดส่งแบบฟอร์มจองคอก', type:'datetime', mark:'fill', req:true},
+  bank:{label:'ธนาคาร', type:'text', mark:'fill', req:true},
+  account_name:{label:'ชื่อบัญชี', type:'text', mark:'fill', req:true},
+  account_no:{label:'เลขที่บัญชี', type:'textnum', mark:'fill', req:true},
+  slip_email:{label:'อีเมลส่งหลักฐานการโอน', type:'email', mark:'fill', req:true},
+  pay_deadline:{label:'กำหนดส่งหลักฐานการโอน', type:'datetime', mark:'fill', req:true},
+  vet_doc:{label:'ข้อกำหนดทางสัตวแพทย์ที่ใช้', type:'textarea', mark:'fill', req:true, hint:'ค่าเริ่มต้นดึงจากฉบับก่อนหน้า'},
+  rules_basis:{label:'ประกาศหรือระเบียบการแข่งขันที่อ้างอิง', type:'textarea', mark:'prop', req:false, hint:'ในต้นฉบับเป็นข้อความปกติ เสนอให้เป็นช่องกรอกเพราะเปลี่ยนตามรายการ'},
+  appeal_deposit:{label:'เงินประกันการประท้วง', type:'money', mark:'prop', unit:'บาท', req:false, hint:'ในต้นฉบับเขียนตายตัว 5,000 บาท'},
+  arena_main:{label:'สนามแข่งขัน (Competition Arena)', type:'textnum', mark:'colon', req:true, ph:'เช่น ทราย 55 x 90 เมตร'},
+  arena_warm:{label:'สนามวอร์ม (Warm up Arena)', type:'textnum', mark:'colon', req:true, ph:'เช่น ทราย 45 x 65 เมตร'},
+  xc_course:{label:'สนามครอสคันทรี (Cross Country Course)', type:'textnum', mark:'prop', req:false, ph:'เช่น ระยะทาง และจำนวนเครื่องกีดขวาง'}
+};
+
+const SECS = [
+  {id:'event', title:'ข้อมูลการแข่งขัน'},
+  {id:'logos', title:'โลโก้บนหน้าปก'},
+  {id:'committee', title:'คณะกรรมการจัดการแข่งขัน'},
+  {id:'officials', title:'คณะกรรมการตัดสิน'},
+  {id:'rules', title:'กฎ กติกา และจรรยาบรรณ', locked:true},
+  {id:'stable', title:'คอกม้า (Stabling)'},
+  {id:'booking', title:'การจองคอกและการชำระเงิน'},
+  {id:'conduct', title:'การนำม้าเข้า กติกา การประท้วง'},
+  {id:'tech', title:'ข้อมูลทางเทคนิค'}
+];
+const DR=['dressage'], JP=['jumping'], EV=['eventing'];
+/* The handbook, block by block. p = page, s = form section */
+const B = [
+  {p:1, s:'event', t:'cover'},
+  {p:2, t:'h', x:'รายละเอียดการแข่งขัน'},
+  {p:2, s:'event', t:'kv', f:'event_name'},
+  {p:2, s:'event', t:'kv', f:'event_dates'},
+  {p:2, s:'event', t:'kv', f:'venue'},
+  {p:2, s:'event', t:'ppl', r:'organizer', l:'ผู้จัดการแข่งขัน', min:2},
+  {p:2, t:'h', x:'คณะกรรมการจัดการแข่งขัน'},
+  {p:2, s:'committee', t:'ppl', r:'hon_president', l:'ประธานกิตติมศักดิ์', min:2, opt:true},
+  {p:2, s:'committee', t:'ppl', r:'president', l:'ประธานจัดการแข่งขัน', min:2},
+  {p:2, s:'committee', t:'ppl', r:'advisor', l:'ที่ปรึกษาการจัดการแข่งขัน', min:3},
+  {p:2, s:'committee', t:'ppl', r:'secretary', l:'เลขานุการ', min:4},
+  {p:2, s:'committee', t:'ppl', r:'stable_mgr', l:'ฝ่ายคอกม้า', min:1},
+  {p:2, s:'committee', t:'ppl', r:'vet_delegate', l:'สัตว์แพทย์ประจำการแข่งขัน (Vet. Delegate)', min:1},
+  {p:2, s:'committee', t:'ppl', r:'treating_vet', l:'ผู้ช่วยสัตว์แพทย์ (Treating Vet.)', min:3},
+  {p:2, t:'h', x:'คณะกรรมการตัดสิน'},
+  {p:2, t:'sh', x:'ประเภทศิลปะบังคับม้า', only:DR},
+  {p:2, s:'officials', t:'ppl', r:'gj_president', l:'ประธานกรรมการตัดสิน', min:1, only:DR},
+  {p:2, s:'officials', t:'ppl', r:'judge', l:'กรรมการตัดสิน', min:1, only:DR},
+  {p:2, s:'officials', t:'ppl', r:'scriber', l:'ผู้ช่วยกรรมการตัดสิน (Scriber)', min:2, only:DR},
+  {p:2, s:'officials', t:'ppl', r:'chief_steward', l:'หัวหน้ากรรมการประจำสนาม (Chief Steward)', min:1, only:DR},
+  {p:2, s:'officials', t:'ppl', r:'asst_steward', l:'ผู้ช่วยกรรมการประจำสนาม (Asst. Steward)', min:3, only:DR},
+  {p:2, t:'sh', x:'ประเภทกระโดดข้ามเครื่องกีดขวาง', only:JP},
+  {p:2, s:'officials', t:'ppl', r:'gj_president', l:'ประธานกรรมการตัดสิน', min:1, only:JP},
+  {p:2, s:'officials', t:'ppl', r:'judge', l:'กรรมการตัดสิน', min:2, only:JP},
+  {p:2, s:'officials', t:'ppl', r:'course_designer', l:'ผู้ออกแบบสนามแข่งขัน', min:1, only:JP},
+  {p:2, s:'officials', t:'ppl', r:'asst_cd', l:'ผู้ช่วยผู้ออกแบบสนามแข่งขัน', min:2, only:JP},
+  {p:2, s:'officials', t:'ppl', r:'chief_steward', l:'หัวหน้ากรรมการประจำสนาม (Chief Steward)', min:1, only:JP},
+  {p:2, s:'officials', t:'ppl', r:'asst_steward', l:'ผู้ช่วยกรรมการประจำสนาม (Asst. Steward)', min:3, only:JP},
+  {p:2, t:'sh', x:'ประเภทอีเว้นติ้ง (Eventing)', only:EV, prop:true},
+  {p:2, s:'officials', t:'ppl', r:'gj_president', l:'ประธานกรรมการตัดสิน', min:1, only:EV},
+  {p:2, s:'officials', t:'ppl', r:'judge', l:'กรรมการตัดสิน', min:2, only:EV},
+  {p:2, s:'officials', t:'ppl', r:'td', l:'ผู้แทนด้านเทคนิค (Technical Delegate)', min:1, only:EV, prop:true},
+  {p:2, s:'officials', t:'ppl', r:'xc_designer', l:'ผู้ออกแบบสนามครอสคันทรี (Cross Country Course Designer)', min:1, only:EV, prop:true},
+  {p:2, s:'officials', t:'ppl', r:'course_designer', l:'ผู้ออกแบบสนามกระโดดข้ามเครื่องกีดขวาง', min:1, only:EV, prop:true},
+  {p:2, s:'officials', t:'ppl', r:'chief_steward', l:'หัวหน้ากรรมการประจำสนาม (Chief Steward)', min:1, only:EV},
+  {p:2, s:'officials', t:'ppl', r:'asst_steward', l:'ผู้ช่วยกรรมการประจำสนาม (Asst. Steward)', min:3, only:EV},
+  {p:2, s:'officials', t:'ppl', r:'scorer', l:'เจ้าหน้าที่บันทึกผล', min:1},
+  {p:2, s:'officials', t:'ppl', r:'timekeeper', l:'เจ้าหน้าที่จับเวลา', min:1, only:['jumping','eventing']},
+  {p:2, s:'officials', t:'ppl', r:'medical', l:'หน่วยพยาบาล (Medical Service)', min:1},
+  {p:3, s:'rules', t:'rules'},
+  {p:3, s:'rules', t:'coc'},
+  {p:4, t:'h3', x:'คอกม้า (Stabling)'},
+  {p:4, s:'stable', t:'li', n:1, l:'การอนุญาตนำม้าเข้า (Stable open on)', parts:['เวลา ',{f:'stable_open'},' เท่านั้น']},
+  {p:4, s:'stable', t:'li', n:2, l:'ขนาดคอก (Size of boxes)', parts:[{f:'box_size'},' เมตร']},
+  {p:4, s:'stable', t:'li', n:3, l:'ค่าคอกม้าถาวร (Stabling Permanent fees)', parts:[{f:'fee_perm'},' บาท/วัน']},
+  {p:4, s:'stable', t:'li', n:4, l:'ค่าคอกม้าชั่วคราว (Stabling Temporary Fees)', parts:[{f:'fee_temp'},' บาท/วัน']},
+  {p:4, s:'stable', t:'li', n:5, l:'ค่าห้องเก็บอุปกรณ์ (Tacks Box)', parts:[{f:'fee_tack'},' บาท/1 ช่อง (เหมารวมตลอดงาน)']},
+  {p:4, t:'note', x:['*อนุญาตให้นำม้าเข้า-ออก ได้ตามเวลาที่กำหนดเท่านั้น','**ไม่อนุญาตให้เก็บอุปกรณ์สัมภาระ (tacks) ไว้หน้าคอกม้า','***ไม่อนุญาตให้กรูมหรือทีมอยู่ในบริเวณคอกม้า หลังจากเวลาปิดคอก (22:00 – 05:00)']},
+  {p:4, t:'h3', x:'การจองคอกม้า'},
+  {p:4, s:'booking', t:'para', parts:['ให้ชมรม/สโมสร ที่ม้าสังกัด เป็นผู้รวบรวมและกรอกแบบฟอร์ม ส่งมาที่ ',{f:'booking_email'},' ภายในวันที่ ',{f:'booking_deadline'}]},
+  {p:4, t:'h3', x:'การชำระเงิน (PAYMENT)'},
+  {p:4, s:'booking', t:'para', parts:['ผ่าน',{f:'bank'},' ชื่อบัญชี ',{f:'account_name'},' เลขที่บัญชี ',{f:'account_no'},' และส่งหลักฐานการโอนเงินที่ ',{f:'slip_email'},' ภายในวันที่ ',{f:'pay_deadline'}]},
+  {p:4, t:'h3', x:'การนำม้าเข้าพื้นที่'},
+  {p:4, s:'conduct', t:'para', parts:['เป็นไปตาม “',{f:'vet_doc'},'”']},
+  {p:4, t:'h3', x:'กติกาการแข่งขัน (RULES OF COMPETITION)'},
+  {p:4, s:'conduct', t:'para', parts:['การแข่งขันจะอยู่ภายใต้กติกาของ สหพันธ์ขี่ม้านานาชาติ (FEI) สมาคมกีฬาขี่ม้าแห่งประเทศไทย (TEF) ',{f:'rules_basis'},' ในกรณีที่เกิดปัญหาที่ไม่ได้ระบุไว้ในข้อบังคับหรือกติกาการแข่งขันของ FEI การวินิจฉัยในกรณีนั้น ๆ ให้เป็นหน้าที่ของผู้แทนสมาคมกีฬาขี่ม้าแห่งประเทศไทย ผู้แทนกรมพลศึกษา หรือ กรรมการตัดสิน']},
+  {p:4, t:'h3', x:'การประท้วงการตัดสิน (Appeal)'},
+  {p:4, s:'conduct', t:'para', parts:['ต้องยื่นหนังสือประท้วงเป็นลายลักษณ์อักษรต่อกรรมการผู้ตัดสิน (Ground Jury) ตามกฎกติกาการแข่งขันของสหพันธ์ขี่ม้านานาชาติ (FEI) ตามข้อกำหนด GA Reg. 162 ควบคู่กับ ระเบียบกรมพลศึกษา ว่าด้วยการแข่งขันกีฬาระหว่างโรงเรียน พ.ศ. ๒๕๖๐ หมวด ๕ เรื่อง การประท้วง ภายใน 30 นาที หลังการประกาศผลการแข่งขัน โดยยึดตามเวลาที่กรรมการตัดสินเซ็นต์รับรองผลการแข่งขัน การประท้วงต้องวางเงินประกัน จำนวน ',{f:'appeal_deposit'},' บาท และจะได้รับเงินประกันคืนต่อเมื่อการประท้วงมีผลชนะ และในกรณีที่การประท้วงมีผลแพ้ จะต้องถูกริบเงินประกัน']},
+  {p:4, t:'h3', x:'ข้อมูลทางเทคนิค (TECHNICAL INFORMATION)'},
+  {p:4, s:'tech', t:'kv', f:'arena_main'},
+  {p:4, s:'tech', t:'kv', f:'arena_warm'},
+  {p:4, s:'tech', t:'kv', f:'xc_course', only:EV},
+  {p:4, t:'sign'}
+];
+
+/* ---------- demo data (prototype only) ---------- */
+/* Example officials registry: fictional names, standing in for TEF's real database */
+const REG = [
+  ['นายสมชาย ใจดี','ประธานกิตติมศักดิ์'],['พล.ท.วีระ กล้าหาญ','ประธานกิตติมศักดิ์'],['นางสาวสมหญิง รักษ์ม้า','ประธานจัดการแข่งขัน'],
+  ['นายธนากร ศรีสวัสดิ์','ประธานจัดการแข่งขัน'],['นางวรรณา สุขใจ','ที่ปรึกษา'],['นายอนุชา มั่นคง','ที่ปรึกษา'],
+  ['นางสาวชุติมา ดีงาม','เลขานุการ'],['นายพีรพล แข็งแรง','เลขานุการ'],['นางสาวกมลวรรณ ใจเย็น','เลขานุการ'],['นายกิตติ ทองดี','ฝ่ายคอกม้า'],
+  ['น.สพ.ปกรณ์ เมตตา','Vet. Delegate'],['สพ.ญ.กานดา ใจงาม','Treating Vet.'],['น.สพ.ณัฐวุฒิ รักสัตว์','Treating Vet.'],
+  ['นางสุภาพร ตั้งใจ','กรรมการตัดสิน Dressage'],['Mr. Daniel Example','กรรมการตัดสิน FEI'],['นายศักดิ์ชัย เที่ยงตรง','กรรมการตัดสิน / Steward'],
+  ['นางสาวปิยะดา สุภาพ','Scriber'],['นายวิทยา วางแผน','ผู้ออกแบบสนาม'],['นายภาณุ ก้าวไกล','ผู้ช่วยผู้ออกแบบสนาม'],['Ms. Laura Sample','Technical Delegate FEI'],
+  ['นายเอกชัย ตรงเวลา','เจ้าหน้าที่จับเวลา'],['นางสาวอรอุมา แม่นยำ','เจ้าหน้าที่บันทึกผล'],['นายณรงค์ ระวังภัย','Steward'],['นางสาวมาลี ใส่ใจ','Steward'],
+  ['โรงพยาบาลตัวอย่าง (หน่วยปฐมพยาบาล)','หน่วยพยาบาล'],['สมาคมกีฬาขี่ม้าแห่งประเทศไทย','องค์กร'],['สโมสรขี่ม้าตัวอย่าง','องค์กร']
+];
+
+/* Roles: order here is the column order of the permission table */
+const ROLES = {
+  admin:{th:'TEF Admin', d:'ดูแลระบบ แม่แบบ ข้อความล็อก ทะเบียนบุคลากร และสิทธิ์ผู้ใช้', who:'เจ้าหน้าที่ที่สมาคมมอบหมาย 1–2 คน', user:{name:'นายธนากร ศรีสวัสดิ์', email:'admin@tef.example.com'}},
+  approver:{th:'ผู้อนุมัติ', d:'อนุมัติหรือส่งกลับคู่มือที่ผ่านการตรวจแล้ว และสั่งเผยแพร่', who:'เลขาธิการ หรือหัวหน้าฝ่ายเทคนิค', user:{name:'นางสาวสมหญิง รักษ์ม้า', email:'approver@tef.example.com'}},
+  reviewer:{th:'ผู้ตรวจ', d:'ตรวจคู่มือ คอมเมนต์รายช่อง ส่งกลับแก้ไข หรือส่งต่อให้ผู้อนุมัติ', who:'เจ้าหน้าที่ฝ่ายการแข่งขัน TEF', user:{name:'นางสาวชุติมา ดีงาม', email:'reviewer@tef.example.com'}},
+  organizer:{th:'ผู้จัดการแข่งขัน', d:'สร้างและกรอกคู่มือของรายการตัวเอง ส่งตรวจ และขอแก้ไขหลังเผยแพร่', who:'ผู้รับผิดชอบของสโมสรหรือผู้จัด', user:{name:'นายกิตติ ทองดี', email:'organizer@club.example.com'}},
+  editor:{th:'ผู้ร่วมกรอก', d:'ช่วยกรอกคู่มือที่ผู้จัดเชิญ ส่งตรวจเองไม่ได้', who:'ทีมงานของผู้จัด', user:{name:'นางสาวกมลวรรณ ใจเย็น', email:'staff@club.example.com'}},
+  public:{th:'สาธารณะ', d:'นักกีฬา สโมสร ผู้ปกครอง ดูคู่มือที่เผยแพร่แล้ว ไม่ต้องเข้าสู่ระบบ', who:'ทุกคน', user:null}
+};
+/* y = ทำได้, - = ทำไม่ได้, ข้อความ = ทำได้แบบมีเงื่อนไข. columns: admin approver reviewer organizer editor public */
+const PERMS = [
+  ['ดูคู่มือที่เผยแพร่แล้ว', ['y','y','y','y','y','y']],
+  ['ดูคู่มือฉบับร่าง', ['y','y','y','ของตัวเอง','ที่ถูกเชิญ','-']],
+  ['สร้างคู่มือรายการใหม่', ['y','-','-','ของตัวเอง','-','-']],
+  ['กรอกช่องเหลือง “ :” และ xxxx', ['แก้แทนได้*','-','-','ของตัวเอง','ที่ถูกเชิญ','-']],
+  ['เชิญผู้ร่วมกรอก', ['y','-','-','ของตัวเอง','-','-']],
+  ['ส่งให้ TEF ตรวจ', ['-','-','-','ของตัวเอง','-','-']],
+  ['คอมเมนต์รายช่อง', ['y','y','y','ตอบกลับ','ตอบกลับ','-']],
+  ['ส่งกลับแก้ไข', ['-','y','y','-','-','-']],
+  ['ส่งต่อให้ผู้อนุมัติ', ['-','-','y','-','-','-']],
+  ['อนุมัติ', ['กรณีฉุกเฉิน*','y','-','-','-','-']],
+  ['เผยแพร่', ['-','y','-','-','-','-']],
+  ['ขอแก้ไขหลังเผยแพร่', ['-','-','-','ของตัวเอง','-','-']],
+  ['แก้ข้อความล็อก (แดง) และออกแม่แบบเวอร์ชันใหม่', ['y','-','-','-','-','-']],
+  ['จัดการทะเบียนบุคลากร', ['y','-','เสนอเพิ่ม','-','-','-']],
+  ['เชิญเจ้าหน้าที่และกำหนดสิทธิ์', ['y','-','-','-','-','-']],
+  ['ดูประวัติการทำงานของผู้ใช้', ['y','พักไว้ก่อน','-','-','-','-']]
+];
+
+const SRC_VET ='ข้อกำหนดทางสัตวแพทย์การแข่งขันกีฬาขี่ม้า กีฬาระหว่างโรงเรียน ประจำปีการศึกษา ๒๕๖๗ ฉบับ ณ วันที่ ๒๒ พฤษภาคม ๒๕๖๗ ของสมาคมกีฬาขี่ม้าแห่งประเทศไทย';
+const SRC_RULES = 'เรื่องการแข่งขันกีฬาขี่ม้า กีฬาระหว่างโรงเรียน ประจำปีการศึกษา ๒๕๖๗ ในข้อ ๑๔ วิธีการจัดการแข่งขัน';
+function base(over){
+  return Object.assign({
+    stable_open:'08.00 – 18.00 น. ของวันก่อนวันแข่งขัน', box_size:'3 x 3', fee_perm:'500', fee_temp:'350', fee_tack:'1500',
+    booking_email:'info@tefthailand.com', bank:'ธนาคารไทยพาณิชย์ (SCB)', account_name:'สมาคมกีฬาขี่ม้าแห่งประเทศไทย', account_no:'080 253 7091',
+    slip_email:'info@tefthailand.com', vet_doc:SRC_VET, rules_basis:SRC_RULES, appeal_deposit:'5000', arena_warm:'ทราย 45 x 65 เมตร'
+  }, over);
+}
+const COMMITTEE = {
+  organizer:['สมาคมกีฬาขี่ม้าแห่งประเทศไทย','สโมสรขี่ม้าตัวอย่าง'], hon_president:['พล.ท.วีระ กล้าหาญ','นายสมชาย ใจดี'],
+  president:['นางสาวสมหญิง รักษ์ม้า','นายธนากร ศรีสวัสดิ์'], advisor:['นางวรรณา สุขใจ','นายอนุชา มั่นคง',''],
+  secretary:['นางสาวชุติมา ดีงาม','นายพีรพล แข็งแรง','นางสาวกมลวรรณ ใจเย็น',''], stable_mgr:['นายกิตติ ทองดี'],
+  vet_delegate:['น.สพ.ปกรณ์ เมตตา'], treating_vet:['สพ.ญ.กานดา ใจงาม','น.สพ.ณัฐวุฒิ รักสัตว์','']
+};
+const SAMPLE = {
+  dressage:{status:'draft', ver:'0.3', values:base({event_name:'TEF Dressage Championship 2027', event_dates:{from:'2027-03-12',to:'2027-03-14'}, venue:'สโมสรขี่ม้าตัวอย่าง จังหวัดนครปฐม', booking_deadline:'2027-02-26T12:00', pay_deadline:'', arena_main:'ทราย 20 x 60 เมตร'}),
+    people:Object.assign({}, COMMITTEE, {gj_president:['Mr. Daniel Example'], judge:['นางสุภาพร ตั้งใจ'], scriber:['นางสาวปิยะดา สุภาพ',''], chief_steward:['นายศักดิ์ชัย เที่ยงตรง'], asst_steward:['นายณรงค์ ระวังภัย','นางสาวมาลี ใส่ใจ',''], scorer:['นางสาวอรอุมา แม่นยำ'], medical:['']})},
+  jumping:{status:'draft', ver:'0.2', values:base({event_name:'TEF Jumping Championship 2027', event_dates:{from:'2027-04-09',to:'2027-04-11'}, venue:'สโมสรขี่ม้าตัวอย่าง จังหวัดนครปฐม', booking_deadline:'2027-03-26T12:00', pay_deadline:'2027-03-29T12:00', fee_tack:'', arena_main:'ทราย 55 x 90 เมตร'}),
+    people:Object.assign({}, COMMITTEE, {gj_president:['นายศักดิ์ชัย เที่ยงตรง'], judge:['Mr. Daniel Example','นางสุภาพร ตั้งใจ'], course_designer:['นายวิทยา วางแผน'], asst_cd:['นายภาณุ ก้าวไกล',''], chief_steward:['นายณรงค์ ระวังภัย'], asst_steward:['นางสาวมาลี ใส่ใจ','',''], scorer:['นางสาวอรอุมา แม่นยำ'], timekeeper:[''], medical:['โรงพยาบาลตัวอย่าง (หน่วยปฐมพยาบาล)']})},
+  eventing:{status:'draft', ver:'0.1', values:base({event_name:'TEF Eventing Cup 2027', event_dates:{from:'2027-05-21',to:'2027-05-23'}, venue:'สโมสรขี่ม้าตัวอย่าง จังหวัดนครปฐม', booking_deadline:'', pay_deadline:'2027-05-10T12:00', arena_main:'ทราย 55 x 90 เมตร', xc_course:''}),
+    people:Object.assign({}, COMMITTEE, {gj_president:['Ms. Laura Sample'], judge:['นางสุภาพร ตั้งใจ',''], td:[''], xc_designer:['นายวิทยา วางแผน'], course_designer:['นายภาณุ ก้าวไกล'], chief_steward:['นายศักดิ์ชัย เที่ยงตรง'], asst_steward:['นายณรงค์ ระวังภัย','นางสาวมาลี ใส่ใจ',''], scorer:['นางสาวอรอุมา แม่นยำ'], timekeeper:['นายเอกชัย ตรงเวลา'], medical:['โรงพยาบาลตัวอย่าง (หน่วยปฐมพยาบาล)']})}
+};
+
+/* ---------- state ---------- */
+const KEY = 'tef-handbook-mockup-v1';
+const clone = o => JSON.parse(JSON.stringify(o));
+function fresh(){ return {disc:'dressage', role:'organizer', marks:true, thai:true, docs:clone(SAMPLE)}; }
+let S;
+try { S = JSON.parse(localStorage.getItem(KEY)); } catch(e) { S = null; }
+if (!S || !S.docs || !S.docs.dressage) S = fresh();
+if (!ROLES[S.role]) S.role = 'organizer';
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); return true; } catch(e) { return false; } }
+const D = () => S.docs[S.disc];
+const vis = b => !b.only || b.only.includes(S.disc);
+const canEdit = () => ['organizer','editor','admin'].includes(S.role);
+const editable = () => ['draft','returned'].includes(D().status) && canEdit();
+let M = true; /* template marks shown in the paper (off for the public view) */
+
+/* ---------- formatting ---------- */
+const TH_M = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const td = s => S.thai ? String(s).replace(/[0-9]/g, d => '๐๑๒๓๔๕๖๗๘๙'[d]) : String(s);
+function ymd(iso){ const [y,m,d] = iso.split('-').map(Number); return {y,m,d}; }
+function fmtDate(iso){ const a = ymd(iso); return `${a.d} ${TH_M[a.m-1]} ${a.y+543}`; }
+function fmtRange(r){
+  if (!r || !r.from) return '';
+  if (!r.to || r.to === r.from) return fmtDate(r.from);
+  const a = ymd(r.from), b = ymd(r.to);
+  if (a.y===b.y && a.m===b.m) return `${a.d} – ${b.d} ${TH_M[a.m-1]} ${a.y+543}`;
+  if (a.y===b.y) return `${a.d} ${TH_M[a.m-1]} – ${b.d} ${TH_M[b.m-1]} ${a.y+543}`;
+  return `${fmtDate(r.from)} – ${fmtDate(r.to)}`;
+}
+function fmtDT(v){ const [d,t] = v.split('T'); return fmtDate(d) + (t ? ` เวลา ${t.replace(':','')} น.` : ''); }
+function fmtMoney(v){ const n = Number(String(v).replace(/[,\s]/g,'')); return isFinite(n) && String(v).trim() !== '' ? n.toLocaleString('en-US') : String(v); }
+function filled(f, v){ return F[f].type === 'daterange' ? !!(v && v.from) : String(v ?? '').trim() !== ''; }
+function display(f, v){
+  const t = F[f].type;
+  if (t === 'daterange') return td(fmtRange(v));
+  if (t === 'datetime') return td(fmtDT(v));
+  if (t === 'money') return td(fmtMoney(v));
+  if (t === 'textnum') return td(v);
+  return String(v);
+}
+function changed(key, cur){ const b = D().base; if (!b) return false; return JSON.stringify(key in b.values ? b.values[key] : undefined) !== JSON.stringify(cur); }
+function changedRole(r){ const b = D().base; if (!b) return false; const clean = a => (a||[]).filter(x => x && x.trim()); return JSON.stringify(clean(b.people[r])) !== JSON.stringify(clean(D().people[r])); }
+
+/* ---------- required items + progress ---------- */
+function fieldsOf(b){ if (b.f) return [b.f]; if (b.parts) return b.parts.filter(p => typeof p === 'object').map(p => p.f); return []; }
+function items(){
+  const out = [], seen = new Set();
+  B.filter(vis).forEach(b => {
+    fieldsOf(b).forEach(f => { if (!seen.has(f)) { seen.add(f); out.push({kind:'f', key:f, label:F[f].label, s:b.s, req:F[f].req}); } });
+    if (b.t === 'ppl' && !roleOff(b.r) && !seen.has('r:'+b.r)) { seen.add('r:'+b.r); out.push({kind:'r', key:b.r, label:b.l, s:b.s, req:true}); }
+  });
+  return out;
+}
+/* lines shown for a people list: the source handbook's count (b.min) until the organizer adds or removes a line */
+function pplLines(b){ const L = D().lines; return Math.max(1, L && L[b.r] != null ? L[b.r] : b.min); }
+function roleOff(r){ const o = D().off; return !!(o && o[r]); }
+function isDone(it){ const d = D(); return it.kind === 'f' ? filled(it.key, d.values[it.key]) : (d.people[it.key]||[]).some(x => x && x.trim()); }
+
+/* ---------- doc rendering ---------- */
+function vspan(f){
+  const d = D(), v = d.values[f], ok = filled(f, v), m = F[f].mark;
+  let txt;
+  if (ok) txt = display(f, v);
+  else if (!M) txt = '……………………';
+  else txt = m === 'x' ? 'xxxxx' : m === 'colon' ? '……………' : `[${F[f].label}]`;
+  const cls = `v m-${m}${ok ? '' : ' empty'}${changed(f, v) ? ' chg' : ''}`;
+  return `<span class="${cls}" data-f="${f}" role="button" tabindex="0" title="${esc(F[f].label)} (คลิกเพื่อแก้)">${esc(txt)}</span>`;
+}
+function pspan(r, i, name){
+  const ok = !!(name && name.trim());
+  const txt = ok ? name : (M ? '……………' : '……………………');
+  return `<span class="v m-colon${ok ? '' : ' empty'}" data-r="${r}" data-i="${i}" role="button" tabindex="0">${esc(txt)}</span>`;
+}
+const kv = (k, val, extra='') => `<div class="kv${extra}"><div class="k">${k}</div><div class="c">:</div><div class="val">${val}</div></div>`;
+const coverOwn = () => String(D().values.cover_line ?? '').trim();
+const coverHint = own => own ? 'แก้เองแล้ว ข้อความนี้จะไม่เปลี่ยนตามสถานที่ วันที่ หรือผู้จัด' : 'สร้างจากสถานที่ วันที่ และผู้จัดการแข่งขันลำดับแรก พิมพ์แก้ได้ถ้าต้องการข้อความอื่น';
+function coverLine(){
+  const d = D(), v = d.values, org = (d.people.organizer||[]).find(x => x && x.trim());
+  const own = coverOwn(), ch = changed('cover_line', v.cover_line) ? ' chg' : '';
+  if (own) return `<span class="v m-fill${ch}" data-cover="1" role="button" tabindex="0" title="บรรทัดบนหน้าปก แก้เอง (คลิกเพื่อแก้)">${esc(td(own))}</span>`;
+  const ok = filled('venue', v.venue) && filled('event_dates', v.event_dates) && !!org;
+  let txt;
+  if (!M && !ok) txt = 'ณ ที่ไหน เมื่อไหร่ โดยใคร';
+  else txt = `ณ ${filled('venue', v.venue) ? v.venue : '[สถานที่]'} วันที่ ${filled('event_dates', v.event_dates) ? td(fmtRange(v.event_dates)) : '[วันที่]'} โดย ${org || '[ผู้จัดการแข่งขัน]'}`;
+  return `<span class="v m-fill${ok ? '' : ' empty'}${ch}" data-cover="1" role="button" tabindex="0" title="สร้างอัตโนมัติจาก สถานที่ วันที่ และผู้จัดการแข่งขัน (คลิกเพื่อแก้)">${esc(txt)}</span>`;
+}
+function stamp(){
+  const d = D();
+  if (d.status === 'approved') return `<div class="stamp">อนุมัติโดย TEF<small>ฉบับ v${d.ver}</small></div>`;
+  if (d.status === 'published') return `<div class="stamp">เผยแพร่แล้ว<small>ฉบับ v${d.ver}</small></div>`;
+  return '';
+}
+const LOCK_TAG = '<span class="lk-tag"><svg width="9" height="10" viewBox="0 0 9 10" aria-hidden="true"><rect x="0.5" y="4" width="8" height="5.5" rx="1" fill="currentColor"/><path d="M2.3 4V2.8a2.2 2.2 0 0 1 4.4 0V4" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>ล็อก · แก้ได้เฉพาะ TEF Admin</span>';
+function block(b){
+  const d = D();
+  switch (b.t) {
+    case 'cover': {
+      const dn = DISC[S.disc];
+      return `<div class="d-title">คู่มือการแข่งขันขี่ม้า</div>
+        <div class="d-title">${vspan('event_name')}</div>
+        <div class="d-title" style="font-size:1.55em">${coverLine()}</div>
+        <div class="d-title en">(Technical Handbook)</div>
+        <div class="d-disc propblk" title="เสนอเพิ่ม: บอกประเภทบนหน้าปก">ประเภท${dn.th} (${dn.en})</div>`;
+    }
+    case 'sign': return typeof approvalSign === 'function' ? approvalSign() : ''; /* approver e-signatures, Dressage app only */
+    case 'h': return `<div class="d-h">${esc(b.x)}</div>`;
+    case 'sh': return `<div class="d-sh${b.prop ? ' propblk' : ''}">${esc(b.x)}</div>`;
+    case 'h3': return `<div class="d-h3">${esc(b.x)}</div>`;
+    case 'kv': return kv(esc(F[b.f].label), vspan(b.f), F[b.f].mark === 'prop' ? ' propblk' : '');
+    case 'ppl': {
+      if (roleOff(b.r)) return '';
+      const arr = d.people[b.r] || [], n = Math.max(pplLines(b), arr.length), any = arr.some(x => x && x.trim());
+      const chg = changedRole(b.r) ? ' chg' : '';
+      let rows = '', first = true;
+      for (let i = 0; i < n; i++) {
+        const name = arr[i] || '';
+        if (!M && !name.trim() && (any || !first)) continue;
+        rows += kv(first ? esc(b.l) : '', pspan(b.r, i, name), (b.prop ? ' propblk' : '') + chg);
+        first = false;
+      }
+      return rows;
+    }
+    case 'li': return kv(`${b.n}. ${esc(b.l)}`, b.parts.map(p => typeof p === 'string' ? esc(p) : vspan(p.f)).join(''), ' li');
+    case 'para': return `<p class="d-p">${b.parts.map(p => typeof p === 'string' ? esc(p) : vspan(p.f)).join('')}</p>`;
+    case 'note': return b.x.map(t => `<div class="d-note">${esc(t)}</div>`).join('');
+    case 'rules': {
+      const list = RULES.filter(r => r.only.includes(S.disc));
+      return `<div class="lockblk" data-lock="rules">${LOCK_TAG}<div class="d-h" style="margin-top:.2em">${esc(LOCKED.rules_head)}</div><ol class="d-ol">${list.map(r => `<li${r.prop ? ' class="px" title="เสนอเพิ่ม รอ TEF ยืนยัน"' : ''}>${esc(r.t)}</li>`).join('')}</ol></div>`;
+    }
+    case 'coc': {
+      const html = LOCKED.coc.map(([k, t]) => {
+        if (k === 'title') return `<div class="coc-t">${esc(t)}</div>`;
+        if (k === 'title-en') return `<div class="coc-en">${esc(t)}</div>`;
+        if (k === 'sec') return `<div class="coc-sec">${esc(t)}</div>`;
+        if (k === 'item') return `<div class="coc-item">${esc(t)}</div>`;
+        if (k === 'cite') return `<div class="coc-cite">${esc(t)}</div>`;
+        return `<div class="coc-p">${esc(t)}</div>`;
+      }).join('');
+      return `<div class="lockblk" data-lock="coc" style="margin-top:1.2em">${LOCK_TAG}${html}</div>`;
+    }
+  }
+  return '';
+}
+function renderDoc(){
+  const doc = document.getElementById('doc');
+  M = S.marks && S.role !== 'public';
+  doc.classList.toggle('marks', M);
+  if (S.role === 'public' && D().status !== 'published') {
+    doc.innerHTML = `<section class="page"><div class="body" style="display:grid;place-items:center;text-align:center"><div><div class="d-title" style="font-size:1.5em">ยังไม่เผยแพร่</div><p>คู่มือ ${DISC[S.disc].en} ฉบับนี้อยู่ระหว่างจัดทำ สาธารณะจะเห็นเมื่อผู้อนุมัติกดเผยแพร่</p></div></div></section>`;
+    return;
+  }
+  const name = filled('event_name', D().values.event_name) ? D().values.event_name : 'ชื่อรายการแข่งขัน';
+  let html = '';
+  for (let p = 1; p <= 4; p++) {
+    const body = B.filter(b => b.p === p && vis(b)).map(block).join('');
+    html += `<section class="page${p === 1 ? ' cover' : ''}">${p === 1 ? stamp() + logosHtml() : ''}<div class="body">${body}</div><div class="pfoot"><span>${esc(name)}</span><span class="pn">pg. ${td(p)}</span></div></section>`;
+  }
+  doc.innerHTML = html;
+  paginate(doc);
+}
+/* A4 pages have a fixed height: content that runs past the footer flows onto continuation pages.
+   Red locked blocks and numbered lists split between items; everything else moves whole. Phones show one long page instead. */
+const bottomOf = el => el.getBoundingClientRect().bottom;
+function splitAt(box, limit, isBody){
+  const kids = [...box.children].filter(k => !k.classList.contains('lk-tag'));
+  const k = kids.findIndex(c => bottomOf(c) > limit);
+  if (k < 0) return null;
+  const c = kids[k], out = box.cloneNode(false);
+  if (box.classList.contains('lockblk')) { out.style.marginTop = '0'; const tag = box.querySelector(':scope > .lk-tag'); if (tag) out.appendChild(tag.cloneNode(true)); }
+  if (box.tagName === 'OL') out.start = (box.start || 1) + k;
+  const inner = [...c.children].filter(x => !x.classList.contains('lk-tag'));
+  const splittable = (c.classList.contains('lockblk') || c.tagName === 'OL') && inner.length > 1 && bottomOf(inner[0]) <= limit;
+  if (splittable) {
+    const part = splitAt(c, limit, false);
+    if (part) { out.append(part, ...kids.slice(k + 1)); return out; }
+  }
+  if (k === 0 && isBody) return null; /* nothing fits and nothing can split: leave it rather than loop */
+  out.append(...kids.slice(k));
+  return out;
+}
+function paginate(doc){
+  if (!doc.offsetParent) return; /* hidden tab: measured again when the builder is shown */
+  const first = doc.querySelector('.page');
+  if (!first || getComputedStyle(first).aspectRatio === 'auto') return;
+  for (let i = 1, guard = 0; i < doc.children.length && guard < 60; i++, guard++) {
+    const page = doc.children[i], body = page.querySelector('.body'), foot = page.querySelector('.pfoot');
+    if (!body || !foot || !body.lastElementChild) continue;
+    const limit = page.getBoundingClientRect().top + page.clientHeight - parseFloat(getComputedStyle(page).paddingBottom) - foot.offsetHeight - parseFloat(getComputedStyle(foot).marginTop);
+    if (bottomOf(body.lastElementChild) <= limit + 1) continue;
+    const part = splitAt(body, limit, true);
+    if (!part) continue;
+    const next = page.cloneNode(false);
+    next.append(part, foot.cloneNode(true));
+    page.after(next);
+  }
+  [...doc.children].forEach((p, n) => { p.setAttribute('aria-label', `หน้า ${n + 1}`); const pn = p.querySelector('.pn'); if (pn) pn.textContent = 'pg. ' + td(n + 1); });
+}
+let rsz;
+window.addEventListener('resize', () => { clearTimeout(rsz); rsz = setTimeout(renderDoc, 150); });
+if (document.fonts) document.fonts.ready.then(() => renderDoc());
+
+/* ---------- form rail ---------- */
+const MK = {fill:['mk-fill','ช่องเหลือง'], colon:['mk-colon',': กรอก'], x:['mk-x','xxxx'], prop:['mk-prop','เสนอเพิ่ม']};
+const badge = m => `<span class="mk ${MK[m][0]}">${MK[m][1]}</span>`;
+function cmtFor(key){
+  const d = D(); if (d.status !== 'returned') return '';
+  return (d.comments || (d.comment ? [d.comment] : [])).filter(c => c.key === key).map(c => `<div class="cmt"><b>${esc(c.by || 'TEF')}:</b> ${esc(c.text)}</div>`).join('');
+}
+function control(f){
+  const d = D(), def = F[f], v = d.values[f], need = def.req && !filled(f, v) ? ' need' : '';
+  const lab = `${esc(def.label)} ${badge(def.mark)}`;
+  let inner;
+  if (def.type === 'daterange') {
+    const r = v || {};
+    inner = `<div class="pair"><label>เริ่ม<input class="inp${need}" type="date" id="f-${f}-from" data-f="${f}" data-part="from" value="${esc(r.from||'')}"></label><label>สิ้นสุด<input class="inp${need}" type="date" id="f-${f}-to" data-f="${f}" data-part="to" value="${esc(r.to||'')}"></label></div>`;
+    return `<div class="fld" data-key="${f}"><div class="lab">${lab}</div>${inner}${cmtFor(f)}</div>`;
+  }
+  if (def.type === 'textarea') inner = `<textarea class="inp${need}" id="f-${f}" data-f="${f}" rows="3">${esc(v||'')}</textarea>`;
+  else if (def.type === 'datetime') inner = `<input class="inp${need}" type="datetime-local" id="f-${f}" data-f="${f}" value="${esc(v||'')}">`;
+  else inner = `<input class="inp${need}" type="${def.type === 'email' ? 'email' : 'text'}" ${def.type === 'money' ? 'inputmode="numeric"' : ''} id="f-${f}" data-f="${f}" value="${esc(v||'')}" placeholder="${esc(def.ph||'')}">`;
+  if (def.unit) inner = `<div class="unit">${inner}<span>${esc(def.unit)}</span></div>`;
+  return `<div class="fld" data-key="${f}"><label for="f-${f}">${lab}</label>${inner}${def.hint ? `<span class="hint">${esc(def.hint)}</span>` : ''}${cmtFor(f)}</div>`;
+}
+function pcontrol(b){
+  const arr = D().people[b.r] || [], n = Math.max(pplLines(b), arr.length);
+  let rows = '';
+  for (let i = 0; i < n; i++) {
+    const need = i === 0 && !arr.some(x => x && x.trim()) ? ' need' : '';
+    rows += `<div class="prow"><span class="n">${i+1}</span><input class="inp${need}" list="registry" id="p-${b.r}-${i}" data-r="${b.r}" data-i="${i}" value="${esc(arr[i]||'')}" placeholder="เลือกจากทะเบียน หรือพิมพ์ชื่อ" aria-label="${esc(b.l)} คนที่ ${i+1}">${n > 1 ? `<button type="button" class="rm" data-rm="${b.r}" data-i="${i}" aria-label="ลบบรรทัด ${i+1}">×</button>` : ''}</div>`;
+  }
+  if (b.opt && roleOff(b.r)) return `<div class="fld" data-key="r:${b.r}"><div class="lab">${esc(b.l)} <span class="mk mk-own">ไม่มีในรายการนี้</span></div><button type="button" class="add" data-role-on="${b.r}">+ เพิ่มตำแหน่ง${esc(b.l)}</button></div>`;
+  const off = b.opt ? `<button type="button" class="add" data-role-off="${b.r}">ลบตำแหน่งนี้</button>` : '';
+  return `<div class="fld" data-key="r:${b.r}"><div class="lab">${esc(b.l)} ${badge(b.prop ? 'prop' : 'colon')}${b.opt ? ' <span class="hint">ไม่บังคับ</span>' : ''}</div>${rows}<div class="cover-row"><button type="button" class="add" data-add="${b.r}">+ เพิ่มรายชื่อ</button>${off}</div>${cmtFor('r:'+b.r)}</div>`;
+}
+function secBody(sec){
+  if (sec.id === 'logos') return logoSecHtml();
+  if (sec.id === 'rules') {
+    const list = RULES.filter(r => r.only.includes(S.disc));
+    return `<div class="lockcard"><span>ผู้จัดเห็นแต่แก้ไม่ได้ ข้อความตรงตามไฮไลต์แดงในไฟล์ต้นฉบับ</span><b style="color:var(--ink)">กฎที่ใช้ในฉบับ ${DISC[S.disc].en} (${list.length} รายการ)</b><ul>${list.map(r => `<li${r.prop ? ' class="px"' : ''}>${esc(r.t)}${r.prop ? ' · เสนอเพิ่ม' : ''}</li>`).join('')}</ul><span>และจรรยาบรรณเพื่อสวัสดิภาพม้าของ FEI ฉบับเต็ม ${LOCKED.coc.length} ย่อหน้า</span><button type="button" class="add" data-goto="rules">ดูในเอกสาร →</button></div>`;
+  }
+  let out = '';
+  if (sec.id === 'event') { const own = coverOwn(); out += `<div class="fld" data-key="cover"><label for="f-cover">บรรทัดบนหน้าปก <span class="mk ${own ? 'mk-own' : 'mk-auto'}" id="cover-mode">${own ? 'แก้เอง' : 'อัตโนมัติ'}</span></label><textarea class="inp" id="f-cover" data-cover="1" rows="2">${esc(own ? D().values.cover_line : coverLineText())}</textarea><div class="cover-row"><span class="hint" id="cover-hint">${coverHint(own)}</span><button type="button" class="add" data-cover-reset="1"${own ? '' : ' hidden'}>กลับเป็นอัตโนมัติ</button></div></div>`; }
+  const seen = new Set();
+  B.filter(b => b.s === sec.id && vis(b)).forEach(b => {
+    if (b.t === 'ppl') out += pcontrol(b);
+    else fieldsOf(b).forEach(f => { if (!seen.has(f)) { seen.add(f); out += control(f); } });
+  });
+  return out;
+}
+function renderRail(){
+  const rail = document.getElementById('rail');
+  if (S.role === 'public') { rail.innerHTML = ''; return; }
+  const open = {};
+  rail.querySelectorAll('details.sec').forEach(x => open[x.dataset.sec] = x.open);
+  const d = D();
+  let banner = '';
+  if (!canEdit() && ['draft','returned'].includes(d.status)) banner = `<div class="banner info"><b>${esc(ROLES[S.role].th)}: ดูได้อย่างเดียว</b>ช่องกรอกแก้ได้เฉพาะผู้จัดการแข่งขัน ผู้ร่วมกรอก และ TEF Admin</div>`;
+  else if (d.status === 'submitted') banner = `<div class="banner info"><b>ส่งให้ TEF ตรวจแล้ว</b>แบบฟอร์มถูกล็อกระหว่างผู้ตรวจทำงาน</div>`;
+  else if (d.status === 'reviewed') banner = `<div class="banner info"><b>ผู้ตรวจส่งต่อแล้ว รอผู้อนุมัติ</b>แบบฟอร์มยังล็อกอยู่</div>`;
+  else if (d.status === 'returned') banner = `<div class="banner warn"><b>TEF ส่งกลับให้แก้ไข</b>มีคอมเมนต์ที่ช่อง “${esc(d.comment ? d.comment.label : '')}” <button type="button" class="add" data-jump="${esc(d.comment ? d.comment.key : '')}">ไปที่ช่อง →</button></div>`;
+  else if (d.status === 'approved') banner = `<div class="banner ok"><b>อนุมัติแล้ว ฉบับ v${d.ver}</b>ฉบับนี้ถูกล็อก กดเผยแพร่เพื่อให้นักกีฬาและสโมสรเห็น</div>`;
+  else if (d.status === 'published') banner = `<div class="banner ok"><b>เผยแพร่แล้ว ฉบับ v${d.ver}</b>ถ้าต้องเปลี่ยนข้อมูล กด “ขอแก้ไข” ระบบจะออกฉบับใหม่และบันทึกสิ่งที่เปลี่ยน</div>`;
+  else if (d.base) banner = `<div class="banner warn"><b>ฉบับแก้ไข v${d.ver}</b>สิ่งที่เปลี่ยนจากฉบับเผยแพร่จะมีขีดสีส้มในเอกสาร และนักกีฬาจะได้รับแจ้ง</div>`;
+  let html = `<div class="card prog"><div class="prog-row"><div><b id="pg-num"></b> <span id="pg-of"></span></div><span id="pg-pct"></span></div><div class="meter" id="pg-meter"><i></i></div><div id="pg-miss"></div></div>${banner}<fieldset id="fs"${editable() ? '' : ' disabled'}>`;
+  SECS.forEach(sec => {
+    const isOpen = sec.id in open ? open[sec.id] : sec.id === 'event' || sec.id === 'logos' || sec.id === 'officials';
+    html += `<details class="sec" data-sec="${sec.id}"${isOpen ? ' open' : ''}><summary><span class="sum-t">${esc(sec.title)}</span><span class="cnt${sec.locked ? ' lk' : ''}" data-cnt="${sec.id}">${sec.locked ? 'ล็อก' : ''}</span></summary><div class="sec-body">${secBody(sec)}</div></details>`;
+  });
+  html += '</fieldset>';
+  rail.innerHTML = html;
+  updateProgress();
+}
+function updateProgress(){
+  const its = items().filter(i => i.req), done = its.filter(isDone);
+  const pct = its.length ? Math.round(done.length / its.length * 100) : 100;
+  const $ = id => document.getElementById(id);
+  if (!$('pg-num')) return;
+  $('pg-num').textContent = `${done.length}/${its.length}`;
+  $('pg-of').textContent = 'ช่องบังคับที่กรอกแล้ว';
+  $('pg-pct').textContent = pct + '%';
+  $('pg-meter').firstElementChild.style.width = pct + '%';
+  $('pg-meter').classList.toggle('done', pct === 100);
+  SECS.forEach(sec => {
+    if (sec.locked) return;
+    if (sec.id === 'logos') { logoCount(); return; }
+    const s = its.filter(i => i.s === sec.id), dn = s.filter(isDone).length, el = document.querySelector(`[data-cnt="${sec.id}"]`);
+    if (el) { el.textContent = `${dn}/${s.length}`; el.classList.toggle('done', dn === s.length); }
+  });
+  const miss = its.filter(i => !isDone(i));
+  const box = $('pg-miss');
+  if (S.showMiss && miss.length && editable()) box.innerHTML = `<div class="miss"><span><b>ยังส่งไม่ได้</b> ขาดอีก ${miss.length} ช่อง คลิกเพื่อไปกรอก</span><ul>${miss.map(m => `<li><button type="button" data-jump="${m.kind === 'r' ? 'r:' + m.key : m.key}">${esc(m.label)}</button></li>`).join('')}</ul></div>`;
+  else box.innerHTML = '';
+  syncCover();
+}
+function syncCover(){
+  const ta = document.getElementById('f-cover'); if (!ta) return;
+  const own = coverOwn();
+  if (!own && document.activeElement !== ta) ta.value = coverLineText();
+  const m = document.getElementById('cover-mode'); if (m) { m.textContent = own ? 'แก้เอง' : 'อัตโนมัติ'; m.className = 'mk ' + (own ? 'mk-own' : 'mk-auto'); }
+  const h = document.getElementById('cover-hint'); if (h) h.textContent = coverHint(own);
+  const b = document.querySelector('#rail [data-cover-reset]'); if (b) b.hidden = !own;
+}
+function coverLineText(){
+  const d = D(), v = d.values, org = (d.people.organizer||[]).find(x => x && x.trim());
+  return `ณ ${v.venue || '…'} วันที่ ${filled('event_dates', v.event_dates) ? td(fmtRange(v.event_dates)) : '…'} โดย ${org || '…'}`;
+}
+
+/* ---------- status bar + simulated review ---------- */
+function renderStatus(){
+  const d = D(), st = d.status, r = S.role;
+  const steps = ['ร่าง','ส่งตรวจ','ตรวจแล้ว','อนุมัติ','เผยแพร่'];
+  const idx = {draft:0, returned:0, submitted:1, reviewed:2, approved:3, published:4}[st] ?? 0;
+  const track = steps.map((s, i) => {
+    let c = i < idx ? 'done' : i === idx ? 'cur' : '';
+    let label = s;
+    if (i === 0 && st === 'returned') { c = 'ret'; label = 'ส่งกลับแก้ไข'; }
+    if (st === 'published' && i === 4) c = 'done';
+    return `${i ? '<span class="ln"></span>' : ''}<span class="st ${c}"><i>${c === 'done' ? '✓' : i + 1}</i>${label}</span>`;
+  }).join('');
+  /* buttons depend on the role: whoever cannot act sees who the document is waiting for */
+  const btn = (a, t, k = 'primary') => `<button type="button" class="btn ${k}" data-act="${a}">${t}</button>`;
+  const wait = who => `<span class="wait">รอ${ROLES[who].th}</span><button type="button" class="btn sim" data-as="${who}">สลับเป็น${ROLES[who].th}</button>`;
+  let acts = '';
+  if (r === 'public') acts = `<span class="wait">${st === 'published' ? 'ฉบับที่เผยแพร่ล่าสุด' : 'ยังไม่เผยแพร่'}</span><button type="button" class="btn sim" data-as="organizer">เข้าสู่ระบบเป็นผู้จัดการแข่งขัน</button>`;
+  else if (st === 'draft' || st === 'returned') acts = r === 'organizer' ? btn('submit', 'ส่งให้ TEF ตรวจ') : (r === 'editor' ? '<span class="wait">ผู้ร่วมกรอกส่งตรวจเองไม่ได้</span>' : '') + wait('organizer');
+  else if (st === 'submitted') acts = r === 'reviewer' ? btn('return', 'ส่งกลับแก้ไข', '') + btn('forward', 'ส่งต่อให้ผู้อนุมัติ') : wait('reviewer');
+  else if (st === 'reviewed') acts = r === 'approver' ? btn('return', 'ส่งกลับแก้ไข', '') + btn('approve', 'อนุมัติ') : wait('approver');
+  else if (st === 'approved') acts = r === 'approver' ? btn('publish', 'เผยแพร่ให้นักกีฬาและสโมสร') : wait('approver');
+  else if (st === 'published') acts = (r === 'organizer' ? btn('amend', 'ขอแก้ไข (ออกฉบับใหม่)', '') : '') + `<button type="button" class="btn sim" data-as="public">ดูแบบสาธารณะ</button>`;
+  let nchg = 0;
+  if (d.base) nchg = items().filter(it => it.kind === 'f' ? changed(it.key, d.values[it.key]) : changedRole(it.key)).length;
+  document.getElementById('status').innerHTML = `<div class="track">${track}</div><div class="acts"><span class="ver">${DISC[S.disc].en} · v${d.ver}${d.base ? ` · เปลี่ยน ${nchg} รายการ` : ''}</span>${acts}</div>`;
+}
+function act(a){
+  const d = D();
+  if (a === 'submit') {
+    const miss = items().filter(i => i.req && !isDone(i));
+    if (miss.length) { S.showMiss = true; renderRail(); document.getElementById('rail').scrollTo({top:0, behavior:'smooth'}); return; }
+    S.showMiss = false; d.status = 'submitted'; d.comment = null;
+  } else if (a === 'return') {
+    d.status = 'returned';
+    d.comment = {key:'fee_temp', label:F.fee_temp.label, by:ROLES[S.role].th, text:'กรุณายืนยันค่าคอกม้าชั่วคราว ตัวเลขต่างจากรายการก่อนหน้า (ตัวอย่างคอมเมนต์)'};
+  } else if (a === 'forward') {
+    d.status = 'reviewed'; d.comment = null;
+  } else if (a === 'approve') {
+    d.status = 'approved'; d.comment = null;
+    if (d.ver.startsWith('0.')) d.ver = '1.0';
+  } else if (a === 'publish') {
+    d.status = 'published'; delete d.base;
+  } else if (a === 'amend') {
+    d.base = clone({values:d.values, people:d.people});
+    const [mj, mn] = d.ver.split('.').map(Number); d.ver = `${mj}.${mn + 1}`;
+    d.status = 'draft';
+  }
+  save(); renderAll();
+}
+
+function renderSeg(){
+  document.getElementById('seg').innerHTML = ALL.map(k => `<button type="button" data-disc="${k}" aria-pressed="${k === S.disc}" style="--c:${DISC[k].c}"><span class="dot"></span>${DISC[k].en} <small>${DISC[k].th}</small></button>`).join('');
+}
+function renderAll(){
+  const pub = S.role === 'public';
+  document.getElementById('v-builder').classList.toggle('pub', pub);
+  document.querySelector('.work').classList.toggle('pub', pub);
+  renderSeg(); renderRail(); renderDoc(); renderStatus();
+}
+/* ---------- wiring ---------- */
+let raf = 0;
+function soon(){ cancelAnimationFrame(raf); raf = requestAnimationFrame(() => { renderDoc(); updateProgress(); renderStatus(); save(); }); }
+function focusField(key){
+  let sel = key.startsWith('r:') ? `[data-key="${key}"] input` : `[data-key="${key}"] input, [data-key="${key}"] textarea`;
+  const el = document.querySelector('#rail ' + sel);
+  if (!el) return;
+  const det = el.closest('details'); if (det) det.open = true;
+  el.scrollIntoView({block:'center', behavior:'smooth'});
+  setTimeout(() => el.focus({preventScroll:true}), 250);
+}
+document.getElementById('seg')?.addEventListener('click', e => {
+  const b = e.target.closest('[data-disc]'); if (!b) return;
+  S.disc = b.dataset.disc; S.showMiss = false; save(); renderAll();
+});
+document.getElementById('opt-marks').addEventListener('change', e => { S.marks = e.target.checked; save(); renderDoc(); });
+document.getElementById('opt-thai').addEventListener('change', e => { S.thai = e.target.checked; save(); renderDoc(); updateProgress(); });
+document.getElementById('btn-reset')?.addEventListener('click', () => { const keep = S.disc, kr = S.role; S = fresh(); S.disc = keep; S.role = kr; save(); syncOpts(); renderAll(); });
+const rail = document.getElementById('rail');
+rail.addEventListener('input', e => {
+  const t = e.target, d = D();
+  if (t.dataset.llabel) { const l = findLogo(t.dataset.llabel); if (l) l.label = t.value; soon(); return; }
+  if (t.dataset.cover) { const x = t.value.trim(); if (!x || x === coverLineText()) delete d.values.cover_line; else d.values.cover_line = t.value; soon(); return; }
+  if (t.dataset.f) {
+    const f = t.dataset.f;
+    if (t.dataset.part) { d.values[f] = Object.assign({}, d.values[f] || {}); d.values[f][t.dataset.part] = t.value; }
+    else d.values[f] = t.value;
+    const req = F[f].req && !filled(f, d.values[f]);
+    rail.querySelectorAll(`[data-f="${f}"]`).forEach(x => x.classList.toggle('need', req));
+  } else if (t.dataset.r) {
+    const r = t.dataset.r, arr = (d.people[r] = (d.people[r] || []).slice());
+    arr[+t.dataset.i] = t.value;
+    const none = !arr.some(x => x && x.trim());
+    const first = rail.querySelector(`#p-${r}-0`); if (first) first.classList.toggle('need', none);
+  }
+  soon();
+});
+rail.addEventListener('focusin', e => {
+  const t = e.target; document.querySelectorAll('#doc .hot').forEach(x => x.classList.remove('hot'));
+  let target = null;
+  if (t.dataset.cover) target = document.querySelector('#doc [data-cover]');
+  else if (t.dataset.f) target = document.querySelector(`#doc [data-f="${t.dataset.f}"]`);
+  else if (t.dataset.r) target = document.querySelector(`#doc [data-r="${t.dataset.r}"][data-i="${t.dataset.i}"]`) || document.querySelector(`#doc [data-r="${t.dataset.r}"]`);
+  if (target) { target.classList.add('hot'); const r = target.getBoundingClientRect(); if (window.innerWidth > 980 && (r.top < 80 || r.bottom > window.innerHeight)) target.scrollIntoView({block:'center', behavior:'smooth'}); }
+});
+rail.addEventListener('click', e => {
+  const t = e.target.closest('button'); if (!t) return;
+  const d = D();
+  if (t.dataset.roleOff || t.dataset.roleOn) { d.off = Object.assign({}, d.off); if (t.dataset.roleOff) d.off[t.dataset.roleOff] = true; else delete d.off[t.dataset.roleOn]; save(); renderRail(); renderDoc(); renderStatus(); if (t.dataset.roleOn) focusLast(t.dataset.roleOn); return; }
+  if (t.dataset.coverReset) { delete d.values.cover_line; const ta = document.getElementById('f-cover'); if (ta) ta.value = coverLineText(); soon(); return; }
+  if (t.dataset.logoAdd) { logoAdd(t.dataset.logoAdd); return; }
+  if (t.dataset.lpick) { selectLogo(t.dataset.lpick); pickFile(t.dataset.lpick); return; }
+  if (t.dataset.lrm) { removeLogo(t.dataset.lrm); return; }
+  if (t.dataset.add || t.dataset.rm) {
+    const r = t.dataset.add || t.dataset.rm, bk = B.find(x => x.t === 'ppl' && x.r === r && vis(x));
+    const arr = (d.people[r] = (d.people[r] || []).slice()), n = Math.max(bk ? pplLines(bk) : 1, arr.length);
+    if (t.dataset.add) { while (arr.length < n) arr.push(''); arr.push(''); d.lines = Object.assign({}, d.lines, {[r]: n + 1}); }
+    else { arr.splice(+t.dataset.i, 1); d.lines = Object.assign({}, d.lines, {[r]: Math.max(1, n - 1)}); }
+    save(); renderRail(); renderDoc(); renderStatus(); if (t.dataset.add) focusLast(r);
+  }
+  else if (t.dataset.jump) focusField(t.dataset.jump);
+  else if (t.dataset.goto) { const el = document.querySelector(`#doc [data-lock="${t.dataset.goto}"]`); if (el) el.scrollIntoView({block:'start', behavior:'smooth'}); }
+});
+function focusLast(r){ const ins = rail.querySelectorAll(`[data-r="${r}"]`); const el = ins[ins.length - 1]; if (el) el.focus(); }
+document.getElementById('status').addEventListener('click', e => {
+  const b = e.target.closest('[data-act],[data-as]'); if (!b) return;
+  if (b.dataset.as) setRole(b.dataset.as); else act(b.dataset.act);
+});
+const docEl = document.getElementById('doc');
+function fromDoc(e){
+  const v = e.target.closest('.v'); if (!v) return;
+  if (v.dataset.cover) focusField('cover');
+  else if (v.dataset.f) focusField(v.dataset.f);
+  else if (v.dataset.r) {
+    const key = 'r:' + v.dataset.r, el = document.getElementById(`p-${v.dataset.r}-${v.dataset.i}`);
+    if (el) { const det = el.closest('details'); if (det) det.open = true; el.scrollIntoView({block:'center', behavior:'smooth'}); setTimeout(() => el.focus({preventScroll:true}), 250); }
+    else focusField(key);
+  }
+}
+docEl.addEventListener('click', fromDoc);
+docEl.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { if (e.target.closest('.v')) { e.preventDefault(); fromDoc(e); } } });
+
+/* ---------- logo slots on the cover ---------- */
+const LOGO_DEFAULT = [
+  {label:'TEF', x:33, y:6, w:14, r:1},
+  {label:'ผู้จัดการแข่งขัน', x:53, y:6, w:14, r:1},
+  {label:'ผู้สนับสนุน', x:14, y:82, w:15, r:1.6},
+  {label:'ผู้สนับสนุน', x:33, y:82, w:15, r:1.6},
+  {label:'ผู้สนับสนุน', x:52, y:82, w:15, r:1.6},
+  {label:'ผู้สนับสนุน', x:71, y:82, w:15, r:1.6}
+];
+const A4 = 210 / 297;
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const r2 = v => Math.round(v * 100) / 100;
+let lseq = 0, selLogo = null, pickFor = null, drag = null;
+const newId = () => 'L' + Date.now().toString(36) + (lseq++);
+function logosOf(d){ if (!Array.isArray(d.logos)) d.logos = LOGO_DEFAULT.map(l => Object.assign({id:newId(), src:''}, l)); return d.logos; }
+const findLogo = id => logosOf(D()).find(l => l.id === id);
+const logoEditable = () => editable() && S.role !== 'public';
+const hPct = (l, ratio) => l.w * ratio / l.r;
+function fit(l, ratio){
+  ratio = ratio || A4;
+  l.w = clamp(l.w, 5, Math.min(90, 100 / ratio * l.r));
+  l.x = r2(clamp(l.x, 0, 100 - l.w)); l.y = r2(clamp(l.y, 0, 100 - hPct(l, ratio))); l.w = r2(l.w);
+}
+function logosHtml(){
+  const ed = logoEditable();
+  const items = logosOf(D()).filter(l => l.src || M).map(l => {
+    const lab = esc(l.label || 'โลโก้');
+    const inner = l.src ? `<img src="${esc(l.src)}" alt="${lab}" draggable="false">` : `<span><b>LOGO</b>${lab}</span>`;
+    const ctl = ed ? `<span class="ltag">${lab} · ลากเพื่อย้าย</span><button type="button" class="lx" data-lx="${l.id}" aria-label="ลบช่อง ${lab}" tabindex="-1">×</button><span class="lr" data-lr="${l.id}" aria-hidden="true"></span>` : '';
+    const a11y = ed ? ` tabindex="0" role="button" aria-label="${lab} ลากหรือใช้ลูกศรเพื่อย้าย, Enter เพื่อเลือกรูป, Delete เพื่อลบ"` : '';
+    return `<div class="logo${l.src ? '' : ' empty'}${ed && l.id === selLogo ? ' sel' : ''}" data-logo="${l.id}" style="left:${l.x}%;top:${l.y}%;width:${l.w}%;aspect-ratio:${l.r}"${a11y}>${inner}${ctl}</div>`;
+  }).join('');
+  return `<div class="logos${ed ? ' edit' : ''}"><i class="guide" aria-hidden="true"></i>${items}</div>`;
+}
+function logoListHtml(){
+  const ls = logosOf(D());
+  if (!ls.length) return '<span class="hint">ยังไม่มีช่องโลโก้ กดปุ่มด้านล่างเพื่อเพิ่ม</span>';
+  return ls.map((l, i) => `<div class="lrow${l.id === selLogo ? ' on' : ''}" data-lrow="${l.id}"><button type="button" class="lthumb${l.src ? ' has' : ''}" data-lpick="${l.id}" aria-label="เลือกรูปสำหรับ ${esc(l.label)}">${l.src ? `<img src="${esc(l.src)}" alt="">` : 'LOGO'}</button><input class="inp" id="lg-${l.id}" data-llabel="${l.id}" value="${esc(l.label)}" placeholder="เช่น ผู้สนับสนุนหลัก" aria-label="ชื่อช่องโลโก้ที่ ${i + 1}"><button type="button" class="btn up" data-lpick="${l.id}">${l.src ? 'เปลี่ยนรูป' : 'อัปโหลด'}</button><button type="button" class="rm" data-lrm="${l.id}" aria-label="ลบช่อง ${esc(l.label)}">×</button></div>`).join('');
+}
+function logoSecHtml(){
+  return `<div class="fld"><div class="lab">ช่องโลโก้ <span class="mk mk-prop">เสนอเพิ่ม</span></div><div class="logo-list" id="logo-list">${logoListHtml()}</div><div class="logo-add"><button type="button" class="add" data-logo-add="one">+ เพิ่มช่องโลโก้</button><button type="button" class="add" data-logo-add="row">+ แถวผู้สนับสนุน 4 ช่อง</button></div><span class="hint">เพิ่มได้ไม่จำกัด ลากโลโก้บนหน้าปกเพื่อย้าย ลากจุดมุมขวาล่างเพื่อปรับขนาด ลากไฟล์รูปมาวางบนหน้าปก หรือกด ⌘V / Ctrl+V วางรูปได้</span><span class="hint" id="logo-note" role="status"></span></div>`;
+}
+function logoCount(){
+  const el = document.querySelector('[data-cnt="logos"]'); if (!el) return;
+  const ls = logosOf(D()), n = ls.filter(l => l.src).length;
+  el.textContent = `${n}/${ls.length}`; el.classList.toggle('done', ls.length > 0 && n === ls.length);
+}
+function note(t){ const el = document.getElementById('logo-note'); if (el) el.textContent = t || ''; }
+function refreshLogoRail(){ const box = document.getElementById('logo-list'); if (box) box.innerHTML = logoListHtml(); logoCount(); }
+function selectLogo(id){
+  selLogo = id;
+  docEl.querySelectorAll('.logo').forEach(x => x.classList.toggle('sel', x.dataset.logo === id));
+  rail.querySelectorAll('.lrow').forEach(x => x.classList.toggle('on', x.dataset.lrow === id));
+}
+function overlaps(x, y, w, h){ return logosOf(D()).some(o => x < o.x + o.w && x + w > o.x && y < o.y + hPct(o, A4) && y + h > o.y); }
+function freeSpot(w, r){
+  const h = w * A4 / r;
+  for (const y of [6, 82, 16, 72]) for (let x = 6; x <= 94 - w; x += 2) if (!overlaps(x, y, w, h)) return {x, y};
+  return {x: 50 - w / 2, y: 40};
+}
+function addLogo(o){
+  const ls = logosOf(D()), w = o.w || 14, r = o.r || 1, p = o.x == null ? freeSpot(w, r) : {x:o.x, y:o.y};
+  const l = {id:newId(), label:o.label || `โลโก้ ${ls.length + 1}`, x:p.x, y:p.y, w, r, src:''};
+  fit(l); ls.push(l); return l;
+}
+function logoAdd(kind){
+  let first;
+  if (kind === 'row') {
+    const xs = [14, 33, 52, 71], h = 15 * A4 / 1.6;
+    const y = [82, 72, 16, 62].find(y => xs.every(x => !overlaps(x, y, 15, h)));
+    xs.forEach(x => { const l = addLogo({label:'ผู้สนับสนุน', x, y: y == null ? 40 : y, w:15, r:1.6}); first = first || l; });
+  } else first = addLogo({});
+  selLogo = first.id; save(); renderDoc(); refreshLogoRail(); note('');
+  const el = docEl.querySelector(`[data-logo="${first.id}"]`); if (el) el.scrollIntoView({block:'nearest', behavior:'smooth'});
+}
+function removeLogo(id){
+  const d = D(); d.logos = logosOf(d).filter(l => l.id !== id);
+  if (selLogo === id) selLogo = null;
+  save(); renderDoc(); refreshLogoRail();
+}
+function readImage(file){
+  return new Promise((res, rej) => {
+    if (!file || !/^image\//.test(file.type)) return rej(new Error('type'));
+    const fr = new FileReader();
+    fr.onerror = rej;
+    fr.onload = () => {
+      const img = new Image();
+      img.onerror = rej;
+      img.onload = () => {
+        const nw = img.naturalWidth || 300, nh = img.naturalHeight || 300, r = nw / nh;
+        if (file.type === 'image/svg+xml' && fr.result.length < 300000) return res({src:fr.result, r});
+        const k = Math.min(1, 720 / Math.max(nw, nh)), c = document.createElement('canvas');
+        c.width = Math.max(1, Math.round(nw * k)); c.height = Math.max(1, Math.round(nh * k));
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        let src = c.toDataURL('image/webp', .9);
+        if (!src.startsWith('data:image/webp')) src = c.toDataURL('image/png');
+        res({src, r});
+      };
+      img.src = fr.result;
+    };
+    fr.readAsDataURL(file);
+  });
+}
+function setLogoImage(id, file){
+  readImage(file).then(({src, r}) => {
+    const l = findLogo(id); if (!l) return;
+    l.src = src; l.r = r2(clamp(r, .2, 6));
+    if (/^โลโก้ \d+$/.test(l.label)) l.label = file.name.replace(/\.[^.]+$/, '').slice(0, 40) || l.label;
+    fit(l); selLogo = id;
+    const ok = save(); renderDoc(); refreshLogoRail();
+    note(ok ? '' : 'เบราว์เซอร์เก็บรูปนี้ไม่ได้เพราะพื้นที่เต็ม รูปจะหายเมื่อรีเฟรช ลองใช้ไฟล์ที่เล็กลง');
+  }).catch(() => note('เปิดไฟล์นี้ไม่ได้ ใช้ได้เฉพาะไฟล์รูป เช่น PNG, JPG, SVG, WebP'));
+}
+const fileIn = document.getElementById('logo-file');
+function pickFile(id){ if (!logoEditable()) return; pickFor = id; fileIn.value = ''; fileIn.click(); }
+fileIn.addEventListener('change', () => { const f = fileIn.files[0]; if (f && pickFor) setLogoImage(pickFor, f); });
+function place(el, l){ el.style.left = l.x + '%'; el.style.top = l.y + '%'; el.style.width = l.w + '%'; }
+docEl.addEventListener('pointerdown', e => {
+  const lx = e.target.closest('[data-lx]');
+  if (lx) { e.preventDefault(); removeLogo(lx.dataset.lx); return; }
+  const el = e.target.closest('.logos.edit .logo');
+  if (!el) { if (selLogo) selectLogo(null); return; }
+  if (e.button > 0) return;
+  const l = findLogo(el.dataset.logo); if (!l) return;
+  e.preventDefault(); el.focus({preventScroll:true}); selectLogo(l.id);
+  const pg = el.closest('.page');
+  drag = {l, el, pr: pg.getBoundingClientRect(), wrap: el.parentElement, mode: e.target.closest('[data-lr]') ? 'size' : 'move', sx: e.clientX, sy: e.clientY, ox: l.x, oy: l.y, ow: l.w, moved: false};
+  el.setPointerCapture(e.pointerId); el.classList.add('drag');
+});
+docEl.addEventListener('pointermove', e => {
+  if (!drag) return;
+  const {l, el, pr} = drag, ratio = pr.width / pr.height;
+  const dx = (e.clientX - drag.sx) / pr.width * 100, dy = (e.clientY - drag.sy) / pr.height * 100;
+  if (Math.abs(e.clientX - drag.sx) + Math.abs(e.clientY - drag.sy) > 3) drag.moved = true;
+  if (drag.mode === 'size') {
+    l.w = clamp(drag.ow + dx, 5, Math.min(90, 100 - l.x, (100 - l.y) / ratio * l.r));
+  } else {
+    let x = clamp(drag.ox + dx, 0, 100 - l.w);
+    const snap = Math.abs(x + l.w / 2 - 50) < 1.2; if (snap) x = 50 - l.w / 2;
+    drag.wrap.classList.toggle('snap', snap);
+    l.x = x; l.y = clamp(drag.oy + dy, 0, 100 - hPct(l, ratio));
+  }
+  place(el, l);
+});
+function endDrag(){
+  if (!drag) return;
+  const {l, el, wrap, moved, pr} = drag; drag = null;
+  el.classList.remove('drag'); wrap.classList.remove('snap');
+  fit(l, pr.width / pr.height); place(el, l); save();
+  if (!moved && !l.src) pickFile(l.id);
+}
+docEl.addEventListener('pointerup', endDrag);
+docEl.addEventListener('pointercancel', endDrag);
+docEl.addEventListener('focusin', e => { const el = e.target.closest('.logos.edit .logo'); if (el) selectLogo(el.dataset.logo); });
+docEl.addEventListener('keydown', e => {
+  const el = e.target.closest('.logos.edit .logo'); if (!el) return;
+  const l = findLogo(el.dataset.logo); if (!l) return;
+  const pr = el.closest('.page').getBoundingClientRect(), step = e.shiftKey ? 2 : .5;
+  if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); removeLogo(l.id); return; }
+  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pickFile(l.id); return; }
+  const mv = {ArrowLeft:[-step, 0, 0], ArrowRight:[step, 0, 0], ArrowUp:[0, -step, 0], ArrowDown:[0, step, 0], '+':[0, 0, 1], '=':[0, 0, 1], '-':[0, 0, -1]}[e.key];
+  if (!mv) return;
+  e.preventDefault(); l.x += mv[0]; l.y += mv[1]; l.w += mv[2];
+  fit(l, pr.width / pr.height); place(el, l); save();
+});
+const hasFiles = e => e.dataTransfer && [...e.dataTransfer.types].includes('Files');
+window.addEventListener('dragover', e => { if (hasFiles(e)) e.preventDefault(); });
+window.addEventListener('drop', e => { if (hasFiles(e)) e.preventDefault(); });
+docEl.addEventListener('dragover', e => {
+  const pg = e.target.closest('.page.cover'); if (!pg || !hasFiles(e) || !logoEditable()) return;
+  e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; pg.classList.add('drop');
+});
+docEl.addEventListener('dragleave', e => { const pg = e.target.closest('.page.cover'); if (pg && !pg.contains(e.relatedTarget)) pg.classList.remove('drop'); });
+docEl.addEventListener('drop', e => {
+  const pg = e.target.closest('.page.cover'); if (!pg || !logoEditable()) return;
+  e.preventDefault(); pg.classList.remove('drop');
+  const files = [...e.dataTransfer.files].filter(f => /^image\//.test(f.type));
+  if (!files.length) { note('ลากมาได้เฉพาะไฟล์รูป'); return; }
+  const pr = pg.getBoundingClientRect();
+  files.forEach((f, i) => {
+    const w = 14, l = addLogo({w, x: (e.clientX - pr.left) / pr.width * 100 - w / 2 + i * 3, y: (e.clientY - pr.top) / pr.height * 100 - 5 + i * 3});
+    setLogoImage(l.id, f);
+  });
+  save(); renderDoc(); refreshLogoRail();
+});
+document.addEventListener('paste', e => {
+  if (document.getElementById('v-builder').hidden || !logoEditable()) return;
+  const a = document.activeElement; if (a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)) return;
+  const f = [...((e.clipboardData && e.clipboardData.files) || [])].find(x => /^image\//.test(x.type)); if (!f) return;
+  e.preventDefault();
+  const cur = selLogo && findLogo(selLogo);
+  const l = cur && !cur.src ? cur : addLogo({});
+  setLogoImage(l.id, f);
+});
+function syncOpts(){ document.getElementById('opt-marks').checked = S.marks; document.getElementById('opt-thai').checked = S.thai; }
+
+/* ---------- proposal tables (computed from the template above) ---------- */
+function inventory(disc){
+  const keep = b => !b.only || b.only.includes(disc);
+  const fs = new Set(); let roles = 0, lines = 0, propRoles = 0;
+  B.filter(keep).forEach(b => { fieldsOf(b).forEach(f => fs.add(f)); if (b.t === 'ppl') { roles++; lines += b.min; if (b.prop) propRoles++; } });
+  const by = m => [...fs].filter(f => F[f].mark === m).length;
+  const rules = RULES.filter(r => r.only.includes(disc));
+  return {lock: rules.filter(r => !r.prop).length + LOCKED.coc.length, rules: rules.length, fill: by('fill'), colonF: by('colon'), roles, lines, x: by('x'), prop: by('prop') + propRoles + rules.filter(r => r.prop).length + 1 + (B.some(b => b.t === 'sh' && b.prop && keep(b)) ? 1 : 0)};
+}
+function renderProposal(){
+  const shared = B.filter(b => !b.only).length, total = B.length;
+  document.getElementById('shared-note').innerHTML = `ทั้ง 3 ฉบับใช้บล็อกร่วมกัน ${shared} จาก ${total} บล็อก (หน้าปก รายละเอียดการแข่งขัน คณะกรรมการจัดการแข่งขัน จรรยาบรรณ คอกม้า การชำระเงิน การประท้วง) ส่วนที่ต่างกันมีแค่คณะกรรมการตัดสิน รายการกฎ และข้อมูลสนาม แก้จรรยาบรรณครั้งเดียว ทั้ง 3 ฉบับได้ข้อความใหม่พร้อมกัน`;
+  const dot = k => `<span class="disc-dot" style="background:${DISC[k].c}"></span>`;
+  const officials = k => B.filter(b => b.s === 'officials' && b.t === 'ppl' && (!b.only || b.only.includes(k))).map(b => `<span class="chip${b.prop ? ' px' : ''}">${esc(b.l.replace(/\s*\(.*\)/, ''))}</span>`).join('');
+  const rules = k => RULES.filter(r => r.only.includes(k)).map(r => `<span class="chip${r.prop ? ' px' : ''}">${esc(r.t.split(',')[0].replace(/ \(.*/, ''))}</span>`).join('');
+  const tech = k => B.filter(b => b.s === 'tech' && (!b.only || b.only.includes(k))).map(b => `<span class="chip${F[b.f].mark === 'prop' ? ' px' : ''}">${esc(F[b.f].label.replace(/\s*\(.*\)/, ''))}</span>`).join('');
+  document.getElementById('diff-table').innerHTML = `<thead><tr><th>ส่วนที่ต่างกัน</th>${ALL.map(k => `<th>${dot(k)}${DISC[k].en}</th>`).join('')}</tr></thead><tbody>
+    <tr><td>คณะกรรมการตัดสิน</td>${ALL.map(k => `<td><div class="chips">${officials(k)}</div></td>`).join('')}</tr>
+    <tr><td>กฎ กติกาที่ใช้ (ล็อก)</td>${ALL.map(k => `<td><div class="chips">${rules(k)}</div></td>`).join('')}</tr>
+    <tr><td>ข้อมูลสนาม</td>${ALL.map(k => `<td><div class="chips">${tech(k)}</div></td>`).join('')}</tr></tbody>`;
+  const inv = ALL.map(inventory);
+  const row = (label, fn) => `<tr><td>${label}</td>${inv.map(i => `<td class="num">${fn(i)}</td>`).join('')}</tr>`;
+  document.getElementById('inv-table').innerHTML = `<thead><tr><th>จำนวนในแต่ละฉบับ</th>${ALL.map(k => `<th style="text-align:right">${dot(k)}${DISC[k].en}</th>`).join('')}</tr></thead><tbody>
+    ${row('ย่อหน้าล็อก (กฎ + จรรยาบรรณ)', i => i.lock)}
+    ${row('ช่องเหลือง', i => i.fill)}
+    ${row('ตำแหน่งบุคลากร “ :” (บรรทัดตามต้นฉบับ)', i => `${i.roles} (${i.lines})`)}
+    ${row('ช่องข้อมูล “ :” อื่น', i => i.colonF)}
+    ${row('ช่อง xxxx', i => i.x)}
+    ${row('ส่วนที่เสนอเพิ่ม', i => i.prop)}</tbody>`;
+}
+
+/* ---------- workflow (lanes, timeline, FEI mapping) ---------- */
+function renderWorkflow(){
+  const stages = [['เตรียมแม่แบบ','ต้นปี / FEI ปรับกฎ'],['ขอจัดการแข่งขัน','ก่อนเปิดปฏิทิน'],['ทำคู่มือฉบับร่าง','ก่อนกำหนดส่ง'],['ตรวจและแก้ไข','1–2 รอบ'],['อนุมัติและเผยแพร่','ล็อกฉบับ v1.0'],['แก้ไขหลังอนุมัติ','เมื่อมีการเปลี่ยน'],['สมัคร จองคอก ชำระเงิน','ตามวันที่ในคู่มือ'],['แข่งขันและประกาศผล','วันแข่ง']];
+  const lanes = [
+    ['TEF Admin','ดูแลแม่แบบ', {0:['mvp','ปรับข้อความล็อกและรายการกฎ ออกแม่แบบเวอร์ชันใหม่ของทั้ง 3 ประเภท'], 2:['mvp','ดูแลทะเบียนบุคลากร (กรรมการ สัตวแพทย์ ผู้ออกแบบสนาม)']}],
+    ['ผู้จัดการแข่งขัน','สโมสร / ผู้จัด', {1:['2','ยื่นขอจัด ระบุวันที่ ประเภท สถานที่ ระดับ'], 2:['mvp','เลือกประเภท ระบบสร้างคู่มือจากแม่แบบ กรอกช่องเหลือง “ :” และ xxxx'], 3:['mvp','แก้ตามคอมเมนต์รายช่อง แล้วส่งใหม่'], 5:['mvp','ยื่นขอแก้ไข เช่น เปลี่ยนกรรมการ ค่าคอก'], 6:['3','ยืนยันใบสมัครและการจองคอก'], 7:['4','ส่งผลการแข่งขัน บันทึกม้าออกจากสนาม']}],
+    ['ผู้ตรวจ','ฝ่ายการแข่งขัน TEF', {1:['2','ตรวจคำขอจัดการแข่งขัน'], 3:['mvp','ตรวจ คอมเมนต์รายช่อง ส่งกลับ หรือส่งต่อให้ผู้อนุมัติ'], 5:['mvp','ตรวจคำขอแก้ไข แล้วส่งต่อ'], 6:['3','ตรวจสลิปการชำระเงิน'], 7:['4','ตรวจผลการแข่งขัน']}],
+    ['ผู้อนุมัติ','เลขาธิการ / หัวหน้าฝ่ายเทคนิค', {1:['2','อนุมัติเข้าปฏิทิน TEF'], 4:['mvp','อนุมัติ ระบบล็อกฉบับ v1.0 สร้าง PDF แล้วสั่งเผยแพร่'], 5:['mvp','อนุมัติการแก้ไข ออกฉบับ v1.1 พร้อมบันทึกการเปลี่ยนแปลง'], 7:['4','รับรองผลการแข่งขัน']}],
+    ['นักกีฬาและสโมสร','สาธารณะ', {4:['mvp','เปิดคู่มือบนเว็บ ดาวน์โหลด PDF'], 5:['mvp','ได้รับแจ้งเมื่อคู่มือมีฉบับใหม่ เห็นสิ่งที่เปลี่ยน'], 6:['3','สมัคร จองคอก แนบสลิปในระบบ แทนการส่งอีเมล'], 7:['4','ดูลำดับการแข่งขันและผล']}]
+  ];
+  const phl = {mvp:['ph-mvp','MVP'], '2':['ph-2','เฟส 2'], '3':['ph-3','เฟส 3'], '4':['ph-4','เฟส 4']};
+  let h = '<div class="hd">บทบาท</div>' + stages.map((s, i) => `<div class="hd"><small>ขั้น ${i + 1}</small>${s[0]}<small>${s[1]}</small></div>`).join('');
+  lanes.forEach(([n, sub, cells]) => {
+    h += `<div class="ln-name">${n}<small>${sub}</small></div>`;
+    stages.forEach((_, i) => { const c = cells[i]; h += `<div class="cell">${c ? `<div class="wcard"><span class="ph ${phl[c[0]][0]}">${phl[c[0]][1]}</span>${c[1]}</div>` : ''}</div>`; });
+  });
+  document.getElementById('lanes').innerHTML = h;
+  const pts = [[-20,'USEF เริ่มส่งอีเมลเตือน'],[-16,'กำหนดส่งตารางฉบับร่าง (USEF) · TEF กำหนดเอง'],[-10,'ตรวจ แก้ไข อนุมัติ (TEF กำหนด)'],[-4,'เผยแพร่และเปิดรับสมัคร'],[0,'วันแข่งขัน'],[1,'ส่งผลทันทีหลังแข่ง']];
+  const min = -21, max = 2;
+  document.getElementById('tl').innerHTML = pts.map(([w, t]) => `<div class="tl-pt${w === 0 ? ' ev' : ''}" style="left:${(w - min) / (max - min) * 100}%"><b>${w === 0 ? 'สัปดาห์ 0' : (w > 0 ? '+' : '') + w + ' สัปดาห์'}</b><i></i><span>${t}</span></div>`).join('');
+  const map = [
+    ['1. Submit a hosting application','ยื่นขอจัดการแข่งขันในปฏิทิน TEF','เฟส 2'],
+    ['2. Pay late fee invoices','ค่าธรรมเนียมและค่าปรับส่งช้า (ถ้า TEF ต้องการ)','เฟส 2'],
+    ['3. Application approval process','TEF อนุมัติเข้าปฏิทิน','เฟส 2'],
+    ['4. Submit change requests','คำขอเปลี่ยนแปลงในระบบ แทนการแจ้งทางอีเมล','MVP / เฟส 2'],
+    ['5. Submit a draft schedule (16 สัปดาห์ก่อนแข่ง, เตือนล่วงหน้า 4 สัปดาห์)','ส่งคู่มือฉบับร่างพร้อมแจ้งเตือนอัตโนมัติ คือส่วนที่ต้นแบบนี้ทำ','MVP'],
+    ['6. Receive approved schedule (ประกาศออนไลน์ให้นักกีฬา)','เผยแพร่คู่มือเป็นหน้าเว็บและ PDF การเปลี่ยนกรรมการต้องแจ้งเป็นฉบับแก้ไข','MVP'],
+    ['7. Accept entries','รับสมัครออนไลน์','เฟส 3'],
+    ['8. Entry changes or withdrawals (ผ่าน dashboard เท่านั้น)','ถอนตัวหรือเปลี่ยนม้าผ่านระบบเท่านั้น ไม่รับทางโทรศัพท์หรืออีเมล','เฟส 3'],
+    ['9. Accept late entries','สมัครล่าช้า ผู้จัดเป็นผู้ตัดสินใจรับ','เฟส 3'],
+    ['10. Check out horses (FEI HorseApp)','บันทึกม้าออกจากสนาม','เฟส 4'],
+    ['11. Results','ส่งผลการแข่งขันทันทีหลังแข่ง','เฟส 4']
+  ];
+  document.getElementById('fei-map').innerHTML = map.map(r => `<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td><td style="white-space:nowrap">${r[2]}</td></tr>`).join('');
+}
+
+/* ---------- roles: signed-in user, Google login mock, permission table ---------- */
+function setRole(r){ if (!ROLES[r]) return; S.role = r; S.showMiss = false; save(); renderWho(); renderRoles(); renderAll(); }
+function renderWho(){
+  const R = ROLES[S.role], u = R.user;
+  const initial = u ? u.name.replace(/^(นางสาว|นาย|นาง|Mr\.|Ms\.)\s*/, '').charAt(0) : '–';
+  document.getElementById('who').innerHTML = `<span class="av" aria-hidden="true">${esc(initial)}</span><span class="who-t"><b>${u ? esc(u.name) : 'ผู้เยี่ยมชม'}</b><small>${u ? esc(u.email) : 'ไม่ได้เข้าสู่ระบบ'}</small></span><label class="sr" for="role-sel">บทบาทที่ใช้ดู</label><select id="role-sel" class="sel" title="สลับบทบาท (จำลอง)">${Object.keys(ROLES).map(k => `<option value="${k}"${k === S.role ? ' selected' : ''}>${ROLES[k].th}</option>`).join('')}</select>`;
+}
+function renderRoles(){
+  const keys = Object.keys(ROLES);
+  document.getElementById('role-cards').innerHTML = keys.map(k => `<div class="rcard${k === S.role ? ' on' : ''}"><b>${ROLES[k].th}</b><span>${esc(ROLES[k].d)}</span><small>ใครถือบทบาทนี้: ${esc(ROLES[k].who)}</small></div>`).join('');
+  const cell = v => v === 'y' ? '<span class="ok" aria-label="ทำได้">✓</span>' : v === '-' ? '<span class="no" aria-label="ทำไม่ได้">—</span>' : `<span class="part">${esc(v)}</span>`;
+  document.getElementById('perm-table').innerHTML = `<thead><tr><th>การกระทำ</th>${keys.map(k => `<th class="${k === S.role ? 'hl' : ''}">${ROLES[k].th}</th>`).join('')}</tr></thead><tbody>${PERMS.map(([a, row]) => `<tr><td>${esc(a)}</td>${keys.map((k, i) => `<td class="c${k === S.role ? ' hl' : ''}">${cell(row[i])}</td>`).join('')}</tr>`).join('')}</tbody>`;
+  document.getElementById('demo-accounts').innerHTML = keys.filter(k => ROLES[k].user).map(k => `<button type="button" class="acct" data-as="${k}"><b>${esc(ROLES[k].user.name)}</b><small>${esc(ROLES[k].user.email)} · ${ROLES[k].th}</small></button>`).join('');
+}
+document.getElementById('who').addEventListener('change', e => { if (e.target.id === 'role-sel') setRole(e.target.value); });
+document.getElementById('demo-accounts').addEventListener('click', e => { const b = e.target.closest('[data-as]'); if (b) { setRole(b.dataset.as); location.hash = 'builder'; } });
+document.getElementById('gbtn').addEventListener('click', () => {
+  document.getElementById('gnote').textContent = 'ในระบบจริงจะเปิดหน้าของ Google ตรงนี้ ในต้นแบบให้เลือกบัญชีทดลองด้านล่างแทน';
+  const demo = document.getElementById('demo'); demo.classList.add('flash'); setTimeout(() => demo.classList.remove('flash'), 1600);
+});
+
+/* ---------- routing ---------- */
+document.getElementById('registry').innerHTML = REG.map(([n, r]) => `<option value="${esc(n)}" label="${esc(r)} (ตัวอย่าง)"></option>`).join('');
+const VIEWS = ['builder','proposal','workflow','roles','roadmap'];
+function route(){
+  const h = location.hash.replace('#','');
+  const v = VIEWS.includes(h) ? h : 'builder';
+  VIEWS.forEach(x => { document.getElementById('v-' + x).hidden = x !== v; });
+  if (v === 'builder') renderDoc();
+  document.querySelectorAll('.tabs a').forEach(a => { if (a.dataset.v === v) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+}
+window.addEventListener('hashchange', () => { route(); window.scrollTo(0, 0); });
+syncOpts(); renderWho(); renderRoles(); renderAll(); renderProposal(); renderWorkflow(); route();
+})();
+</script>
+
+</body></html>
