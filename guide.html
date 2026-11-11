@@ -1,0 +1,132 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8">
+<title>คู่มือทดสอบระบบ THC Online Draft Schedule</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+:root{--ink:#2A3443;--ink2:#4A5566;--ink3:#5D687A;--bg:#E6EBF2;--card:#EEF2F7;--line:#CDD5E0;--accent:#0A7383;--ok:#1D7445;--warn:#A44C06;--lock:#B42318;
+  --font:"IBM Plex Sans Thai","Sukhumvit Set",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 var(--font);-webkit-font-smoothing:antialiased}
+.wrap{max-width:820px;margin:0 auto;padding:28px 22px 60px}
+h1{font-size:27px;margin:0 0 4px;line-height:1.25}
+h2{font-size:19px;margin:28px 0 8px;padding-top:14px;border-top:2px solid var(--line)}
+h3{font-size:16px;margin:16px 0 4px}
+p,li{color:var(--ink2)}
+.lead{font-size:17px;color:var(--ink2);margin:4px 0 0}
+.eyebrow{font:600 12px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)}
+.card{background:var(--card);border-radius:16px;padding:16px 18px;margin:12px 0}
+.card.warn{background:#FDEFDF}
+.card.ok{background:#E0F2E7}
+.card.lock{background:#FCE9E7}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:15px;background:var(--card);border-radius:12px;overflow:hidden}
+th,td{text-align:left;padding:8px 11px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:13px;color:var(--ink3);font-weight:600;background:#E4E9F1}
+tr:last-child td{border-bottom:0}
+code{font:600 14px var(--mono);background:#DCE2EA;border-radius:6px;padding:1px 6px}
+ol{padding-left:22px}ol li{margin:6px 0}
+ul{padding-left:20px}ul li{margin:3px 0}
+.step{counter-reset:none;background:var(--card);border-radius:16px;padding:14px 18px;margin:10px 0}
+.step h3{margin-top:0;color:var(--ink)}
+.who{display:inline-block;font-size:12.5px;font-weight:600;color:#fff;background:var(--accent);border-radius:999px;padding:2px 10px;margin-right:6px}
+.who.org{background:#6236C9}.who.rev{background:var(--accent)}.who.app{background:var(--ok)}.who.adm{background:#8A6A00}
+a{color:var(--accent)}
+.foot{margin-top:30px;font-size:13px;color:var(--ink3);text-align:center}
+@media print{body{background:#fff}.wrap{max-width:none;padding:0 12mm}.card,table,.step{break-inside:avoid}h2{break-after:avoid}}
+</style></head><body><div class="wrap">
+
+<div class="eyebrow">สมาคมกีฬาขี่ม้าแห่งประเทศไทย · ต้นแบบระบบ</div>
+<h1>คู่มือทดสอบระบบ THC Online Draft Schedule</h1>
+<p class="lead">สำหรับคุณสุขุมาลี มณีใส · ประเภทศิลปะบังคับม้า (Dressage) · ฉบับวันที่ 12 พฤศจิกายน 2569</p>
+
+<div class="card">
+<b>เปิดที่ลิงก์นี้</b>
+<table>
+<tr><th>หน้า</th><th>ลิงก์</th><th>ใช้ทำอะไร</th></tr>
+<tr><td>ระบบจริง</td><td><a href="https://tef-all.github.io/draft-thc-dressage/">tef-all.github.io/draft-thc-dressage</a></td><td>เข้าระบบ ยื่นขอเป็นผู้จัด สร้างคู่มือ ตรวจ และอนุมัติ</td></tr>
+<tr><td>ใบสมัครนักกีฬา</td><td><a href="https://tef-all.github.io/draft-thc-dressage/entry.html">/entry.html</a></td><td>ต้นแบบใบสมัครออนไลน์ของชมรม</td></tr>
+<tr><td>ต้นแบบ 3 ประเภท</td><td><a href="https://tef-all.github.io/draft-thc-dressage/prototype.html">/prototype.html</a></td><td>ดูรูปเล่มทั้ง Dressage, Jumping, Eventing โดยไม่ต้องเข้าระบบ</td></tr>
+</table>
+<p style="margin:6px 0 0">ใช้ Chrome หรือ Safari บนคอมพิวเตอร์จะเห็นภาพครบที่สุด บนมือถือใช้ได้แต่หน้าเอกสารจะเล็ก</p>
+</div>
+
+<h2>บัญชีทดสอบ</h2>
+<p>ระบบจริงเข้าด้วยบัญชี Google เท่านั้น แต่สำหรับการทดสอบ สมาคมเปิด <b>ทางเข้าสำหรับทดสอบ</b> ไว้ชั่วคราว อยู่ใต้ปุ่ม Sign in with Google กดที่หัวข้อเล็กๆ แล้วกรอกอีเมลกับรหัสทดสอบ</p>
+<table>
+<tr><th>ทดสอบในบทบาท</th><th>อีเมล</th><th>ทำอะไรได้</th></tr>
+<tr><td><span class="who org">ชมรม/สโมสร 1</span></td><td><code>club1@thc-test.invalid</code></td><td>ยื่นแบบแจ้งความประสงค์ สร้างคู่มือ ส่งตรวจ</td></tr>
+<tr><td><span class="who org">ชมรม/สโมสร 2</span></td><td><code>club2@thc-test.invalid</code></td><td>อีกชมรมหนึ่ง ไว้ดูว่าต่างชมรมเห็นข้อมูลกันหรือไม่</td></tr>
+<tr><td><span class="who rev">ผู้ตรวจทาน</span></td><td><code>review@thc-test.invalid</code></td><td>ตรวจเอกสารและตรวจทานคู่มือ (บทบาทเดียวกับที่คุณเจนใช้จริง)</td></tr>
+<tr><td><span class="who app">ผู้อนุมัติ Dressage</span></td><td><code>approve@thc-test.invalid</code></td><td>แทน พล.ต.สมพงษ์ สำหรับทดสอบ</td></tr>
+<tr><td><span class="who app">ผู้อนุมัติรุ่นโพนี</span></td><td><code>pony@thc-test.invalid</code></td><td>แทนคุณวีระพงค์ ใช้เมื่อรายการมีรุ่นโพนี</td></tr>
+<tr><td><span class="who adm">TEF Admin</span></td><td><code>admin@thc-test.invalid</code></td><td>ตรวจชั้น Admin อนุมัติผู้ใช้ใหม่ แก้ข้อความล็อก</td></tr>
+<tr><td><span class="who">ผู้ประกาศ</span></td><td><code>announce@thc-test.invalid</code></td><td>กดยืนยันว่าประกาศทาง Facebook แล้ว</td></tr>
+</table>
+<div class="card lock"><b>รหัสทดสอบ: ดูในไฟล์ PDF ที่สมาคมส่งให้</b>
+<p style="margin:4px 0 0">ใช้รหัสเดียวกันทุกบัญชี · ทางเข้านี้รับเฉพาะอีเมลที่ลงท้ายด้วย <code>@thc-test.invalid</code> ใช้กับ Gmail จริงไม่ได้ · สมาคมปิดทางเข้านี้ได้ทันทีเมื่อทดสอบเสร็จ</p></div>
+<p>คุณเจนจะใช้บัญชี Google จริงของตัวเอง (sukhumalee@gmail.com) เข้ามาตรวจก็ได้เช่นกัน ระบบให้สิทธิ์ผู้ตรวจทานไว้แล้ว</p>
+
+<h2>สิ่งที่อยากให้ช่วยทดสอบ 5 เรื่อง</h2>
+
+<div class="step"><h3>1. ชมรมยื่นแบบแจ้งความประสงค์ขอเป็นผู้จัดการแข่งขัน</h3>
+<p>เข้าด้วย <code>club1@thc-test.invalid</code> → แท็บ <b>แจ้งความประสงค์</b></p>
+<ol>
+<li>เลือกวิธียื่น <b>แบบที่ 1 ลงนามอิเล็กทรอนิกส์</b> หรือ <b>แบบที่ 2 พิมพ์ไปเซ็นด้วยปากกา</b> (สลับไปมาได้)</li>
+<li>กรอกตามแบบฟอร์มของสมาคม ผู้ขอ สังกัด เบอร์ Line อีเมล ห้วงวันที่ สถานที่ กรรมสิทธิ์สถานที่ สนาม 1–5 คอกถาวร/ชั่วคราว สิ่งอำนวยความสะดวก อุปกรณ์ประกอบ</li>
+<li>แบบที่ 1 ลงนามสองจุด คือผู้ขอ และประธานชมรม/สโมสรหรือผู้จัดการ แล้วแนบรูปตราประทับ หรือติ๊กว่าไม่มีตรา</li>
+<li>แบบที่ 2 กดพิมพ์แบบฟอร์มที่กรอกแล้ว เซ็นด้วยปากกา แล้วอัปโหลดกลับ</li>
+<li>กด <b>ยื่นให้ TEF ตรวจ</b></li>
+</ol>
+<p><b>อยากให้ดู</b> คำในฟอร์มตรงกับแบบฟอร์มกระดาษของสมาคมไหม ขาดช่องไหนไหม และข้อความเตือนตอนกรอกไม่ครบเข้าใจง่ายหรือเปล่า</p></div>
+
+<div class="step"><h3>2. ตรวจเอกสารและเสนออนุมัติ</h3>
+<p>ออกจากระบบ แล้วเข้าด้วย <code>review@thc-test.invalid</code> (หรือบัญชี Google ของคุณเจนเอง) → แท็บ <b>คำขอจัดการแข่งขัน</b></p>
+<ol>
+<li>กด <b>ดูแบบฟอร์มทั้งใบ</b> เพื่ออ่านรายละเอียดที่ชมรมกรอก</li>
+<li>ถ้าเอกสารไม่ครบ กด <b>ส่งกลับให้แก้</b> พร้อมพิมพ์ว่าต้องแก้อะไร ชมรมจะกลับไปแก้แล้วยื่นใหม่ได้</li>
+<li>ถ้าครบ กด <b>เอกสารครบ เสนอผู้อนุมัติ</b></li>
+<li>เข้าด้วย <code>approve@thc-test.invalid</code> กด <b>อนุมัติ</b> (ถ้ารายการมีรุ่นโพนี ต้องเข้าด้วย <code>pony@thc-test.invalid</code> อนุมัติอีกคน)</li>
+</ol>
+<p><b>อยากให้ดู</b> ลำดับขั้นตรงกับที่สมาคมทำจริงไหม และข้อมูลที่เห็นพอให้ตัดสินใจหรือเปล่า</p></div>
+
+<div class="step"><h3>3. สร้าง Technical Handbook จนถึงอนุมัติ</h3>
+<p>กลับมาเข้าด้วย <code>club1@thc-test.invalid</code> → แท็บ <b>คู่มือของฉัน</b> → <b>+ สร้างคู่มือ Dressage ใหม่</b></p>
+<ol>
+<li>กรอกในแถบซ้าย เอกสารด้านขวาจะขึ้นตามทันที เล่มเป็นภาษาไทย 4 หน้าแรกแล้วต่อด้วยภาคอังกฤษตามไฟล์ Word ของสมาคม</li>
+<li>สีในเอกสาร <span style="color:var(--lock)">แดง</span> คือข้อความล็อกที่ผู้จัดแก้ไม่ได้ · เหลืองเข้มคือยังไม่กรอก · เหลืองอ่อนคือกรอกแล้ว</li>
+<li>ติ๊ก <b>รายการนี้มีรุ่นโพนี</b> ถ้าอยากเห็นว่าคำว่า “และม้าเล็ก” กับลายเซ็นชุดที่สองขึ้นมาอย่างไร</li>
+<li>กด <b>ส่งให้ TEF Admin</b> → เข้าด้วย <code>admin@thc-test.invalid</code> ส่งต่อให้ตรวจทาน → เข้าด้วย <code>review@thc-test.invalid</code> ตรวจทานแล้วส่งกลับ Admin → Admin ส่งให้ผู้อนุมัติ</li>
+<li>เข้าด้วย <code>approve@thc-test.invalid</code> จะเห็นการ์ด <b>รายชื่อคนทำงานในเล่มนี้</b> ต้องกด <b>อนุมัติรายชื่อกรรมการ</b> ก่อน แล้วปุ่ม <b>อนุมัติเล่ม</b> จึงจะขึ้น</li>
+<li>ก่อนอนุมัติ แนบไฟล์ภาพลายเซ็นได้ที่ปุ่ม <b>แนบไฟล์ลายเซ็นของฉัน</b> ลายเซ็นจะไปอยู่ในช่องว่างเหนือชื่อในหน้า GENERAL CONDITIONS</li>
+<li>สุดท้ายเข้าด้วย <code>announce@thc-test.invalid</code> กดยืนยันว่าประกาศทาง Facebook แล้ว</li>
+</ol>
+<p><b>อยากให้ดู</b> รูปเล่มตรงกับไฟล์ Word ของสมาคมหรือยัง ทั้งลำดับหัวข้อ เลขโรมัน การเยื้อง และช่องเว้นสำหรับเซ็น · ถ้าเจอจุดที่ไม่ตรงให้จดหน้าและหัวข้อไว้</p></div>
+
+<div class="step"><h3>4. ใบสมัครนักกีฬาและการจองคอก</h3>
+<p>ส่วนนี้มีสองทางให้ดู</p>
+<ol>
+<li><b>ในระบบจริง</b> ตอนกรอกคู่มือ ไปที่แท็บ <b>3 ใบสมัคร / จองคอก</b> ตั้งรายการคลาสและค่าสมัคร แล้วกดดาวน์โหลดไฟล์ Excel ที่ระบบสร้างให้ ไฟล์มีทั้งใบสมัคร ใบจองคอก และสูตรคิดเงิน</li>
+<li><b>ต้นแบบใบสมัครออนไลน์</b> ที่ <a href="https://tef-all.github.io/draft-thc-dressage/entry.html">/entry.html</a> เข้าด้วยอีเมลสมมติ <code>demo@club.example</code> แล้วลองกรอก 1 คนลงได้หลายม้า สูงสุด 20 คนต่อครั้ง นักกีฬาต่ำกว่า 18 ปีต้องมีผู้ปกครองลงนาม กดส่งแล้วดูอีเมลจำลองที่ระบบจะส่งถึงเลขานุการ</li>
+</ol>
+<p><b>อยากให้ดู</b> ช่องในใบสมัครตรงกับไฟล์ใบสมัครของสมาคมไหม ค่าสมัครคิดถูกไหม และขั้นตอนจองคอกควรอยู่ตรงไหนของระบบ</p></div>
+
+<div class="step"><h3>5. ข้อความล็อกและสิทธิ์ของแต่ละคน</h3>
+<p>เข้าด้วย <code>admin@thc-test.invalid</code> → แท็บ <b>ข้อความล็อก</b></p>
+<ul>
+<li>ข้อความสีแดงทั้งหมดแก้ได้จากหน้านี้ กดบันทึกจะได้เวอร์ชันใหม่พร้อมชื่อผู้แก้และเวลา</li>
+<li>เล่มที่อนุมัติไปแล้วจะไม่เปลี่ยนตาม เพราะระบบตรึงข้อความชุดที่ผู้อนุมัติเซ็นไว้กับเล่มนั้น</li>
+<li>แท็บ <b>ผู้ใช้</b> ใช้อนุมัติผู้ใช้ใหม่ เอาผู้จัดออกจากระบบ และกู้คืนสิทธิ์</li>
+</ul></div>
+
+<h2>ข้อจำกัดของต้นแบบ ณ ตอนนี้</h2>
+<div class="card warn"><ul style="margin:0">
+<li>อีเมลยังไม่ส่งออกจริง ทุกฉบับเก็บไว้ในแท็บ <b>อีเมล</b> ให้ดูว่าใครจะได้รับอะไรเมื่อไร</li>
+<li>ใบสมัครออนไลน์ยังเป็นหน้าทดลองแยก ยังไม่ได้ต่อเข้าระบบจริง</li>
+<li>Jumping กับ Eventing ยังเป็นคู่มือฉบับไทยแบบเดิม ยังไม่ได้เปลี่ยนตามไฟล์ FEI</li>
+<li>บัญชีทดสอบและรหัสทดสอบเป็นของชั่วคราว จะปิดเมื่อระบบเปิดใช้จริง</li>
+</ul></div>
+
+<h2>แจ้งสิ่งที่ต้องแก้</h2>
+<p>จดไว้เป็นข้อๆ ว่าอยู่หน้าไหน หัวข้ออะไร และควรเป็นอย่างไร ส่งกลับมาที่ TEF Admin ได้เลย ถ้าเป็นเรื่องรูปเล่มให้ระบุหน้าในไฟล์ Word ของสมาคมเทียบด้วยจะแก้ได้เร็วที่สุด</p>
+
+<div class="foot">THC Online Draft Schedule · ต้นแบบระบบคู่มือการแข่งขัน · จัดทำสำหรับการทดสอบภายในของสมาคมกีฬาขี่ม้าแห่งประเทศไทย</div>
+</div></body></html>
