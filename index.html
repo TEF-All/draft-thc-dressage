@@ -3164,7 +3164,7 @@ function renderBooks(){
     html += `<div class="banner warn"><b>ต้องได้รับอนุมัติให้เป็นผู้จัดการแข่งขันก่อน</b>${q ? `คำขอของคุณอยู่ในขั้น “${esc(BID_ST[q.status])}”` : 'ยื่นแบบแจ้งความประสงค์ขอเป็นผู้จัดการแข่งขันก่อน แล้วรอการตรวจและอนุมัติ'}<button type="button" class="add" data-go="bid">ไปที่แบบแจ้งความประสงค์ →</button></div>`;
   }
   if (u.role === 'admin' && pend) html += `<div class="banner warn"><b>มีผู้ขอเข้าใช้งาน ${td(pend)} คน</b><button type="button" class="add" data-go="users">ไปอนุมัติ →</button></div>`;
-  if (!all.length) html += `<div class="panel empty">${u.role === 'organizer' ? 'ยังไม่มีคู่มือ กด “สร้างคู่มือ Dressage ใหม่” เพื่อเริ่ม' : 'ยังไม่มีคู่มือในระบบ'}</div>`;
+  if (!all.length) html += `<div class="panel empty">${u.role !== 'organizer' ? 'ยังไม่มีคู่มือในระบบ' : bidOk() ? 'ยังไม่มีคู่มือ กด “สร้างคู่มือ Dressage ใหม่” เพื่อเริ่ม' : 'ยังสร้างคู่มือไม่ได้ ต้องยื่นแบบแจ้งความประสงค์และได้รับอนุมัติก่อน'}</div>`;
   else {
     html += `<div><h2>รอคุณดำเนินการ (${td(mine.length)})</h2>${mine.length ? table(mine) : '<div class="panel empty">ไม่มีงานที่รอคุณ</div>'}</div>`;
     if (others.length) html += `<div><h2>${u.role === 'organizer' ? 'อยู่ระหว่างดำเนินการ / ประกาศแล้ว' : 'ทั้งหมด'} (${td(others.length)})</h2>${table(others)}</div>`;
