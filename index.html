@@ -470,8 +470,12 @@ fieldset:disabled .btn.up{display:none}
 .page.fei .coc-sec{margin-left:2.6em}
 .page.fei .d-ol,.page.fei .d-ul{margin-left:3.6em}
 .page.fei .d-blk{margin-left:4.6em}
-.page.fei .d-sign{text-align:left;margin-left:3em}
-.page.fei .d-sign.pony{margin-left:14em}
+.page.fei{font-size:11pt}
+.page.fei .d-sign{text-align:left;margin-left:1.8em;margin-top:.6em;line-height:1.25}
+.page.fei .d-sign.pony{margin-left:17em;margin-top:1.6em}
+.page.fei .d-sign .sigimg{height:3.4em;width:15em;display:flex;align-items:flex-end}
+.page.fei .d-sign .sigimg img{max-height:3.4em;max-width:15em}
+.doc.marks .page.fei .d-sign .sigimg:empty{outline:1.2px dashed var(--paper-ok);outline-offset:-3px;border-radius:5px}
 .page.fei .d-sub{text-align:center}
 .doc.en .pfoot{justify-content:center;position:relative}
 .doc.en .pfoot .pn{position:absolute;right:0}
@@ -649,7 +653,8 @@ td .inp{min-width:180px}
 <section id="v-login" hidden><div class="login-wrap" id="login"></div></section>
 <section id="v-pending" hidden><div class="login-wrap" id="pending"></div></section>
 <section id="v-books" hidden><div class="read" id="books"></div></section>
-<section id="v-bid" hidden><div class="read" id="bid"></div><input type="file" id="bid-file" accept=".pdf,image/*" hidden></section>
+<section id="v-bid" hidden><div class="read" id="bid"></div><input type="file" id="bid-file" accept=".pdf,image/*" hidden>
+<input type="file" id="sig-file" accept="image/*" hidden></section>
 <section id="v-builder" hidden>
   <div class="bar">
     <button type="button" class="btn" data-go="books">← รายการคู่มือ</button>
@@ -927,12 +932,14 @@ const LOCKED_ALL = {
   "sign": [
    "Major General Sompong Sukpradit",
    "Chair of Sub-committee of Dressage",
-   "Thailand Equestrian Federation under the Royal Patronage"
+   "Thailand Equestrian Federation",
+   "under the Royal Patronage"
   ],
   "sign_pony": [
-   "Major General Sompong Sukpradit",
-   "Chair of Sub-committee of Dressage",
-   "Thailand Equestrian Federation under the Royal Patronage"
+   "Mr. Weeraphong Aukraphasuchat",
+   "Chair of Pony",
+   "Thailand Equestrian Federation",
+   "under the Royal Patronage"
   ],
   "coc_head": "THE FEI CODE OF CONDUCT FOR THE WELFARE OF THE HORSE",
   "coc_intro": "The Fédération Equestre Internationale (FEI) expects all those involved in international equestrian sport to adhere to the FEI’s Code of Conduct and to acknowledge and accept that at all times the welfare of the horse must be paramount and must never be subordinated to competitive or commercial influences.",
@@ -1556,14 +1563,18 @@ function block(b){
     case 'cond': {
       const list = RULES.filter(r => r.only.includes(S.disc));
       const pony = D().pony;
-      const sign = (lines, cls) => `<div class="d-sign ${cls}">${lines.map(t => `<div>${esc(t)}</div>`).join('')}</div>`;
+      /* เว้นที่ว่างเท่าไฟล์ต้นฉบับไว้ให้วางไฟล์ภาพลายเซ็นตอนอนุมัติ */
+      const sg = (d.sigImg || {});
+      const sign = (lines, cls, role) => `<div class="d-sign ${cls}">
+        <div class="sigimg" data-sigrole="${role}" title="ช่องลายเซ็น: แนบไฟล์ภาพลายเซ็นตอนอนุมัติ">${sg[role] ? `<img src="${sg[role]}" alt="ลายเซ็น">` : ''}</div>
+        ${lines.map(t => `<div>${esc(t)}</div>`).join('')}</div>`;
       return `<div class="lockblk" data-lock="rules">${LOCK_TAG}
         <ul class="d-ul">${list.map(r => `<li${r.prop ? ' class="px" title="Proposed, waiting for TEF to confirm"' : ''}>${esc(r.t)}</li>`).join('')}</ul>
         <div class="coc-p" style="margin-left:0">${esc(LOCKED.rules_note)}</div>
         <div class="d-rule"></div>
         <div class="coc-p" style="margin-left:0">${esc(LOCKED.approved)}</div>
-        ${sign(LOCKED.sign, '')}
-        ${pony ? sign(LOCKED.sign_pony, 'pony') : ''}</div>`;
+        ${sign(LOCKED.sign, '', 'approver')}
+        ${pony ? sign(LOCKED.sign_pony, 'pony', 'approver_pony') : ''}</div>`;
     }
     case 'toc': {
       return `<div class="lockblk" data-lock="toc">${LOCK_TAG}<div class="d-h">TABLE OF CONTENTS</div>
@@ -1664,10 +1675,18 @@ function renderDoc(){
   let html = '';
   const pages = Math.max(...B.map(x => x.p));
   const feiFrom = B === B_DR ? TH_PAGES + 1 : (EN_DISC.includes(S.disc) ? 1 : 99);  /* หน้าภาคอังกฤษ ใช้การเยื้องตามไฟล์ Word */
+  /* ขึ้นหน้าใหม่เฉพาะจุดที่ไฟล์ต้นฉบับขึ้นหน้าใหม่จริง (ปก สารบัญ ฯลฯ) ที่เหลือไหลต่อกันแล้วตัวจัดหน้าค่อยแบ่งเมื่อเต็มหน้า */
+  const hardBreak = p => B !== B_DR || p <= TH_PAGES + 3;
+  const groups = [];
   for (let p = 1; p <= pages; p++) {
     const body = B.filter(b => b.p === p && vis(b)).map(block).join('');
-    html += `<section class="page${p === 1 ? ' cover' : ''}${p >= feiFrom ? ' fei' : ''}">${p === 1 ? stamp() + logosHtml() : ''}<div class="body">${body}</div><div class="pfoot"><span>${esc(name)}</span><span class="pn">pg. ${td(p)}</span></div></section>`;
+    if (!body.trim()) continue;
+    if (!groups.length || hardBreak(p)) groups.push({p, body});
+    else groups[groups.length - 1].body += body;
   }
+  groups.forEach((g, i) => {
+    html += `<section class="page${g.p === 1 ? ' cover' : ''}${g.p >= feiFrom ? ' fei' : ''}">${g.p === 1 ? stamp() + logosHtml() : ''}<div class="body">${g.body}</div><div class="pfoot"><span>${esc(name)}</span><span class="pn">pg. ${td(i + 1)}</span></div></section>`;
+  });
   doc.innerHTML = html;
   paginate(doc);
 }
@@ -2540,9 +2559,11 @@ function pplPanel(b, u){
     : '<span class="muted">ยังไม่มีใครอนุมัติรายชื่อ</span>';
   const acts = isApprover && b.status === 'approval' && !(b.pplOk || {})[u.role]
     ? `<div class="row-acts" style="margin-top:8px"><button type="button" class="btn primary" data-do="ppl-ok">อนุมัติรายชื่อกรรมการ</button><button type="button" class="btn" data-do="ppl-back">ไม่ผ่าน ส่งกลับให้แก้รายชื่อ</button></div>` : '';
+  const sigBtn = isApprover && ['approval', 'approved', 'published'].includes(b.status)
+    ? `<div class="row-acts" style="margin-top:8px"><button type="button" class="btn" data-do="sig-up">${(b.sigImg || {})[u.role] ? 'เปลี่ยนไฟล์ลายเซ็นของฉัน' : 'แนบไฟล์ลายเซ็นของฉัน (รูปภาพ)'}</button>${(b.sigImg || {})[u.role] ? '<span class="okc">แนบลายเซ็นแล้ว ขึ้นในช่องเซ็นหน้า GENERAL CONDITIONS</span>' : '<span class="hint">ลายเซ็นจะไปอยู่ในช่องว่างเหนือชื่อท่านในเล่ม</span>'}</div>` : '';
   return `<div class="panel"><div class="head-row"><div><div class="eyebrow">รายชื่อคนทำงานในเล่มนี้</div><h3 style="margin:2px 0 0">กรรมการและเจ้าหน้าที่</h3></div><span>${state}</span></div>
     <div class="tbl-wrap" style="margin-top:8px"><table><thead><tr><th>ตำแหน่ง</th><th>ชื่อ</th></tr></thead><tbody>${list}</tbody></table></div>
-    <p class="hint" style="margin:8px 0 0">ผู้อนุมัติตรวจรายชื่อชุดนี้ก่อน ถ้าไม่ผ่านให้กดส่งกลับพร้อมคอมเมนต์ว่าต้องแก้ใคร</p>${acts}</div>`;
+    <p class="hint" style="margin:8px 0 0">ผู้อนุมัติตรวจรายชื่อชุดนี้ก่อน ถ้าไม่ผ่านให้กดส่งกลับพร้อมคอมเมนต์ว่าต้องแก้ใคร</p>${acts}${sigBtn}</div>`;
 }
 function renderFlow(){
   const b = D(), u = me(), out = [];
@@ -3681,6 +3702,19 @@ function dlgBidBack(q){
   };
   dlg.showModal();
 }
+document.getElementById('sig-file').addEventListener('change', e => {
+  const f = e.target.files[0], b = D(), u = me();
+  if (!f || !b || !needApprovers(b).includes(u.role)) return;
+  const fr = new FileReader();
+  fr.onload = () => {
+    b.sigImg = b.sigImg || {};
+    b.sigImg[u.role] = fr.result;
+    log(b, 'แนบไฟล์ลายเซ็น');
+    if (!save()) { delete b.sigImg[u.role]; save(); }
+    renderAll();
+  };
+  fr.readAsDataURL(f);
+});
 let BID_UP = 'file';
 document.getElementById('bid-file').addEventListener('change', e => {
   const f = e.target.files[0], q = myBid();
@@ -3824,6 +3858,7 @@ document.addEventListener('click', e => {
     save(); renderAll();
   }
   else if (d.startsWith('bid-')) { if (bidAct(d, arg)) return; }
+  else if (d === 'sig-up') { const fi = document.getElementById('sig-file'); fi.value = ''; fi.click(); return; }
   else if (d === 'ppl-ok') { act('ppl-ok'); return; }
   else if (d === 'ppl-back') { act('return'); return; }
   else if (d === 'org-out' && u.role === 'admin') { dlgOrgOut(arg); }
