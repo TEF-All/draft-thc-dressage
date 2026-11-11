@@ -2208,7 +2208,7 @@ function act(a){
     if (iss.length) { S.flash = {t:'ส่งไม่ได้: ' + iss.join(' · ')}; renderStatus(); return; }
     if (b.status === 'returned') {
       const to = b.returnTo; b.status = to; b.round = (b.round || 0) + 1;
-      if (to === 'approval') b.approvals = {};
+      if (to === 'approval') { b.approvals = {}; b.pplOk = {}; }
       b.rounds = b.rounds || []; b.rounds.push({by:b.returnedBy, at:b.returnedAt, comments:b.comments, back:now()});
       b.due = null; syncComments(b);
       const back = to === 'admin' ? admins : to === 'review' ? holders('reviewer') : needApprovers(b).flatMap(holders);
@@ -2226,10 +2226,16 @@ function act(a){
     b.status = 'admin2'; log(b, 'ตรวจทานแล้ว ส่งกลับ TEF Admin');
     sendMail({to:admins, subject:`[ตรวจทานแล้ว] ${ev}`, body:`${u.name} ตรวจทานคู่มือ ${ev} แล้ว พร้อมส่งผู้อนุมัติ\n\n${link(b)}`, book:b.id});
   } else if (a === 'fwd-approve') {
-    b.status = 'approval'; b.approvals = {};
+    b.status = 'approval'; b.approvals = {}; b.pplOk = {};
     const ap = needApprovers(b).flatMap(holders);
     log(b, `ส่งให้${ap.map(x => x.name).join(' และ ')}อนุมัติ`);
     sendMail({to:ap, cc:admins, subject:`[ขออนุมัติ] ${ev}`, body:`TEF Admin ส่งคู่มือ ${ev} ให้อนุมัติ${b.pony ? '\nรายการนี้มีรุ่นโพนี ต้องผ่านพลตรี สมพงษ์และคุณวีระพงค์' : ''}\n\n${link(b)}`, book:b.id});
+  } else if (a === 'ppl-ok') {
+    /* ผู้อนุมัติตรวจรายชื่อกรรมการของเล่มนี้ก่อน แล้วจึงอนุมัติเล่มได้ ไม่ผ่านให้กดส่งกลับแก้ไข */
+    if (!needApprovers(b).includes(u.role)) return;
+    b.pplOk = b.pplOk || {}; b.pplOk[u.role] = now();
+    log(b, 'อนุมัติรายชื่อกรรมการ');
+    S.flash = {ok:true, t:'อนุมัติรายชื่อกรรมการแล้ว กดอนุมัติเล่มได้เลย'};
   } else if (a === 'approve') {
     if (!needApprovers(b).includes(u.role) || b.approvals[u.role]) return;
     b.approvals[u.role] = now(); log(b, 'อนุมัติ');
@@ -2341,12 +2347,29 @@ function renderStatus(){
   else if (st === 'admin') acts = mine ? back + btn('fwd-review', 'ส่งต่อคุณสุขุมาลีตรวจทาน') : wait(w);
   else if (st === 'review') acts = mine ? back + btn('reviewed', 'ตรวจทานแล้ว ส่งกลับ TEF Admin') : wait(w);
   else if (st === 'admin2') acts = mine ? back + btn('fwd-approve', b.pony ? 'ส่งพลตรี สมพงษ์และคุณวีระพงค์อนุมัติ' : 'ส่งพลตรี สมพงษ์อนุมัติ') : wait(w);
-  else if (st === 'approval') acts = mine ? back + btn('approve', 'อนุมัติ') : wait(w);
+  else if (st === 'approval') acts = mine ? back + ((b.pplOk || {})[u.role] ? btn('approve', 'อนุมัติเล่ม') : btn('ppl-ok', 'อนุมัติรายชื่อกรรมการ')) : wait(w);
   else if (st === 'approved') acts = mine ? btn('publish', 'ยืนยันว่าประกาศทาง Facebook แล้ว') : wait(w);
   else acts = `<span class="wait">ประกาศแล้วเมื่อ ${fmtTs(b.publishedAt)}</span>`;
   document.getElementById('status').innerHTML = `<div class="track">${track}</div><div class="acts"><span class="ver">Dressage · v${td(b.ver)}</span>${acts}</div>`;
   markNotes();
   renderFlow();
+}
+function pplPanel(b, u){
+  /* ผู้จัดเห็นรายชื่อในฟอร์มอยู่แล้ว การ์ดนี้จึงขึ้นเมื่อเล่มเข้าสู่การตรวจแล้วเท่านั้น */
+  if (u.role === 'organizer' && ['draft', 'returned'].includes(b.status)) return '';
+  const rows = B.filter(x => x.t === 'ppl' && x.s === 'officials' && (!x.only || x.only.includes(S.disc || 'dressage')));
+  if (!rows.length) return '';
+  const names = r => (b.people[r] || []).filter(n => n && n.trim());
+  const okd = needApprovers(b).filter(r => (b.pplOk || {})[r]);
+  const isApprover = needApprovers(b).includes(u.role);
+  const list = rows.map(x => `<tr><td>${esc(x.d ? x.d.replace(/\t+/g, ' — ') : x.l)}</td><td>${names(x.r).length ? names(x.r).map(esc).join('<br>') : '<span class="late">ยังไม่กรอก</span>'}</td></tr>`).join('');
+  const state = okd.length ? okd.map(r => `<span class="okc">✓ ${esc(roleName(r, b))} อนุมัติรายชื่อแล้ว ${fmtTs(b.pplOk[r])}</span>`).join(' · ')
+    : '<span class="muted">ยังไม่มีใครอนุมัติรายชื่อ</span>';
+  const acts = isApprover && b.status === 'approval' && !(b.pplOk || {})[u.role]
+    ? `<div class="row-acts" style="margin-top:8px"><button type="button" class="btn primary" data-act="ppl-ok">อนุมัติรายชื่อกรรมการ</button><button type="button" class="btn" data-act="return">ไม่ผ่าน ส่งกลับให้แก้รายชื่อ</button></div>` : '';
+  return `<div class="panel"><div class="head-row"><div><div class="eyebrow">รายชื่อคนทำงานในเล่มนี้</div><h3 style="margin:2px 0 0">กรรมการและเจ้าหน้าที่</h3></div><span>${state}</span></div>
+    <div class="tbl-wrap" style="margin-top:8px"><table><thead><tr><th>ตำแหน่ง</th><th>ชื่อ</th></tr></thead><tbody>${list}</tbody></table></div>
+    <p class="hint" style="margin:8px 0 0">ผู้อนุมัติตรวจรายชื่อชุดนี้ก่อน ถ้าไม่ผ่านให้กดส่งกลับพร้อมคอมเมนต์ว่าต้องแก้ใคร</p>${acts}</div>`;
 }
 function renderFlow(){
   const b = D(), u = me(), out = [];
@@ -2360,6 +2383,8 @@ function renderFlow(){
   const lateBtn = u.role === 'admin' && b.status === 'draft' && by !== null && now() > by && !b.lateOk ? ` <button type="button" class="add" data-do="late-ok">อนุญาตให้ส่งช้า</button>` : '';
   const pony = editable() ? `<label class="sw"><input type="checkbox" data-do="pony"${b.pony ? ' checked' : ''}> รายการนี้มีรุ่นโพนี (Pony) ต้องให้คุณวีระพงค์อนุมัติด้วย</label>` : `<span class="hint">รุ่นโพนี: ${b.pony ? 'มี (ต้องผ่านพลตรี สมพงษ์และคุณวีระพงค์)' : 'ไม่มี'}</span>`;
   out.push(`<div class="panel"><div class="row-acts" style="justify-content:space-between"><span>${dl.join('<br>')}${lateBtn}</span></div><div style="margin-top:6px">${pony}</div></div>`);
+  /* the officials named in this handbook: the approvers sign these off before the handbook itself */
+  out.push(pplPanel(b, u));
   /* comment thread */
   out.push(notesPanel(b));
   /* after the announcement: reports and results */
@@ -3094,9 +3119,13 @@ function renderUsers(){
   const p = holders('pending'), orgs = holders('organizer'), team = S.users.filter(x => TEAM.some(t => t.id === x.id));
   const pend = p.length ? `<div class="tbl-wrap"><table><thead><tr><th>ชื่อ</th><th>อีเมล Gmail</th><th>ขอเมื่อ</th><th></th></tr></thead><tbody>${p.map(x => `<tr><td>${esc(x.name)}</td><td>${esc(x.email)}</td><td>${fmtTs(x.at)}</td><td class="row-acts"><button type="button" class="btn primary" data-do="allow" data-arg="${x.id}">อนุมัติเป็นผู้จัดการแข่งขัน</button><button type="button" class="btn" data-do="deny" data-arg="${x.id}">ไม่อนุมัติ</button></td></tr>`).join('')}</tbody></table></div>` : '<div class="panel empty">ไม่มีคำขอที่รออยู่</div>';
   const teamT = `<div class="tbl-wrap"><table><thead><tr><th>ชื่อ</th><th>บทบาท</th><th>อีเมล (ใช้รับแจ้งเตือนและ cc)</th></tr></thead><tbody>${team.map(x => `<tr><td>${esc(x.name)}</td><td>${esc(ROLES[x.role].th)}</td><td><input class="inp" type="email" data-email="${x.id}" value="${esc(x.email)}" placeholder="ใส่อีเมล"></td></tr>`).join('')}<tr><td>กล่อง info ของ TEF</td><td>รับอีเมลยืนยันเมื่ออนุมัติ</td><td>${INFO} <small class="muted">(รอ TEF ยืนยัน)</small></td></tr></tbody></table></div>`;
-  const orgT = orgs.length ? `<div class="tbl-wrap"><table><thead><tr><th>ชื่อ</th><th>อีเมล</th><th>คู่มือ</th><th>อนุมัติเมื่อ</th></tr></thead><tbody>${orgs.map(x => `<tr><td>${esc(x.name)}</td><td>${esc(x.email)}</td><td>${td(S.books.filter(b => b.owner === x.id).length)}</td><td>${x.okAt ? fmtTs(x.okAt) : '—'}</td></tr>`).join('')}</tbody></table></div>` : '<div class="panel empty">ยังไม่มีผู้จัดการแข่งขัน</div>';
+  const nbooks = x => S.books.filter(b => b.owner === x.id).length;
+  const orgT = orgs.length ? `<div class="tbl-wrap"><table><thead><tr><th>ชื่อ</th><th>อีเมล</th><th>คู่มือ</th><th>อนุมัติเมื่อ</th><th></th></tr></thead><tbody>${orgs.map(x => `<tr><td>${esc(x.name)}</td><td>${esc(x.email)}</td><td>${td(nbooks(x))}</td><td>${x.okAt ? fmtTs(x.okAt) : '—'}</td><td class="row-acts"><button type="button" class="btn" data-do="org-out" data-arg="${x.id}">เอาออกจากระบบ</button></td></tr>`).join('')}</tbody></table></div>` : '<div class="panel empty">ยังไม่มีผู้จัดการแข่งขัน</div>';
+  /* เอาออกจากระบบ = ถอนสิทธิ์ ไม่ใช่ลบข้อมูลทิ้ง กู้คืนได้ และคู่มือที่เคยทำไว้ยังอยู่ครบ */
+  const outs = S.users.filter(x => x.outAt).sort((a, b) => b.outAt - a.outAt);
+  const outT = outs.length ? `<div class="tbl-wrap"><table><thead><tr><th>ชื่อ</th><th>อีเมล</th><th>คู่มือที่ค้างอยู่</th><th>เอาออกเมื่อ</th><th>เหตุผล</th><th></th></tr></thead><tbody>${outs.map(x => `<tr><td>${esc(x.name)}</td><td>${esc(x.email)}</td><td>${td(nbooks(x))}</td><td>${fmtTs(x.outAt)}<small class="muted"> โดย ${esc(x.outBy || '—')}</small></td><td>${esc(x.outWhy || '—')}</td><td class="row-acts"><button type="button" class="btn" data-do="org-back" data-arg="${x.id}">กู้คืนสิทธิ์</button></td></tr>`).join('')}</tbody></table></div>` : '';
   document.getElementById('users').innerHTML = `<div><div class="eyebrow">TEF Admin</div><h1>ผู้ใช้และสิทธิ์</h1><p class="lead">ใครก็เข้าสู่ระบบด้วย Gmail ได้ แต่ต้องรอ TEF Admin อนุมัติก่อนจึงสร้างคู่มือในฐานะผู้จัดการแข่งขันได้</p></div>
-    <div><h2>รออนุมัติ (${td(p.length)})</h2>${pend}</div><div><h2>ผู้จัดการแข่งขัน (${td(orgs.length)})</h2>${orgT}</div><div><h2>ทีม TEF</h2>${teamT}</div>`;
+    <div><h2>รออนุมัติ (${td(p.length)})</h2>${pend}</div><div><h2>ผู้จัดการแข่งขัน (${td(orgs.length)})</h2>${orgT}</div>${outT ? `<div><h2>เอาออกจากระบบแล้ว (${td(outs.length)})</h2><p class="hint" style="margin:0 0 8px">กดรับมาผิดก็เอาออกได้ คนที่ถูกเอาออกจะเข้าระบบไม่ได้อีก แต่ข้อมูลและคู่มือที่เคยทำยังอยู่ครบ กู้คืนสิทธิ์เมื่อไรก็ได้</p>${outT}</div>` : ''}<div><h2>ทีม TEF</h2>${teamT}</div>`;
 }
 function renderStaff(){
   const rows = S.reg.map((r, i) => `<tr><td>${esc(r.name)}</td><td>${esc(r.pos)}</td><td>${esc(r.email)}</td><td><button type="button" class="rm" data-do="reg-rm" data-arg="${i}" aria-label="ลบ">×</button></td></tr>`).join('');
@@ -3162,6 +3191,33 @@ function googleDialog(){
       sendMail({to:holders('admin'), subject:`[ขอเข้าใช้งาน] ${name}`, body:`${name} (${email}) เข้าสู่ระบบด้วย Google และขอสิทธิ์ผู้จัดการแข่งขัน\nอนุมัติได้ที่หน้า “ผู้ใช้”`});
     }
     S.me = u.id; S.view = 'books'; save(); renderAll();
+  };
+  dlg.showModal();
+}
+
+function dlgOrgOut(id){
+  const x = S.users.find(y => y.id === id); if (!x) return;
+  const n = S.books.filter(b => b.owner === x.id).length;
+  const live = S.books.filter(b => b.owner === x.id && !['published', 'approved'].includes(b.status)).length;
+  const f = document.getElementById('dlg-form');
+  f.innerHTML = `<h3>เอา ${esc(x.name)} ออกจากระบบ</h3>
+    <p class="hint" style="margin:0">${esc(x.email)}</p>
+    <div class="banner warn"><b>คนนี้จะเข้าระบบไม่ได้อีก</b>ข้อมูลและคู่มือที่เคยทำไว้ยังอยู่ครบ ไม่ได้ถูกลบ และกู้คืนสิทธิ์ได้ทุกเมื่อที่หน้านี้</div>
+    ${n ? `<div class="banner${live ? ' warn' : ''}">มีคู่มือในระบบ ${td(n)} เล่ม${live ? ` ยังทำไม่เสร็จ ${td(live)} เล่ม ถ้าเอาออกตอนนี้เล่มที่ค้างจะไม่มีใครกรอกต่อ` : ''}</div>` : ''}
+    <label style="display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--ink-2)">เหตุผล (บันทึกไว้ในระบบ)
+      <textarea class="inp" name="why" rows="2" placeholder="เช่น กดอนุมัติผิดคน หรือไม่ใช่ผู้แทนของชมรมแล้ว"></textarea></label>
+    <p class="late" id="o-err" hidden>ใส่เหตุผลก่อน</p>
+    <div class="dlg-acts"><button type="button" class="btn" id="o-cancel">ยกเลิก</button><button type="submit" class="btn primary">เอาออกจากระบบ</button></div>`;
+  document.getElementById('o-cancel').onclick = () => dlg.close();
+  f.onsubmit = e => {
+    e.preventDefault();
+    const why = f.why.value.trim();
+    if (!why) { document.getElementById('o-err').hidden = false; return; }
+    dlg.close();
+    x.role = 'rejected'; x.outAt = now(); x.outBy = me().name; x.outWhy = why;
+    sendMail({to:[x], cc:holders('admin'), subject:'[เอาออกจากระบบ] สิทธิ์ผู้จัดการแข่งขัน',
+      body:`เรียน ${x.name}\n\nTEF Admin เอาบัญชีของคุณออกจากระบบแล้ว เหตุผล: ${why}\n\nคู่มือที่เคยทำไว้ยังอยู่ในระบบ หากเข้าใจว่าเป็นความเข้าใจผิด กรุณาติดต่อสมาคม`});
+    save(); renderAll();
   };
   dlg.showModal();
 }
@@ -3269,6 +3325,13 @@ document.addEventListener('click', e => {
     const x = S.users.find(y => y.id === arg); if (!x) return;
     x.role = d === 'allow' ? 'organizer' : 'rejected'; x.okAt = now();
     sendMail({to:[x], cc:holders('admin'), subject: d === 'allow' ? '[อนุมัติแล้ว] เข้าใช้งานในฐานะผู้จัดการแข่งขัน' : '[ไม่อนุมัติ] คำขอเข้าใช้งาน', body: d === 'allow' ? `เรียน ${x.name}\n\nTEF Admin อนุมัติให้คุณเข้าใช้งานในฐานะผู้จัดการแข่งขันแล้ว เข้าสู่ระบบด้วย Gmail เดิมเพื่อสร้างคู่มือ` : `เรียน ${x.name}\n\nคำขอเข้าใช้งานไม่ได้รับอนุมัติ กรุณาติดต่อ TEF`});
+    save(); renderAll();
+  }
+  else if (d === 'org-out' && u.role === 'admin') { dlgOrgOut(arg); }
+  else if (d === 'org-back' && u.role === 'admin') {
+    const x = S.users.find(y => y.id === arg); if (!x) return;
+    x.role = 'organizer'; x.okAt = now(); delete x.outAt; delete x.outBy; delete x.outWhy;
+    sendMail({to:[x], cc:holders('admin'), subject:'[กู้คืนสิทธิ์] ผู้จัดการแข่งขัน', body:`เรียน ${x.name}\n\nTEF Admin กู้คืนสิทธิ์ผู้จัดการแข่งขันให้คุณแล้ว เข้าสู่ระบบด้วย Gmail เดิมได้ตามปกติ`});
     save(); renderAll();
   }
   else if (d === 'late-ok' && u.role === 'admin') { b.lateOk = true; log(b, 'TEF Admin อนุญาตให้ส่งเกินกำหนด 45 วัน'); sendMail({to:[ownerOf(b)], cc:holders('admin'), book:b.id, subject:`[อนุญาตส่งช้า] ${eventName(b)}`, body:`TEF Admin อนุญาตให้ส่งคู่มือ ${eventName(b)} หลังกำหนด 45 วันก่อนวันแข่งได้\n\n${link(b)}`}); save(); renderStatus(); }
