@@ -460,7 +460,6 @@ fieldset:disabled .btn.up{display:none}
     <div class="seg" id="seg" aria-label="ประเภทการแข่งขัน"></div>
     <div class="opts">
       <label class="sw"><input type="checkbox" id="opt-marks" checked> แสดงสีแม่แบบ</label>
-      <label class="sw"><input type="checkbox" id="opt-thai" checked> ตัวเลขไทย</label>
       <button class="btn" id="btn-reset" type="button">โหลดข้อมูลตัวอย่างใหม่</button>
     </div>
   </div>
@@ -533,7 +532,7 @@ fieldset:disabled .btn.up{display:none}
         <li>คำผิดในข้อความแดง: “จำดัก” (น่าจะเป็น “กำจัด”) และหัวข้อ “c) การเกษียณม้า” ซ้ำลำดับ (น่าจะเป็น e)</li>
         <li>ข้อความปกติ: “สหพันธ์ขี่ม้านานาชาติn” และ “เวลปิดคอก” ในหมายเหตุคอกม้า (แก้แล้วทั้งสองจุดในต้นแบบ)</li>
         <li>รายการกฎมี FEI Endurance ซึ่งไม่อยู่ใน 3 ประเภท จึงไม่ใส่ในฉบับใดเลย</li>
-        <li>ย่อหน้ากติกาการแข่งขันและการประท้วงอ้างถึง “กีฬาระหว่างโรงเรียน ประจำปีการศึกษา ๒๕๖๗” และระเบียบกรมพลศึกษา ซึ่งเป็นข้อมูลเฉพาะรายการ จึงเสนอให้เป็นช่องกรอก</li>
+        <li>ย่อหน้ากติกาการแข่งขันและการประท้วงอ้างถึง “กีฬาระหว่างโรงเรียน ประจำปีการศึกษา 2567” และระเบียบกรมพลศึกษา ซึ่งเป็นข้อมูลเฉพาะรายการ จึงเสนอให้เป็นช่องกรอก</li>
         <li>เอกสารใช้เลขไทยและเลขอารบิกปนกัน ระบบจัดให้เหมือนกันทั้งเล่มด้วยสวิตช์ “ตัวเลขไทย”</li>
         <li>บรรทัด “ :” บางบรรทัดในต้นฉบับไม่มีหัวข้อ (เป็นบรรทัดต่อของรายชื่อ) ระบบตีความเป็น “เพิ่มรายชื่อในตำแหน่งเดียวกัน”</li>
       </ul>
@@ -811,7 +810,7 @@ const B = [
   {p:4, t:'h3', x:'กติกาการแข่งขัน (RULES OF COMPETITION)'},
   {p:4, s:'conduct', t:'para', parts:['การแข่งขันจะอยู่ภายใต้กติกาของ สหพันธ์ขี่ม้านานาชาติ (FEI) สมาคมกีฬาขี่ม้าแห่งประเทศไทย (TEF) ',{f:'rules_basis'},' ในกรณีที่เกิดปัญหาที่ไม่ได้ระบุไว้ในข้อบังคับหรือกติกาการแข่งขันของ FEI การวินิจฉัยในกรณีนั้น ๆ ให้เป็นหน้าที่ของผู้แทนสมาคมกีฬาขี่ม้าแห่งประเทศไทย ผู้แทนกรมพลศึกษา หรือ กรรมการตัดสิน']},
   {p:4, t:'h3', x:'การประท้วงการตัดสิน (Appeal)'},
-  {p:4, s:'conduct', t:'para', parts:['ต้องยื่นหนังสือประท้วงเป็นลายลักษณ์อักษรต่อกรรมการผู้ตัดสิน (Ground Jury) ตามกฎกติกาการแข่งขันของสหพันธ์ขี่ม้านานาชาติ (FEI) ตามข้อกำหนด GA Reg. 162 ควบคู่กับ ระเบียบกรมพลศึกษา ว่าด้วยการแข่งขันกีฬาระหว่างโรงเรียน พ.ศ. ๒๕๖๐ หมวด ๕ เรื่อง การประท้วง ภายใน 30 นาที หลังการประกาศผลการแข่งขัน โดยยึดตามเวลาที่กรรมการตัดสินเซ็นต์รับรองผลการแข่งขัน การประท้วงต้องวางเงินประกัน จำนวน ',{f:'appeal_deposit'},' บาท และจะได้รับเงินประกันคืนต่อเมื่อการประท้วงมีผลชนะ และในกรณีที่การประท้วงมีผลแพ้ จะต้องถูกริบเงินประกัน']},
+  {p:4, s:'conduct', t:'para', parts:['ต้องยื่นหนังสือประท้วงเป็นลายลักษณ์อักษรต่อกรรมการผู้ตัดสิน (Ground Jury) ตามกฎกติกาการแข่งขันของสหพันธ์ขี่ม้านานาชาติ (FEI) ตามข้อกำหนด GA Reg. 162 ควบคู่กับ ระเบียบกรมพลศึกษา ว่าด้วยการแข่งขันกีฬาระหว่างโรงเรียน พ.ศ. 2560 หมวด 5 เรื่อง การประท้วง ภายใน 30 นาที หลังการประกาศผลการแข่งขัน โดยยึดตามเวลาที่กรรมการตัดสินเซ็นต์รับรองผลการแข่งขัน การประท้วงต้องวางเงินประกัน จำนวน ',{f:'appeal_deposit'},' บาท และจะได้รับเงินประกันคืนต่อเมื่อการประท้วงมีผลชนะ และในกรณีที่การประท้วงมีผลแพ้ จะต้องถูกริบเงินประกัน']},
   {p:4, t:'h3', x:'ข้อมูลทางเทคนิค (TECHNICAL INFORMATION)'},
   {p:4, s:'tech', t:'kv', f:'arena_main'},
   {p:4, s:'tech', t:'kv', f:'arena_warm'},
@@ -861,8 +860,8 @@ const PERMS = [
   ['ดูประวัติการทำงานของผู้ใช้', ['y','พักไว้ก่อน','-','-','-','-']]
 ];
 
-const SRC_VET ='ข้อกำหนดทางสัตวแพทย์การแข่งขันกีฬาขี่ม้า กีฬาระหว่างโรงเรียน ประจำปีการศึกษา ๒๕๖๗ ฉบับ ณ วันที่ ๒๒ พฤษภาคม ๒๕๖๗ ของสมาคมกีฬาขี่ม้าแห่งประเทศไทย';
-const SRC_RULES = 'เรื่องการแข่งขันกีฬาขี่ม้า กีฬาระหว่างโรงเรียน ประจำปีการศึกษา ๒๕๖๗ ในข้อ ๑๔ วิธีการจัดการแข่งขัน';
+const SRC_VET ='ข้อกำหนดทางสัตวแพทย์การแข่งขันกีฬาขี่ม้า กีฬาระหว่างโรงเรียน ประจำปีการศึกษา 2567 ฉบับ ณ วันที่ 22 พฤษภาคม 2567 ของสมาคมกีฬาขี่ม้าแห่งประเทศไทย';
+const SRC_RULES = 'เรื่องการแข่งขันกีฬาขี่ม้า กีฬาระหว่างโรงเรียน ประจำปีการศึกษา 2567 ในข้อ 14 วิธีการจัดการแข่งขัน';
 function base(over){
   return Object.assign({
     stable_open:'08.00 – 18.00 น. ของวันก่อนวันแข่งขัน', box_size:'3 x 3', fee_perm:'500', fee_temp:'350', fee_tack:'1500',
@@ -888,7 +887,7 @@ const SAMPLE = {
 /* ---------- state ---------- */
 const KEY = 'tef-handbook-mockup-v1';
 const clone = o => JSON.parse(JSON.stringify(o));
-function fresh(){ return {disc:'dressage', role:'organizer', marks:true, thai:true, docs:clone(SAMPLE)}; }
+function fresh(){ return {disc:'dressage', role:'organizer', marks:true, docs:clone(SAMPLE)}; }
 let S;
 try { S = JSON.parse(localStorage.getItem(KEY)); } catch(e) { S = null; }
 if (!S || !S.docs || !S.docs.dressage) S = fresh();
@@ -903,7 +902,7 @@ let M = true; /* template marks shown in the paper (off for the public view) */
 /* ---------- formatting ---------- */
 const TH_M = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const td = s => S.thai ? String(s).replace(/[0-9]/g, d => '๐๑๒๓๔๕๖๗๘๙'[d]) : String(s);
+const td = String; /* the handbook uses Hindu-Arabic numerals (1 2 3), TEF's decision of 11 Nov 2026 */
 function ymd(iso){ const [y,m,d] = iso.split('-').map(Number); return {y,m,d}; }
 function fmtDate(iso){ const a = ymd(iso); return `${a.d} ${TH_M[a.m-1]} ${a.y+543}`; }
 function fmtRange(r){
@@ -1113,7 +1112,7 @@ function pcontrol(b){
   let rows = '';
   for (let i = 0; i < n; i++) {
     const need = i === 0 && !arr.some(x => x && x.trim()) ? ' need' : '';
-    rows += `<div class="prow"><span class="n">${i+1}</span><input class="inp${need}" list="registry" id="p-${b.r}-${i}" data-r="${b.r}" data-i="${i}" value="${esc(arr[i]||'')}" placeholder="เลือกจากทะเบียน หรือพิมพ์ชื่อ" aria-label="${esc(b.l)} คนที่ ${i+1}">${n > 1 ? `<button type="button" class="rm" data-rm="${b.r}" data-i="${i}" aria-label="ลบบรรทัด ${i+1}">×</button>` : ''}</div>`;
+    rows += `<div class="prow"><span class="n">${i+1}</span><input class="inp${need}" list="${b.r === 'organizer' ? 'clubs' : 'registry'}" id="p-${b.r}-${i}" data-r="${b.r}" data-i="${i}" value="${esc(arr[i]||'')}" placeholder="เลือกจากทะเบียน หรือพิมพ์ชื่อ" aria-label="${esc(b.l)} คนที่ ${i+1}">${n > 1 ? `<button type="button" class="rm" data-rm="${b.r}" data-i="${i}" aria-label="ลบบรรทัด ${i+1}">×</button>` : ''}</div>`;
   }
   if (b.opt && roleOff(b.r)) return `<div class="fld" data-key="r:${b.r}"><div class="lab">${esc(b.l)} <span class="mk mk-own">ไม่มีในรายการนี้</span></div><button type="button" class="add" data-role-on="${b.r}">+ เพิ่มตำแหน่ง${esc(b.l)}</button></div>`;
   const off = b.opt ? `<button type="button" class="add" data-role-off="${b.r}">ลบตำแหน่งนี้</button>` : '';
@@ -1267,7 +1266,6 @@ document.getElementById('seg')?.addEventListener('click', e => {
   S.disc = b.dataset.disc; S.showMiss = false; save(); renderAll();
 });
 document.getElementById('opt-marks').addEventListener('change', e => { S.marks = e.target.checked; save(); renderDoc(); });
-document.getElementById('opt-thai').addEventListener('change', e => { S.thai = e.target.checked; save(); renderDoc(); updateProgress(); });
 document.getElementById('btn-reset')?.addEventListener('click', () => { const keep = S.disc, kr = S.role; S = fresh(); S.disc = keep; S.role = kr; save(); syncOpts(); renderAll(); });
 const rail = document.getElementById('rail');
 rail.addEventListener('input', e => {
@@ -1527,7 +1525,7 @@ document.addEventListener('paste', e => {
   const l = cur && !cur.src ? cur : addLogo({});
   setLogoImage(l.id, f);
 });
-function syncOpts(){ document.getElementById('opt-marks').checked = S.marks; document.getElementById('opt-thai').checked = S.thai; }
+function syncOpts(){ document.getElementById('opt-marks').checked = S.marks; }
 
 /* ---------- proposal tables (computed from the template above) ---------- */
 function inventory(disc){

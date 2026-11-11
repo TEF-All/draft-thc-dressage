@@ -561,7 +561,6 @@ td .inp{min-width:180px}
     <button type="button" class="btn" data-go="books">← รายการคู่มือ</button>
     <div class="opts">
       <label class="sw"><input type="checkbox" id="opt-marks" checked> แสดงสีแม่แบบ</label>
-      <label class="sw"><input type="checkbox" id="opt-thai" checked> ตัวเลขไทย</label>
     </div>
   </div>
   <div class="seg doc-tabs" id="doc-tabs" aria-label="เอกสารของรายการนี้"></div>
@@ -586,6 +585,7 @@ td .inp{min-width:180px}
   <div id="tab-entry" class="read" hidden></div>
   <input type="file" id="sched-file" accept=".pdf,.xlsx,.xls,.jpg,.jpeg,.png" hidden>
   <datalist id="registry"></datalist>
+<datalist id="clubs"></datalist>
   <input type="file" id="logo-file" accept="image/*" hidden>
 </section>
 <section id="v-apply" hidden><div class="read" id="apply"></div><input type="file" id="slip-file" accept="image/*,.pdf" hidden></section>
@@ -709,7 +709,7 @@ const B = [
   {p:4, t:'h3', x:'กติกาการแข่งขัน (RULES OF COMPETITION)'},
   {p:4, s:'conduct', t:'para', parts:['การแข่งขันจะอยู่ภายใต้กติกาของ สหพันธ์ขี่ม้านานาชาติ (FEI) สมาคมกีฬาขี่ม้าแห่งประเทศไทย (TEF) ',{f:'rules_basis'},' ในกรณีที่เกิดปัญหาที่ไม่ได้ระบุไว้ในข้อบังคับหรือกติกาการแข่งขันของ FEI การวินิจฉัยในกรณีนั้น ๆ ให้เป็นหน้าที่ของผู้แทนสมาคมกีฬาขี่ม้าแห่งประเทศไทย ผู้แทนกรมพลศึกษา หรือ กรรมการตัดสิน']},
   {p:4, t:'h3', x:'การประท้วงการตัดสิน (Appeal)'},
-  {p:4, s:'conduct', t:'para', parts:['ต้องยื่นหนังสือประท้วงเป็นลายลักษณ์อักษรต่อกรรมการผู้ตัดสิน (Ground Jury) ตามกฎกติกาการแข่งขันของสหพันธ์ขี่ม้านานาชาติ (FEI) ตามข้อกำหนด GA Reg. 162 ควบคู่กับ ระเบียบกรมพลศึกษา ว่าด้วยการแข่งขันกีฬาระหว่างโรงเรียน พ.ศ. ๒๕๖๐ หมวด ๕ เรื่อง การประท้วง ภายใน 30 นาที หลังการประกาศผลการแข่งขัน โดยยึดตามเวลาที่กรรมการตัดสินเซ็นต์รับรองผลการแข่งขัน การประท้วงต้องวางเงินประกัน จำนวน ',{f:'appeal_deposit'},' บาท และจะได้รับเงินประกันคืนต่อเมื่อการประท้วงมีผลชนะ และในกรณีที่การประท้วงมีผลแพ้ จะต้องถูกริบเงินประกัน']},
+  {p:4, s:'conduct', t:'para', parts:['ต้องยื่นหนังสือประท้วงเป็นลายลักษณ์อักษรต่อกรรมการผู้ตัดสิน (Ground Jury) ตามกฎกติกาการแข่งขันของสหพันธ์ขี่ม้านานาชาติ (FEI) ตามข้อกำหนด GA Reg. 162 ควบคู่กับ ระเบียบกรมพลศึกษา ว่าด้วยการแข่งขันกีฬาระหว่างโรงเรียน พ.ศ. 2560 หมวด 5 เรื่อง การประท้วง ภายใน 30 นาที หลังการประกาศผลการแข่งขัน โดยยึดตามเวลาที่กรรมการตัดสินเซ็นต์รับรองผลการแข่งขัน การประท้วงต้องวางเงินประกัน จำนวน ',{f:'appeal_deposit'},' บาท และจะได้รับเงินประกันคืนต่อเมื่อการประท้วงมีผลชนะ และในกรณีที่การประท้วงมีผลแพ้ จะต้องถูกริบเงินประกัน']},
   {p:4, t:'h3', x:'ข้อมูลทางเทคนิค (TECHNICAL INFORMATION)'},
   {p:4, s:'tech', t:'kv', f:'arena_main'},
   {p:4, s:'tech', t:'kv', f:'arena_warm'},
@@ -721,7 +721,7 @@ const B = [
 /* ---------- formatting ---------- */
 const TH_M = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const td = s => S.thai ? String(s).replace(/[0-9]/g, d => '๐๑๒๓๔๕๖๗๘๙'[d]) : String(s);
+const td = String; /* the handbook uses Hindu-Arabic numerals (1 2 3), TEF's decision of 11 Nov 2026 */
 function ymd(iso){ const [y,m,d] = iso.split('-').map(Number); return {y,m,d}; }
 function fmtDate(iso){ const a = ymd(iso); return `${a.d} ${TH_M[a.m-1]} ${a.y+543}`; }
 function fmtRange(r){
@@ -931,7 +931,7 @@ function pcontrol(b){
   let rows = '';
   for (let i = 0; i < n; i++) {
     const need = i === 0 && !arr.some(x => x && x.trim()) ? ' need' : '';
-    rows += `<div class="prow"><span class="n">${i+1}</span><input class="inp${need}" list="registry" id="p-${b.r}-${i}" data-r="${b.r}" data-i="${i}" value="${esc(arr[i]||'')}" placeholder="เลือกจากทะเบียน หรือพิมพ์ชื่อ" aria-label="${esc(b.l)} คนที่ ${i+1}">${n > 1 ? `<button type="button" class="rm" data-rm="${b.r}" data-i="${i}" aria-label="ลบบรรทัด ${i+1}">×</button>` : ''}</div>`;
+    rows += `<div class="prow"><span class="n">${i+1}</span><input class="inp${need}" list="${b.r === 'organizer' ? 'clubs' : 'registry'}" id="p-${b.r}-${i}" data-r="${b.r}" data-i="${i}" value="${esc(arr[i]||'')}" placeholder="เลือกจากทะเบียน หรือพิมพ์ชื่อ" aria-label="${esc(b.l)} คนที่ ${i+1}">${n > 1 ? `<button type="button" class="rm" data-rm="${b.r}" data-i="${i}" aria-label="ลบบรรทัด ${i+1}">×</button>` : ''}</div>`;
   }
   if (b.opt && roleOff(b.r)) return `<div class="fld" data-key="r:${b.r}"><div class="lab">${esc(b.l)} <span class="mk mk-own">ไม่มีในรายการนี้</span></div><button type="button" class="add" data-role-on="${b.r}">+ เพิ่มตำแหน่ง${esc(b.l)}</button></div>`;
   const off = b.opt ? `<button type="button" class="add" data-role-off="${b.r}">ลบตำแหน่งนี้</button>` : '';
@@ -1027,7 +1027,6 @@ document.getElementById('seg')?.addEventListener('click', e => {
   S.disc = b.dataset.disc; S.showMiss = false; save(); renderAll();
 });
 document.getElementById('opt-marks').addEventListener('change', e => { S.marks = e.target.checked; save(); renderDoc(); });
-document.getElementById('opt-thai').addEventListener('change', e => { S.thai = e.target.checked; save(); renderDoc(); updateProgress(); });
 document.getElementById('btn-reset')?.addEventListener('click', () => { const keep = S.disc, kr = S.role; S = fresh(); S.disc = keep; S.role = kr; save(); syncOpts(); renderAll(); });
 const rail = document.getElementById('rail');
 rail.addEventListener('input', e => {
@@ -1287,7 +1286,7 @@ document.addEventListener('paste', e => {
   const l = cur && !cur.src ? cur : addLogo({});
   setLogoImage(l.id, f);
 });
-function syncOpts(){ document.getElementById('opt-marks').checked = S.marks; document.getElementById('opt-thai').checked = S.thai; }
+function syncOpts(){ document.getElementById('opt-marks').checked = S.marks; }
 
 
 
@@ -1321,7 +1320,12 @@ const ST = {
 /* ---------- state ---------- */
 const KEY = 'tef-dressage-app-v1';
 const clone = o => JSON.parse(JSON.stringify(o));
-function fresh(){ return {v:2, disc:'dressage', marks:true, thai:true, me:null, view:'books', cur:null, clock:0, mineOnly:false, users:clone(TEAM), books:[], mail:[], reg:[]}; }
+function fresh(){ return {v:2, disc:'dressage', marks:true, me:null, view:'books', cur:null, clock:0, mineOnly:false, users:clone(TEAM), books:[], mail:[], reg:[]}; }
+
+const CLUBS = [["หน่วยม้าทรงประจำพระองค์ฯ","RSU"],["ชมรมขี่ม้า ทหารม้ารักษาพระองค์","HG"],["สมาคมราชกรีฑาสโมสรโปโลคลับ","RBSC"],["ชมรมกีฬาขี่ม้า ค่ายทองฑีฆายุ"],["ชมรมขี่ม้าค่ายอดิศร / ชมรมกีฬาขี่ม้ากองทัพบก","CC"],["ชมรมนักขี่ม้า กองพันสัตว์ต่าง","P.S.R.C."],["สโมสรขี่ม้าและตีคลีในพระบรมราชูปถัมภ์"],["ชมรมขี่ม้า อีเควสเทรี่ยนพาราไดซ์","EP"],["ชมรมขี่ม้า วินดี้ เชียงใหม่","W.E.C"],["สโมสร เดอะฮอร์สชูพอย์ทรีสอร์ท แอนด์ คันทรี่คลับ","HSP"],["สโมสร โจโจ้ ฮอร์ส คลับ","JOJO"],["ศูนย์ฝึกขี่ม้า กรมทหารราบที่ 21 รักษาพระองค์","NQG"],["สโมสร คนรักม้า","HLC"],["ชมรมขี่ม้า ลัดดาแลนด์","LEC"],["สโมสร นิว อีเควสเทรียน โซไซตี้ คลับ","NESC"],["ชมรมขี่ม้า ฟินิกซ์ไรดิ้ง อาคาเดอมี","PRA"],["ชมรมขี่ม้า ค่ายสุรนารี","SRC"],["สโมสรขี่ม้า บ้านริมน้ำ","BRN"],["สโมสร เช็คเมท ฮอร์ส คลับ","CMHC"],["สโมสร เซนต์แอนดรูส์ อีเควสเทรี่ยน เซ็นเตอร์","ST.AEC"],["ชมรม กีฬาขี่ม้าชมวิวระยอง","CV"],["สโมสร ไทย โปโล แอนด์ อีเควียสเตรียน คลับ","Thai Polo"],["สโมสร แม็กซ์วิน","Maxwin"],["ชมรม เค เอ็ม แอล สตัดท์","KML STUD"],["ชมรมขี่ม้า MCC แสนสุข","MCC"],["ชมรม สมานฟาร์ม","SM"],["สโมสร กีฬาขี่ม้าโกลด์เด้นฮอร์ส","GHRC"],["ชมรมขี่ม้า วิว ชาเล่ต์","VCH"],["ชมรมขี่ม้า เดอะฮอร์สเซส","The Horses"],["ชมรมขี่ม้า เปรมปรีดิ์บายใจ"],["สโมสร ปิยะชาติ ฮอร์สไรด์ดิ้ง คลับ","PHRC"],["ชมรมขี่ม้า ไอซ์ธารา พัทยา","ITP"],["สโมสรขี่ม้า เฮ้าส์ ออฟ ฮอร์ส","HOH"],["ชมรมขี่ม้า สกายไวท์ ฮอร์ส ไรดิ้ง คลับ","SWHR"],["ชมรมขี่ม้า เอ็นพี อีเควสเตรียนคลับ บาย มานะ","NPEC"],["ชมรมขี่ม้า อุบล โพนี่ คลับ","UPC"],["ชมรม กีฬาขี่ม้านครศรีธรรมราช","N.SRC"],["สโมสรขี่ม้า เลิศนิมิต บ้านเลี้ยงม้า","LNM"],["ชมรมขี่ม้า FARO FARM 101","FF101"],["ชมรม 22nd Horse Club","22HC"],["สโมสรขี่ม้า กรุงเทพอีเควสเตรียนเซ็นเตอร์","B.E.C."],["ชมรมขี่ม้า ออชาร์ดปาร์ค","OP"],["ชมรมขี่ม้า ภูผาหมอก","PPM"],["ชมรม อนุรักษ์ม้าไทยแสนรู้"],["ชมรมขี่ม้าฮอร์ส คลับ ไทยแลนด์"],["ชมรม มวกเหล็ก ไรดิ้ง คลับ"],["ชมรมขี่ม้า ฮอร์ส โกลด์ คิม"],["สโมสร แจ้งวัฒนะฮอสสปอร์ทคลับ","CWN"],["ชมรม สปิริต ฮอร์ส ไรด์ดิ้ง","SHR"],["ชมรมขี่ม้า โรดิโอ ฮอร์ส ไรด์ดิ้ง","R.H.R"],["สโมสร Cattymax Horse Riding","CMHR"],["โรงเรียนสอนขี่ม้าอัศวิน","KEA"],["สโมสร เดอะฮอร์สแลนด์ไรด์ดิ้งคลับ","THRC"],["ชมรมขี่ม้า สุภาวดี แรนซ์"],["ชมรมขี่ม้า ลาดกระบังอีเควสเทรียน"],["ชมรมขี่ม้า พจนา ฟาร์ม","PN"],["ชมรมขี่ม้า หาดใหญ่ ฮอร์ส สปอร์ต","HHS"],["ชมรมขี่ม้า รักม้ารักษ์ป่า ลลิตาฟาร์ม","LLL"],["สโมสร นอร์ท สตาร์","NS"],["สโมสรขี่ม้า ไอ แอม ฮอร์ส ไรดิ้ง","I AM"],["ชมรม สปินนิ่ง ฮอร์ส ไทยแลนด์","SHTH"],["ชมรมขี่ม้า เขาใหญ่ฮอร์สแมน","KYHM"],["ชมรมขี่ม้า กองพันทหารม้าที่ 19","C.S.C."],["สโมสร บีบี อาราเบียน ฟาร์ม","BBA"],["ชมรม ไร่เหมือนฝัน กาญจนบุรี","RMK"],["ชมรมขี่ม้า อุดรธานี","U.D.E.C"],["ชมรมขี่ม้า ปีโป้ โพนี่ คลับ"],["ชมรมขี่ม้า กองการสัตว์และเกษตรกรรมที่ 1"],["ชมรมขี่ม้า เจทีทีดับเบิ้ลยูฮอร์สฟาร์ม"],["ชมรมขี่ม้า P.O. Ranch","P.O."],["ชมรมขี่ม้า จังหวัดพะเยา","PYRC"],["ชมรมขี่ม้า ฟาร์มสวีท ฮอร์ส","SHFarm"],["ชมรมขี่ม้า จรัญ 92 ฮอร์สไรด์ดิ้ง","C92HR"],["สโมสรขี่ม้า อัศวแพทย์แห่งมหาวิทยาลัยเทคโนโลยีมหานคร"],["สโมสรขี่ม้า ฟ้าใส","FSHRC"],["ชมรมขี่ม้า The Herd","THT"],["ชมรมขี่ม้า สมุยไรดิ้ง คลับ"],["ชมรมขี่ม้า มหาวิทยาลัยเกษตรศาสตร์ กำแพงแสน","KU.KPS.HRC"],["ชมรมขี่ม้า สโล บันนี่","SLO"],["ชมรมขี่ม้า วังเพชรฟาร์ม"],["ชมรมขี่ม้า เลฟอร์ท อีเควสเทรียน คลับ"],["ชมรมขี่ม้า บัวทองแก้วฟาร์ม","BTK"],["ชมรมขี่ม้า มอนทาน่า สุรินทร์"],["ชมรมขี่ม้า โรงเรียน อบจ.สงขลาพิทยานุสรณ์"],["ชมรมขี่ม้า ฮอร์สซ์ ยูไนเต็ด","H.U.C"],["ชมรมขี่ม้า สงขลา บาเรล เรสซิ่ง คลับ (ดี.ดี.ฟาร์ม-สงขลา บาเรล เรสซิ่ง คลับ)"],["ชมรมขี่ม้า บ้านคอกม้า คาวบอยฟาร์ม","B.B.C.F"],["ชมรมขี่ม้า เพ็ชรไทย ฟาร์ม","PT"],["ชมรมขี่ม้า ซี ทู","C2"],["ชมรมขี่ม้า ตำรวจม้า 191","M.P.C."],["ชมรมขี่ม้า ฮอสมาสเตอร์ไทยแลนด์","HMT"],["ชมรมขี่ม้า ฟาร์มม้าอรุณ","ARHF"],["ชมรมขี่ม้า บริษัท อีเควสเตรียน เอ็ดดูเคชั่น เซ็นเตอร์ เชียงใหม่","EEC"],["ชมรมขี่ม้า ชายหาดระยอง","RBHR"],["ชมรมขี่ม้า ธนัชฟาร์มม้าและสวนเกษตรพอเพียง","TFH"],["ชมรมขี่ม้า เพื่อสุขภาพ กิ้กกะก้อ"],["ชมรมขี่ม้า The Wind of Heaven Horse Riding Club"],["ชมรม กีฬาขี่ม้าจังหวัดสตูล","S.H.C"],["ชมรม กีฬาขี่ม้าชมวิวบางกอก","CBC"],["ชมรมขี่ม้า กู๊ดฟิวส์ อีเควสเตรียน คลับ","Good Feel"],["ชมรมขี่ม้า บ้านม้าควนพลา","Ban-Ma"],["ชมรม กีฬาขี่ม้าจังหวัดปัตตานี","P.H.C"],["ชมรม กีฬาขี่ม้าจังหวัดพังงา","P.N.H.C."],["ชมรม กีฬาขี่ม้าจังหวัดสุราษฎร์ธานี (ชมทัศน์ ฟาร์ม)","SRT"],["ชมรมขี่ม้า ลอยเด่น ฮอร์ส มาสเตอร์"],["ชมรมขี่ม้า สุพรรณ ฮอร์ส สปอร์ท คลับ","SP Club"],["ชมรมขี่ม้า สร้างเงินอะคาเดมี่"],["ชมรมขี่ม้า เอลกาบาโญ่ คลับ","Caballo"],["สโมสรขี่ม้า ลิตเติ้ลบิทฮอร์สคลับ"],["ชมรมขี่ม้า สมุทรปราการ ฮอร์ส ไรดิ้ง คลับ","SPHRC"],["ชมรมขี่ม้า เชาวณัฏฟาร์ม","CHF"],["ชมรมขี่ม้า BH Farm Horse Club"],["ชมรมขี่ม้า ไร่คาราวาน"],["ชมรมขี่ม้า MM Rice and Ranch"],["ชมรมขี่ม้า Phatthalung Mountain View Ranch","P.M.V.R."],["ชมรมขี่ม้า บ้านคอกม้าบางพลี","BRPC"],["ชมรมขี่ม้า ภูสายลม","PSLC"],["ชมรมขี่ม้า ภูสิน ฟาร์ม","P.S."],["ชมรมขี่ม้า SK Horse Stable Sakonnakhon","SKHS"],["ชมรมขี่ม้า เอสซี อีเควสเทรียน คลับ","SCEC"],["ชมรมขี่ม้า เดอะ เฮย์-อีเควสเทรี่ยน เซ็นเตอร์","The Hay"],["สโมสรขี่ม้า เอฟ ดี แอล ไรดิ้งคลับ","FDL"],["ชมรมขี่ม้า Pari Passu บ้านสวนตะวัน","PPT"],["ชมรมขี่ม้า ภูดิศ ฮอร์ส คลับ เขาใหญ่"],["ชมรมขี่ม้า สถาบันสอนขี่ม้ามอราเซีย","MHA"],["ชมรมขี่ม้า ฮอส แฟมิลี่"],["สโมสรขี่ม้า ฮอสเฮเว่น","HORSE HAVEN"],["ชมรมขี่ม้า บีเบล ระยอง","B’BELL"],["ชมรมขี่ม้า ฮาร์โมเนีย","HM"],["สโมสร ดรีมเมอร์ สตั๊ด ฟาร์ม","D.S.F."],["ชมรมขี่ม้า บ้านม้าริมคลอง","BAANMA"],["สโมสรขี่ม้า ชาวาลลิโน อีเควสเทรียน เซ็นเตอร์","CHA"],["ชมรมขี่ม้า เคพี อีเควสเตรียนเซ็นเตอร์","KPEC"],["ชมรมขี่ม้า Jumping Academy"],["สโมสรขี่ม้า นิรันดร์","NECP"],["ชมรมขี่ม้า LL Pegasus Club","LL Pegasus"],["ชมรมขี่ม้า คอกม้ากุลชา","KLC"],["ชมรมขี่ม้า แฮปปี้ ฟาร์ม สุราษฏร์ธานี","HFS"],["สโมสรขี่ม้า บ้านมนตรี","BMEC"],["ชมรมขี่ม้า บีบี ฮอร์ส สเตเบิ้ล ไทยแลนด์","BB.HS"],["ชมรมขี่ม้า เบรฟฮอร์สไทยแลนด์","BHT"],["สโมสรขี่ม้า คอกม้ามิตรภาพ","R2HSC"]];
+/* Member clubs of TEF, from the association's directory (member V2nov26.xlsx, 11 Nov 2026).
+   Shown as you type in a club field so every entry names a club the association knows. */
+const clubList = () => CLUBS.map(([n, a]) => `<option value="${esc(n)}"${a ? ` label="${esc(a)}"` : ''}></option>`).join('');
 
 /* ---------- backend: real accounts, roles and shared data ----------
    ONLINE: everyone signs in with their own Google account, data is in the TEF database and the
@@ -1546,7 +1550,7 @@ function act(a){
     if (miss.length) { S.showMiss = true; renderRail(); document.getElementById('rail').scrollTo({top:0, behavior:'smooth'}); return; }
     const by = submitBy(b);
     if (b.status === 'draft' && by !== null && now() > by && !b.lateOk) {
-      S.flash = {t:`ส่งไม่ได้: ต้องส่งอย่างน้อย ๔๕ วันก่อนวันแข่ง (ภายใน ${fmtD(by)}) ติดต่อ TEF Admin เพื่อขออนุญาตส่งช้า`}; renderStatus(); return;
+      S.flash = {t:`ส่งไม่ได้: ต้องส่งอย่างน้อย 45 วันก่อนวันแข่ง (ภายใน ${fmtD(by)}) ติดต่อ TEF Admin เพื่อขออนุญาตส่งช้า`}; renderStatus(); return;
     }
     S.showMiss = false;
     const iss = packageIssues(b);
@@ -1609,7 +1613,7 @@ function publish(b){
   b.reports.results = {sentAt:now()};
   sendMail({to:[owner], cc:[...holders('admin'), scorer ? `${scorer.name} <${scorer.email}>` : null], book:b.id,
     subject:`[ขอผลการแข่งขัน] ${ev} · ไฟล์ Excel ภายใน ${fmtD(due)}`,
-    body:`คู่มือ ${ev} ประกาศแล้ว\nกรุณาส่งผลการแข่งขันเป็นไฟล์ Excel ภายใน ๗๒ ชั่วโมงหลังจบการแข่งขัน (ภายใน ${fmtTs(due)}) ที่ ${INFO}\n\n${link(b)}`});
+    body:`คู่มือ ${ev} ประกาศแล้ว\nกรุณาส่งผลการแข่งขันเป็นไฟล์ Excel ภายใน 72 ชั่วโมงหลังจบการแข่งขัน (ภายใน ${fmtTs(due)}) ที่ ${INFO}\n\n${link(b)}`});
 }
 function sendReport(b, rp, due){
   const ev = eventName(b), name = ((b.people[rp.r] || []).find(x => x && x.trim()) || '').trim(), hit = regFind(name);
@@ -1622,7 +1626,7 @@ function sendReport(b, rp, due){
   }
   row.sentAt = now();
   sendMail({to:[`${name} <${hit.email}>`], cc:holders('admin'), book:b.id, attach:[rp.form], subject:`[แบบฟอร์มรายงาน] ${ev} · ส่งกลับภายใน ${fmtD(due)}`,
-    body:`เรียน ${name}\n\nตามที่ท่านเป็น${rp.th}ในการแข่งขัน ${ev} (${td(fmtRange(b.values.event_dates))})\nกรุณากรอก${rp.form}และส่งกลับภายใน ๗๒ ชั่วโมงหลังจบการแข่งขัน (ภายใน ${fmtTs(due)}) ที่ ${INFO}\n\nสมาคมกีฬาขี่ม้าแห่งประเทศไทย`});
+    body:`เรียน ${name}\n\nตามที่ท่านเป็น${rp.th}ในการแข่งขัน ${ev} (${td(fmtRange(b.values.event_dates))})\nกรุณากรอก${rp.form}และส่งกลับภายใน 72 ชั่วโมงหลังจบการแข่งขัน (ภายใน ${fmtTs(due)}) ที่ ${INFO}\n\nสมาคมกีฬาขี่ม้าแห่งประเทศไทย`});
 }
 /* comments are required when sending back; the organizer gets 3 days */
 function openReturn(preset){
@@ -1630,7 +1634,7 @@ function openReturn(preset){
   const b0 = D(), open0 = notesOf(b0).filter(n => n.state === 'open');
   const row = () => `<div class="crow"><select class="inp" name="key">${opts}</select><textarea class="inp" name="text" rows="2" placeholder="สิ่งที่ต้องแก้"></textarea></div>`;
   const f = document.getElementById('dlg-form');
-  f.innerHTML = `<h3>ส่งกลับให้ผู้จัดแก้ไข</h3><p class="hint" style="margin:0">ผู้จัดการแข่งขันมีเวลา ๓ วันในการส่งฉบับแก้ไข ต้องมีคอมเมนต์ที่รอแก้อย่างน้อย ๑ ข้อ</p>${open0.length ? `<div><b>คอมเมนต์ที่รอแก้ ${td(open0.length)} ข้อ จะส่งไปด้วย</b><ul class="cmts" style="margin-top:6px">${open0.map(n => `<li><b>${esc(n.label)}:</b> ${esc(n.text)}<small>${esc(n.by)}</small></li>`).join('')}</ul></div>` : ''}<div id="crows">${row()}</div><button type="button" class="add" id="c-add">+ เพิ่มคอมเมนต์</button><p class="late" id="c-err" hidden>ใส่คอมเมนต์อย่างน้อย ๑ ข้อ</p><div class="dlg-acts"><button type="button" class="btn" value="cancel" id="c-cancel">ยกเลิก</button><button type="submit" class="btn primary" value="ok">ส่งกลับแก้ไข</button></div>`;
+  f.innerHTML = `<h3>ส่งกลับให้ผู้จัดแก้ไข</h3><p class="hint" style="margin:0">ผู้จัดการแข่งขันมีเวลา 3 วันในการส่งฉบับแก้ไข ต้องมีคอมเมนต์ที่รอแก้อย่างน้อย 1 ข้อ</p>${open0.length ? `<div><b>คอมเมนต์ที่รอแก้ ${td(open0.length)} ข้อ จะส่งไปด้วย</b><ul class="cmts" style="margin-top:6px">${open0.map(n => `<li><b>${esc(n.label)}:</b> ${esc(n.text)}<small>${esc(n.by)}</small></li>`).join('')}</ul></div>` : ''}<div id="crows">${row()}</div><button type="button" class="add" id="c-add">+ เพิ่มคอมเมนต์</button><p class="late" id="c-err" hidden>ใส่คอมเมนต์อย่างน้อย 1 ข้อ</p><div class="dlg-acts"><button type="button" class="btn" value="cancel" id="c-cancel">ยกเลิก</button><button type="submit" class="btn primary" value="ok">ส่งกลับแก้ไข</button></div>`;
   document.getElementById('c-add').onclick = () => document.getElementById('crows').insertAdjacentHTML('beforeend', row());
   document.getElementById('c-cancel').onclick = () => dlg.close();
   f.onsubmit = e => {
@@ -1650,7 +1654,7 @@ function doReturn(list){
   syncComments(b);
   log(b, `ส่งกลับแก้ไข ${open.length} ข้อ กำหนดส่งฉบับแก้ไข ${fmtD(b.due)}`);
   sendMail({to:[ownerOf(b)], cc:holders('admin'), book:b.id, subject:`[ส่งกลับแก้ไข] ${ev} · ส่งฉบับแก้ไขภายใน ${fmtD(b.due)}`,
-    body:`${u.name} ส่งคู่มือ ${ev} กลับให้แก้ไข\nกรุณาส่งฉบับแก้ไขภายใน ๓ วัน (ภายใน ${fmtTs(b.due)})\n\n${open.map((c, i) => `${td(i + 1)}. ${c.label}: ${c.text} (${c.by})`).join('\n')}\n\n${link(b)}`});
+    body:`${u.name} ส่งคู่มือ ${ev} กลับให้แก้ไข\nกรุณาส่งฉบับแก้ไขภายใน 3 วัน (ภายใน ${fmtTs(b.due)})\n\n${open.map((c, i) => `${td(i + 1)}. ${c.label}: ${c.text} (${c.by})`).join('\n')}\n\n${link(b)}`});
   save(); renderAll();
 }
 /* deadline watcher: reminder mails are sent once when a deadline passes */
@@ -1659,10 +1663,10 @@ function tick(){
     b.flags = b.flags || {};
     const owner = ownerOf(b), ev = eventName(b), once = (k, fn) => { if (!b.flags[k]) { b.flags[k] = now(); fn(); } };
     const by = submitBy(b);
-    if (b.status === 'draft' && by !== null && daysLeft(by) <= 7 && daysLeft(by) >= 0) once('remind45', () => sendMail({to:[owner], book:b.id, subject:`[ใกล้กำหนดส่ง] ${ev}`, body:`กำหนดส่งคู่มือ ${ev} คือ ${fmtD(by)} (๔๕ วันก่อนวันแข่ง) เหลืออีก ${td(daysLeft(by))} วัน\n\n${link(b)}`}));
+    if (b.status === 'draft' && by !== null && daysLeft(by) <= 7 && daysLeft(by) >= 0) once('remind45', () => sendMail({to:[owner], book:b.id, subject:`[ใกล้กำหนดส่ง] ${ev}`, body:`กำหนดส่งคู่มือ ${ev} คือ ${fmtD(by)} (45 วันก่อนวันแข่ง) เหลืออีก ${td(daysLeft(by))} วัน\n\n${link(b)}`}));
     if (b.status === 'returned' && b.due && now() > b.due) once('late' + (b.round || 0), () => { log(b, 'เลยกำหนดส่งฉบับแก้ไข'); sendMail({to:[owner], cc:holders('admin'), book:b.id, subject:`[เลยกำหนด] ${ev} · ยังไม่ส่งฉบับแก้ไข`, body:`ครบกำหนดส่งฉบับแก้ไขเมื่อ ${fmtTs(b.due)} แล้ว\n\n${link(b)}`}); });
     if (b.status === 'published' && reportDue(b) && now() > reportDue(b)) {
-      REPORTERS.forEach(rp => { const r = b.reports[rp.r]; if (r && r.sentAt && !r.receivedAt) once('late-' + rp.r, () => sendMail({to:[`${r.name} <${r.email}>`], cc:holders('admin'), book:b.id, subject:`[เลยกำหนด] รายงาน${rp.th} · ${ev}`, body:`ยังไม่ได้รับ${rp.form}\nครบกำหนด ๗๒ ชั่วโมงหลังจบการแข่งขันเมื่อ ${fmtTs(reportDue(b))}`})); });
+      REPORTERS.forEach(rp => { const r = b.reports[rp.r]; if (r && r.sentAt && !r.receivedAt) once('late-' + rp.r, () => sendMail({to:[`${r.name} <${r.email}>`], cc:holders('admin'), book:b.id, subject:`[เลยกำหนด] รายงาน${rp.th} · ${ev}`, body:`ยังไม่ได้รับ${rp.form}\nครบกำหนด 72 ชั่วโมงหลังจบการแข่งขันเมื่อ ${fmtTs(reportDue(b))}`})); });
       if (b.reports.results && !b.reports.results.receivedAt) once('late-results', () => sendMail({to:[owner], cc:holders('admin'), book:b.id, subject:`[เลยกำหนด] ผลการแข่งขัน (Excel) · ${ev}`, body:`ยังไม่ได้รับไฟล์ผลการแข่งขัน ครบกำหนดเมื่อ ${fmtTs(reportDue(b))}`}));
     }
   });
@@ -1698,7 +1702,7 @@ function renderFlow(){
   if (S.flash) out.push(`<div class="flash${S.flash.ok ? ' ok' : ''}">${esc(S.flash.t)}</div>`);
   /* deadlines */
   const by = submitBy(b), dl = [];
-  if (['draft','returned'].includes(b.status) || b.status === 'admin') dl.push(by === null ? 'กำหนดส่ง: กรอกวันที่แข่งเพื่อคำนวณ (ส่งอย่างน้อย ๔๕ วันก่อนวันแข่ง)' : (b.submittedAt ? `ส่งให้ TEF เมื่อ ${fmtTs(b.submittedAt)}` : left(by, 'ส่งให้ TEF ภายใน')) + (b.lateOk ? ' · <span class="okc">TEF Admin อนุญาตส่งช้า</span>' : ''));
+  if (['draft','returned'].includes(b.status) || b.status === 'admin') dl.push(by === null ? 'กำหนดส่ง: กรอกวันที่แข่งเพื่อคำนวณ (ส่งอย่างน้อย 45 วันก่อนวันแข่ง)' : (b.submittedAt ? `ส่งให้ TEF เมื่อ ${fmtTs(b.submittedAt)}` : left(by, 'ส่งให้ TEF ภายใน')) + (b.lateOk ? ' · <span class="okc">TEF Admin อนุญาตส่งช้า</span>' : ''));
   else if (b.submittedAt) dl.push(`ส่งให้ TEF เมื่อ ${fmtTs(b.submittedAt)}`);
   if (b.status === 'returned' && b.due) dl.push(left(b.due, 'ส่งฉบับแก้ไขภายใน'));
   if (b.status === 'approval') dl.push('ผู้อนุมัติ: ' + needApprovers(b).map(r => `${esc(roleName(r, b))} ${b.approvals[r] ? `<span class="okc">✓ อนุมัติ ${fmtD(b.approvals[r])}</span>` : '<span class="muted">รอ</span>'}`).join(' · '));
@@ -1717,7 +1721,7 @@ function renderFlow(){
     }).join('');
     const res = b.reports.results || {};
     const resRow = `<tr><td>ผลการแข่งขัน (Excel)</td><td>${esc(roleName('owner', b))}</td><td>${res.sentAt ? fmtTs(res.sentAt) : '—'}</td><td>${res.receivedAt ? `<span class="okc">ได้รับ ${esc(res.file)}</span>` : now() > due ? '<span class="late">เลยกำหนด</span>' : 'รอไฟล์'}</td><td>${res.receivedAt ? '' : '<button type="button" class="btn sim" data-do="xlsx">แนบไฟล์ Excel</button>'}</td></tr>`;
-    out.push(`<div class="panel"><h3>รายงานหลังการแข่งขัน · ส่งกลับภายใน ๗๒ ชั่วโมงหลังจบการแข่งขัน (${due ? fmtTs(due) : '—'})</h3><div class="tbl-wrap"><table><thead><tr><th>ตำแหน่ง</th><th>ชื่อ / อีเมล (จากทะเบียนคนทำงาน)</th><th>ส่งแบบฟอร์มเมื่อ</th><th>สถานะ</th><th></th></tr></thead><tbody>${rows}${resRow}</tbody></table></div></div>`);
+    out.push(`<div class="panel"><h3>รายงานหลังการแข่งขัน · ส่งกลับภายใน 72 ชั่วโมงหลังจบการแข่งขัน (${due ? fmtTs(due) : '—'})</h3><div class="tbl-wrap"><table><thead><tr><th>ตำแหน่ง</th><th>ชื่อ / อีเมล (จากทะเบียนคนทำงาน)</th><th>ส่งแบบฟอร์มเมื่อ</th><th>สถานะ</th><th></th></tr></thead><tbody>${rows}${resRow}</tbody></table></div></div>`);
   }
   out.push(`<div class="panel"><details class="more"><summary>บันทึกการดำเนินการ (${td(b.hist.length)})</summary><ul class="hist">${b.hist.map(h => `<li><time>${fmtTs(h.at)} · ${esc(h.by)}</time>${esc(h.text)}</li>`).join('') || '<li class="muted">ยังไม่มี</li>'}</ul></details></div>`);
   document.getElementById('flow').innerHTML = out.join('');
@@ -1794,7 +1798,7 @@ const kb = n => n >= 1e6 ? (n / 1e6).toFixed(1) + ' MB' : Math.max(1, Math.round
 function renderDocTabs(){
   const b = D(), cl = classList(b), f = b.schedFile;
   if (!DOC_TABS.includes(S.tab)) S.tab = 'handbook';
-  const lab = {handbook:['๑ คู่มือ', 'Technical Handbook'], sched:['๒ ตารางการแข่งขัน', f ? `ไฟล์ v${td(f.ver)}` : 'ยังไม่อัปโหลด'], entry:['๓ ใบสมัคร / จองคอก', cl.length ? `${td(cl.length)} คลาส` : 'ยังไม่มีคลาส']};
+  const lab = {handbook:['1 คู่มือ', 'Technical Handbook'], sched:['2 ตารางการแข่งขัน', f ? `ไฟล์ v${td(f.ver)}` : 'ยังไม่อัปโหลด'], entry:['3 ใบสมัคร / จองคอก', cl.length ? `${td(cl.length)} คลาส` : 'ยังไม่มีคลาส']};
   document.getElementById('doc-tabs').innerHTML = DOC_TABS.map(k => `<button type="button" data-tab="${k}" aria-pressed="${S.tab === k}">${esc(lab[k][0])}<small>${esc(lab[k][1])}</small></button>`).join('');
   DOC_TABS.forEach(k => { document.getElementById('tab-' + k).hidden = S.tab !== k; });
   if (S.tab === 'sched') renderSched();
@@ -1851,7 +1855,7 @@ function renderEntry(){
       <label>วันปิดรับสมัคร<input class="inp" type="date" data-ent="deadline" value="${esc(e.deadline)}"${dis}></label>
       <label>ค่าสมัครเริ่มต้นต่อคลาส (บาท) ใช้กับคลาสที่เพิ่มใหม่<input class="inp" inputmode="numeric" data-ent="fee" value="${esc(e.fee)}"${dis}></label></div></div>
     <div class="panel"><div class="head-row"><h3 style="margin:0">รายการคลาส (${td(cc.length)}) · รวมค่าสมัครทุกคลาส ${td(fmtMoney(sumFee))} บาท/คน</h3>
-      ${ed ? `<div class="row-acts">${cc.length ? '' : `<button type="button" class="btn" data-cl="tpl"${days.length ? '' : ' disabled title="กรอกวันแข่งในคู่มือก่อน"'}>เริ่มจากแม่แบบ (๕ ระดับ × วันแข่ง)</button>`}<button type="button" class="add" data-cl="add">+ เพิ่มคลาส</button></div>` : ''}</div>
+      ${ed ? `<div class="row-acts">${cc.length ? '' : `<button type="button" class="btn" data-cl="tpl"${days.length ? '' : ' disabled title="กรอกวันแข่งในคู่มือก่อน"'}>เริ่มจากแม่แบบ (5 ระดับ × วันแข่ง)</button>`}<button type="button" class="add" data-cl="add">+ เพิ่มคลาส</button></div>` : ''}</div>
       <p class="hint" style="margin:6px 0 10px">รหัสคลาสระบบใส่ให้ตามลำดับวันของแต่ละระดับ ให้ตรงกับรหัสในไฟล์ตารางการแข่งขัน · Test เลือกจากคลัง Test Dressage หรือพิมพ์เอง</p>
       ${cc.length ? `<div class="tbl-wrap"><table class="cls-tbl"><thead><tr><th>รหัส</th><th>วัน</th><th>ระดับ</th><th>Test</th><th>ค่าสมัคร</th><th>หมายเหตุ</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>` : `<div class="empty">ยังไม่มีคลาส${days.length ? '' : ' (กรอกวันแข่งในคู่มือก่อน)'}</div>`}</div>
     ${entriesPanel(b)}
@@ -1865,7 +1869,7 @@ function renderEntry(){
         <span class="muted">ส่งหลักฐานที่</span><span>${hb('slip_email')}</span></div>
         <button type="button" class="add" data-tab="handbook" style="margin-top:8px">แก้ในคู่มือ →</button></div>
       <div class="panel"><h3>รุ่นอายุ (นับจากปีเกิด) · รอ TEF ยืนยัน</h3><table><tbody>${AGES.map(a => `<tr><td><b>${a[0]}</b></td><td>${a[3]}</td></tr>`).join('')}</tbody></table>
-        <p class="hint" style="margin:6px 0 0">นักกีฬาเลือกรุ่นที่แจ้ง ไฟล์ Excel ตรวจให้ว่าอายุตรงรุ่นหรือไม่ (Young Rider แก้จากใบสมัคร RSU ให้เป็น ๑๖–๒๑ ปี)</p></div>
+        <p class="hint" style="margin:6px 0 0">นักกีฬาเลือกรุ่นที่แจ้ง ไฟล์ Excel ตรวจให้ว่าอายุตรงรุ่นหรือไม่ (Young Rider แก้จากใบสมัคร RSU ให้เป็น 16–21 ปี)</p></div>
     </div>`;
 }
 
@@ -2100,7 +2104,7 @@ function notesPanel(b, onlyKey){
   const key = onlyKey !== undefined ? onlyKey : (S.noteKey ?? (S.tab === 'sched' || S.tab === 'entry' ? S.tab : ''));
   const composer = canComment(b) ? `<div class="composer"><select class="inp" id="note-key"${onlyKey !== undefined ? ' disabled' : ''}>${noteTargets().map(([k, t]) => `<option value="${esc(k)}"${k === key ? ' selected' : ''}>${esc(t)}</option>`).join('')}</select>
       <textarea class="inp" id="note-text" rows="2" placeholder="พิมพ์คอมเมนต์ถึงผู้จัด หรือถึงทีม TEF"></textarea>
-      <div class="row-acts"><button type="button" class="btn primary" data-do="note-add" data-arg="${onlyKey !== undefined ? esc(onlyKey) : ''}">เพิ่มคอมเมนต์</button><span class="hint">${S.tab === 'handbook' ? 'คลิกช่องในหน้าเอกสารเพื่อคอมเมนต์ที่ช่องนั้น · ' : ''}คอมเมนต์ถึงผู้จัดพร้อมกำหนดแก้ ๓ วันเมื่อกด “ส่งกลับแก้ไข”</span></div></div>` : '';
+      <div class="row-acts"><button type="button" class="btn primary" data-do="note-add" data-arg="${onlyKey !== undefined ? esc(onlyKey) : ''}">เพิ่มคอมเมนต์</button><span class="hint">${S.tab === 'handbook' ? 'คลิกช่องในหน้าเอกสารเพื่อคอมเมนต์ที่ช่องนั้น · ' : ''}คอมเมนต์ถึงผู้จัดพร้อมกำหนดแก้ 3 วันเมื่อกด “ส่งกลับแก้ไข”</span></div></div>` : '';
   return `<div class="panel" id="notes"><div class="head-row"><h3 style="margin:0">คอมเมนต์${onlyKey !== undefined ? 'ของ' + esc(cmtLabel(onlyKey)) : ''}</h3><span class="hint">รอแก้ ${td(nOpen)} · แก้แล้วรอตรวจ ${td(nFixed)} · ปิดแล้ว ${td(closed.length)}</span></div>
     ${live.length ? `<ul class="cmts">${live.map(n => noteItem(b, n)).join('')}</ul>` : '<p class="hint" style="margin:6px 0">ยังไม่มีคอมเมนต์ที่เปิดอยู่</p>'}
     ${closed.length ? `<details class="more" style="margin-top:6px"><summary>คอมเมนต์ที่ปิดแล้ว (${td(closed.length)})</summary><ul class="cmts" style="margin-top:6px">${closed.map(n => noteItem(b, n)).join('')}</ul></details>` : ''}
@@ -2119,7 +2123,7 @@ function markNotes(){
 /* ---------- online entry form: public page #apply-<handbook id>, no login ---------- */
 /* Built for clubs entering 10–20 riders: one grid row = one rider + one horse (a combination, as FEI entries are),
    classes are columns. Paste a block from Excel, tick a column header to enter everyone, "+ม้า" adds the same rider
-   with another horse. Entries land in b.entries; organizer and TEF see them on tab ๓ and download one Excel file. */
+   with another horse. Entries land in b.entries; organizer and TEF see them on tab 3 and download one Excel file. */
 const applyBook = () => S.books.find(b => b.id === S.applyFor);
 const GCOLS = ['name', 'fid', 'yob', 'cat', 'horse', 'pass', 'hage'];
 const newRider = base => Object.assign({id:rid('r'), name:'', fid:'', yob:'', cat:'', horse:'', pass:'', hage:'', cls:{}}, base || {});
@@ -2216,11 +2220,11 @@ function renderApply(focus){
     ${open ? '' : `<div class="flash">ปิดรับสมัครแล้วเมื่อ ${td(fmtDate(e.deadline))}</div>`}
     ${S.apErr && S.apErr.length ? `<div class="flash" id="ap-err"><b>ยังส่งไม่ได้ (${td(S.apErr.length)} จุด)</b><br>${S.apErr.slice(0, 12).map(esc).join('<br>')}${S.apErr.length > 12 ? '<br>…' : ''}</div>` : ''}
     <div class="panel"><h3>ชมรม / สโมสร และผู้ติดต่อ</h3><div class="ap-grid" style="margin-top:10px">
-      <label>ชมรม/สโมสร (Club)${inp('data-ap="club"', ap.club)}</label><label>ผู้ติดต่อ (Contact person)${inp('data-ap="contact"', ap.contact)}</label>
+      <label>ชมรม/สโมสร (Club)${inp('data-ap="club" list="clubs" placeholder="พิมพ์ชื่อสโมสร แล้วเลือกจากรายการ"', ap.club)}</label><label>ผู้ติดต่อ (Contact person)${inp('data-ap="contact"', ap.contact)}</label>
       <label>อีเมล (Email)${inp('data-ap="email"', ap.email, 'email')}</label><label>โทรศัพท์ (Mobile)${inp('data-ap="phone" inputmode="tel"', ap.phone)}</label></div></div>
     <div class="panel"><div class="head-row"><h3 style="margin:0">นักกีฬาและม้า</h3>${open ? `<div class="row-acts">
-        <button type="button" class="btn" data-do="ap-paste">วางรายชื่อจาก Excel</button><button type="button" class="add" data-do="ap-add" data-arg="1">+ ๑ แถว</button><button type="button" class="add" data-do="ap-add" data-arg="5">+ ๕ แถว</button><button type="button" class="add" data-do="ap-clean">ลบแถวว่าง</button></div>` : ''}</div>
-      <p class="hint" style="margin:6px 0 10px">๑ แถว = นักกีฬา ๑ คน + ม้า ๑ ตัว · ขี่หลายม้ากด <b>+ม้า</b> ที่แถวนั้น · คัดลอกจาก Excel (ชื่อ · TEF/FEI ID · ปีเกิด · รุ่น · ม้า · Passport · อายุม้า) แล้วกด Ctrl+V ที่ช่องไหนก็ได้ · Enter ลงแถวถัดไป · ติ๊กหัวคอลัมน์คลาสเพื่อเลือกทุกคน</p>
+        <button type="button" class="btn" data-do="ap-paste">วางรายชื่อจาก Excel</button><button type="button" class="add" data-do="ap-add" data-arg="1">+ 1 แถว</button><button type="button" class="add" data-do="ap-add" data-arg="5">+ 5 แถว</button><button type="button" class="add" data-do="ap-clean">ลบแถวว่าง</button></div>` : ''}</div>
+      <p class="hint" style="margin:6px 0 10px">1 แถว = นักกีฬา 1 คน + ม้า 1 ตัว · ขี่หลายม้ากด <b>+ม้า</b> ที่แถวนั้น · คัดลอกจาก Excel (ชื่อ · TEF/FEI ID · ปีเกิด · รุ่น · ม้า · Passport · อายุม้า) แล้วกด Ctrl+V ที่ช่องไหนก็ได้ · Enter ลงแถวถัดไป · ติ๊กหัวคอลัมน์คลาสเพื่อเลือกทุกคน</p>
       <div class="tbl-wrap grid-wrap"><table class="egrid"><thead>
         <tr><th rowspan="2" class="sk0">#</th><th rowspan="2" class="sk1">ชื่อ-สกุลนักกีฬา</th><th rowspan="2">TEF/FEI ID</th><th rowspan="2">ปีเกิด</th><th rowspan="2">อายุ</th><th rowspan="2">รุ่น</th><th rowspan="2">ชื่อม้า</th><th rowspan="2">Passport</th><th rowspan="2">อายุม้า</th>
           ${days.map(d => `<th colspan="${d.n}" class="dayh">${d.d ? fmtD(Date.parse(d.d + 'T00:00:00')) : '—'}</th>`).join('')}<th rowspan="2">คลาส</th><th rowspan="2">ค่าสมัคร</th><th rowspan="2"></th></tr>
@@ -2304,7 +2308,7 @@ function apSubmit(){
     if (ageOf(b, r) === null) miss('yob', 'ปีเกิด (ค.ศ. 4 หลัก)');
     if (!r.cat) miss('cat', 'เลือกรุ่นอายุ'); else if (catOk(b, r) === false) miss('cat', `อายุ ${td(ageOf(b, r))} ปี ไม่ตรงรุ่น ${r.cat}`);
     if (!r.horse.trim()) miss('horse', 'ชื่อม้า');
-    if (!Object.values(r.cls).some(Boolean)) { errs.push(`${n} เลือกคลาสอย่างน้อย ๑ คลาส`); }
+    if (!Object.values(r.cls).some(Boolean)) { errs.push(`${n} เลือกคลาสอย่างน้อย 1 คลาส`); }
   });
   t.stable.forEach(x => { if (x.s.on && !x.days) errs.push(`คอกม้า ${x.h.name}: ใส่วันเข้า-ออกให้ถูกต้อง`); });
   S.apErr = errs;
@@ -2330,7 +2334,7 @@ function apSubmit(){
   S.apDone = {book:b.id, no, total:t.total, pairs:t.pairs}; S.ap = null; S.apErr = null;
   save(); renderApply(); window.scrollTo({top:0, behavior:'smooth'});
 }
-/* organizer / TEF side, on tab ๓ */
+/* organizer / TEF side, on tab 3 */
 function entriesPanel(b){
   const es = b.entries || [], cls = coded(b), count = {};
   es.forEach(x => x.riders.forEach(r => r.cls.forEach(id => { count[id] = (count[id] || 0) + 1; })));
@@ -2425,7 +2429,7 @@ function renderBooks(){
   const table = list => `<div class="tbl-wrap"><table><thead><tr><th>รายการแข่งขัน</th><th>วันแข่ง</th><th>ผู้จัดการแข่งขัน</th><th>ตารางการแข่งขัน</th><th>ใบสมัคร</th><th>สถานะ</th><th>กำหนด</th><th></th></tr></thead><tbody>${list.map(b => `<tr><td><b>${esc(eventName(b))}</b>${b.pony ? ' <span class="chip">Pony</span>' : ''}</td><td>${b.values.event_dates && b.values.event_dates.from ? td(fmtRange(b.values.event_dates)) : '—'}</td><td>${esc(roleName('owner', b))}</td><td>${b.schedFile ? `<span class="okc">v${td(b.schedFile.ver)}</span>` : '<span class="muted">ยังไม่อัปโหลด</span>'}</td><td>${(b.classes || []).length ? `${td(b.classes.length)} คลาส` : '<span class="muted">ยังไม่มี</span>'}</td><td>${pill(b)}</td><td>${dueCell(b)}</td><td><button type="button" class="btn${isMine(b) ? ' primary' : ''}" data-open="${b.id}">เปิด</button></td></tr>`).join('')}</tbody></table></div>`;
   const pend = holders('pending').length;
   let html = `<div class="head-row"><div><div class="eyebrow">${esc(ROLES[u.role].th)}</div><h1>${u.role === 'organizer' ? 'คู่มือของฉัน' : 'คู่มือการแข่งขัน Dressage'}</h1>
-    <p class="lead">${u.role === 'organizer' ? 'สร้างคู่มือ กรอกให้ครบ แล้วส่งให้ TEF อย่างน้อย ๔๕ วันก่อนวันแข่ง ถ้าถูกส่งกลับ มีเวลาแก้ ๓ วัน' : 'คู่มือผ่าน TEF Admin → คุณสุขุมาลี (ตรวจทาน) → TEF Admin → พลตรี สมพงษ์ (และคุณวีระพงค์ถ้ามีรุ่นโพนี) → info แจ้งทางอีเมล → คุณหยกประกาศทาง Facebook'}</p></div>
+    <p class="lead">${u.role === 'organizer' ? 'สร้างคู่มือ กรอกให้ครบ แล้วส่งให้ TEF อย่างน้อย 45 วันก่อนวันแข่ง ถ้าถูกส่งกลับ มีเวลาแก้ 3 วัน' : 'คู่มือผ่าน TEF Admin → คุณสุขุมาลี (ตรวจทาน) → TEF Admin → พลตรี สมพงษ์ (และคุณวีระพงค์ถ้ามีรุ่นโพนี) → info แจ้งทางอีเมล → คุณหยกประกาศทาง Facebook'}</p></div>
     ${u.role === 'organizer' ? '<button type="button" class="btn primary" data-do="new">+ สร้างคู่มือ Dressage ใหม่</button>' : ''}</div>`;
   if (u.role === 'admin' && pend) html += `<div class="banner warn"><b>มีผู้ขอเข้าใช้งาน ${td(pend)} คน</b><button type="button" class="add" data-go="users">ไปอนุมัติ →</button></div>`;
   if (!all.length) html += `<div class="panel empty">${u.role === 'organizer' ? 'ยังไม่มีคู่มือ กด “สร้างคู่มือ Dressage ใหม่” เพื่อเริ่ม' : 'ยังไม่มีคู่มือในระบบ'}</div>`;
@@ -2532,7 +2536,7 @@ function renderStrip(){
     return;
   }
   el.hidden = false;
-  el.innerHTML = `<b>โหมดทดลอง</b><span>ข้อมูลเก็บในเบราว์เซอร์นี้เท่านั้น อีเมลไม่ได้ส่งจริง</span><span class="sp"></span><span>วันที่จำลอง ${fmtD(now())}</span><button type="button" class="btn" data-do="clock" data-arg="1">+๑ วัน</button><button type="button" class="btn" data-do="clock" data-arg="3">+๓ วัน</button><button type="button" class="btn" data-do="clock" data-arg="0">วันนี้</button><button type="button" class="btn" data-do="wipe">ล้างข้อมูลทดลอง</button>`;
+  el.innerHTML = `<b>โหมดทดลอง</b><span>ข้อมูลเก็บในเบราว์เซอร์นี้เท่านั้น อีเมลไม่ได้ส่งจริง</span><span class="sp"></span><span>วันที่จำลอง ${fmtD(now())}</span><button type="button" class="btn" data-do="clock" data-arg="1">+1 วัน</button><button type="button" class="btn" data-do="clock" data-arg="3">+3 วัน</button><button type="button" class="btn" data-do="clock" data-arg="0">วันนี้</button><button type="button" class="btn" data-do="wipe">ล้างข้อมูลทดลอง</button>`;
 }
 
 function renderAll(){
@@ -2545,6 +2549,7 @@ function renderAll(){
   Object.entries(VIEWS).forEach(([k, id]) => { document.getElementById(id).hidden = k !== v; });
   renderStrip(); renderHeader(v); hdrHeight();
   document.getElementById('registry').innerHTML = S.reg.map(r => `<option value="${esc(r.name)}" label="${esc(r.pos)}"></option>`).join('');
+  document.getElementById('clubs').innerHTML = clubList();
   if (v === 'apply') renderApply();
   else if (v === 'login') renderLogin();
   else if (v === 'pending') renderPending();
@@ -2615,7 +2620,7 @@ document.addEventListener('click', e => {
     sendMail({to:[x], cc:holders('admin'), subject: d === 'allow' ? '[อนุมัติแล้ว] เข้าใช้งานในฐานะผู้จัดการแข่งขัน' : '[ไม่อนุมัติ] คำขอเข้าใช้งาน', body: d === 'allow' ? `เรียน ${x.name}\n\nTEF Admin อนุมัติให้คุณเข้าใช้งานในฐานะผู้จัดการแข่งขันแล้ว เข้าสู่ระบบด้วย Gmail เดิมเพื่อสร้างคู่มือ` : `เรียน ${x.name}\n\nคำขอเข้าใช้งานไม่ได้รับอนุมัติ กรุณาติดต่อ TEF`});
     save(); renderAll();
   }
-  else if (d === 'late-ok' && u.role === 'admin') { b.lateOk = true; log(b, 'TEF Admin อนุญาตให้ส่งเกินกำหนด ๔๕ วัน'); sendMail({to:[ownerOf(b)], cc:holders('admin'), book:b.id, subject:`[อนุญาตส่งช้า] ${eventName(b)}`, body:`TEF Admin อนุญาตให้ส่งคู่มือ ${eventName(b)} หลังกำหนด ๔๕ วันก่อนวันแข่งได้\n\n${link(b)}`}); save(); renderStatus(); }
+  else if (d === 'late-ok' && u.role === 'admin') { b.lateOk = true; log(b, 'TEF Admin อนุญาตให้ส่งเกินกำหนด 45 วัน'); sendMail({to:[ownerOf(b)], cc:holders('admin'), book:b.id, subject:`[อนุญาตส่งช้า] ${eventName(b)}`, body:`TEF Admin อนุญาตให้ส่งคู่มือ ${eventName(b)} หลังกำหนด 45 วันก่อนวันแข่งได้\n\n${link(b)}`}); save(); renderStatus(); }
   else if (d === 'got') { const r = b.reports[arg]; if (r) { r.receivedAt = now(); log(b, `ได้รับรายงาน${REPORTERS.find(x => x.r === arg).th}`); save(); renderStatus(); } }
   else if (d === 'resend' && u.role === 'admin') { sendReport(b, REPORTERS.find(x => x.r === arg), reportDue(b)); log(b, `ส่งแบบฟอร์มให้${REPORTERS.find(x => x.r === arg).th}อีกครั้ง`); save(); renderStatus(); }
   else if (d === 'xlsx') { const fi = document.getElementById('xlsx-file'); fi.value = ''; fi.click(); }
