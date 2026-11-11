@@ -193,7 +193,7 @@ fieldset:disabled .inp{background:var(--surface-2);color:var(--ink-2)}
 .d-h:first-child{margin-top:0}
 .d-sh{font-weight:700;text-decoration:underline;text-underline-offset:3px;margin:.7em 0 .15em}
 .d-h3{font-weight:700;margin:1em 0 .15em}
-.kv{display:grid;grid-template-columns:minmax(0,15em) 1.1em minmax(0,1fr);align-items:baseline}
+.kv{display:grid;grid-template-columns:minmax(0,var(--kvw,20.5em)) 1.1em minmax(0,1fr);align-items:baseline}
 .kv .c{text-align:center}
 .kv.li .k{padding-left:1.6em;text-indent:-1.3em}
 .d-p{margin:.1em 0 .45em;text-indent:2.4em}
@@ -438,7 +438,8 @@ fieldset{gap:16px}
 .btn.up{padding:5px 11px;font-size:12.5px;white-space:nowrap}
 .logo-add{display:flex;flex-wrap:wrap;gap:6px}
 fieldset:disabled .btn.up{display:none}
-/* ---- FEI-format handbook: cover, locked blocks, table of contents ---- */
+/* ---- FEI-format handbook ---- */
+.doc.en{--kvw:15em}
 .d-sub{text-align:center;font-size:.95em;color:var(--paper-muted)}
 .d-ul{margin:.25em 0 .5em;padding-left:1.5em}
 .d-ul li{margin:.08em 0}
@@ -448,8 +449,8 @@ fieldset:disabled .btn.up{display:none}
 .d-rule{border-bottom:1px dotted var(--paper-ink);margin:.8em 0 .6em}
 .d-sign{margin:.9em 0 0;text-align:center;line-height:1.45}
 .d-sign.pony{margin-top:1.4em}
-.d-blk{white-space:pre-line;margin:.1em 0 .5em}
 .doc.marks .d-sign.pony{outline:1.5px dashed var(--paper-ok);outline-offset:3px}
+.d-blk{white-space:pre-line;margin:.1em 0 .5em}
 
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 
@@ -613,161 +614,489 @@ td .inp{min-width:180px}
 <script>
 (function(){
 "use strict";
-const LOCKED = {
- "source": "toc.docx",
- "rules_head": "GENERAL CONDITIONS",
- "rules": [
-  "FEI Statutes 25th edition, effective 7 November 2025",
-  "FEI General Regulations, 24th Edition, 1 January 2020, updates effective 1 January 2026",
-  "FEI Dressage Rules 26th Edition,1 January 2023 Including updates effective 1 January 2026",
-  "FEI Dressage Tack & Equipment Requirements Effective from 1 January 2026",
-  "FEI Veterinary Regulations,15th Edition,1 January 2023, effective 01 January 2026",
-  "TEF National Rules and Regulations 2026",
-  "TEF Veterinary Regulation 2026"
- ],
- "rules_note": "** If any incident which may not be stated in those Rules and Regulations above, the President of the Ground Jury, the Represent of Thailand Equestrian Federation and the Dressage Sub-Committee must take a response.",
- "approved": "Approved by the TEF, on DD-MM-YYYY",
- "sign": [
-  "Major General Sompong Sukpradit",
-  "Chair of Sub-committee of Dressage",
-  "Thailand Equestrian Federation under the Royal Patronage"
- ],
- "sign_pony": [
-  "Major General Sompong Sukpradit",
-  "Chair of Sub-committee of Dressage",
-  "Thailand Equestrian Federation under the Royal Patronage"
- ],
- "coc_head": "THE FEI CODE OF CONDUCT FOR THE WELFARE OF THE HORSE",
- "coc_intro": "The Fédération Equestre Internationale (FEI) expects all those involved in international equestrian sport to adhere to the FEI’s Code of Conduct and to acknowledge and accept that at all times the welfare of the horse must be paramount and must never be subordinated to competitive or commercial influences.",
- "coc_items": [
-  "At all stages during the preparation and training of competition horses, welfare must take precedence over all other demands. This includes good horse management, training methods, farriery and tack, and transportation.",
-  "Horses and athletes must be fit, competent and in good health before they are allowed to compete. This encompasses medication use, surgical procedures that threaten welfare or safety, pregnancy in mares and the misuse of aids.",
-  "Events must not prejudice horse welfare. This involves paying careful attention to the competition areas, ground surfaces, weather conditions, stabling, site safety and fitness of the horse for onward travel after the event.",
-  "Every effort must be made to ensure that horses receive proper attention after they have competed and that they are treated humanely when their competition careers are over. This covers proper veterinary care, competition injuries, euthanasia and retirement.",
-  "The FEI urges all involved with the sport to attain the highest levels of education in their areas of expertise."
- ],
- "coc_note": "A full copy of this Code can be obtained from the Fédération Equestre Internationale, Chemin de la Joliette 8, CH-1006 Lausanne, Switzerland. Telephone: +41 21 310 47 47. The Code is available in English. The Code is also available on the FEI’s website: http://inside.fei.org/ or Event Technical Handbook ANNEX I",
- "entries_intro": "Submission of the application form must be made by the club exclusively through the Show Secretary’s email address.",
- "payment_note": "Confirmation of payment is required by submitting the payment slip to the Show Secretary via email.",
- "noshow": [
-  "A full refund will be issued within 30 days after the completion of the competition, provided that a written notification of withdrawal is received via email prior to the definite date. No refunds will be given after the definite date.",
-  "Substitutions for Athletes or Horses may be made up to two days prior to the horse inspection."
- ],
- "timetable_note": "Competitions commencing before 08:00 or concluding after 17:00 shall require the Organiser to notify the relevant club at least three (3) days prior to the commencement of the horse inspection.",
- "briefing_note": "(not later than one (1) hour after the horse inspection)",
- "vet": {
-  "health": "HEALTH REQUIREMENTS: In accordance with the FEI Code of Conduct for the Welfare of the Horse it is imperative that all Horses are physically fit, free from infectious disease and meet the health requirements before being allowed to compete.",
-  "national": "NATIONAL REQUIREMENTS: For each horse coming to the event the following documents must be provided:",
-  "national_items": [
-   "A TEF/FEI passport.",
-   "A valid health certificate."
+const LOCKED_ALL = {
+ "th": {
+  "rules_head": "กฎ กติกา ที่ใช้ในการแข่งขัน",
+  "rules": [
+   "FEI General Regulations, 24th edition 1 January 2020 Updates effective 1 January 2024",
+   "FEI Jumping Rules, 27th edition effective 1 January 2022 Updates effective 1 January 2024",
+   "FEI Jumping Guidelines for Use of Saddlery, Equipment and Dress 1st Edition September 2022",
+   "TEF National Jumping Rules 2024",
+   "FEI Dressage Rules, 26th edition updates effective 1 January 2024",
+   "FEI Endurance 12th Edition, effective 1 January 2024",
+   "FEI Veterinary Regulation 2024 15th Edition effective 1 January 2024",
+   "2024 Veterinary Regulation Recognition of the Thailand Equestrian Federation (Temporary Implementation from January-June 2024)"
   ],
-  "transport": "TRANSPORT OF HORSES: Horses must be fit to travel and be transported in suitable vehicles. Any government requirements for infectious disease testing and control must be requested well in advance, to ensure that the horse is in compliance by the time of arrival. Athletes, or their representatives, have the responsibility to comply with legislation in both their origin area and the venue. Where necessary athletes must contact local government authorities or veterinary advisors for information regarding animal health requirements and transport legislation",
-  "arrival_head": "VENUE ARRIVAL INFORMATION & FITNESS TO COMPETE",
-  "passports": "PASSPORTS: All Horses competing at the Events must be registered with TEF/FEI. Athletes who do not present a Horse’s Passport or one that is not correctly validated or fail to meet other passport requirements will be subject to Sanctions in accordance with the Veterinary Regulations and may not be allowed to compete.",
-  "passports_nb": "NB for Horses permanently resident in a venue, must have a TEF/FEI passport in compliance with TEF Regulations.",
-  "vaccinations": "VACCINATIONS: Horses competing at the Events must comply with the requirements of the TEF Veterinary Regulations 2025.",
-  "examination": "EXAMINATION ON ARRIVAL: On arrival at an Event venue, all Horses must undergo an examination by a veterinarian to confirm their identification from their passport and microchip (where present), their vaccination status and meet the health requirements to access the Stables Area. To protect all horses attending events, any Horse with a questionable health status concerning vaccination, infectious disease or other concerns, must be stabled within the isolation facilities provided by the Organising Committee pending a decision on entering the venue.",
-  "inspections": "HORSE INSPECTIONS: All Horses will be assessed for their fitness to compete during the Horse Inspection. Any Horse demonstrating questionable fitness may be referred to the Holding Box for further veterinary examination. Horses not deemed fit to compete by the Inspection Panel will not be permitted to compete."
+  "coc": [
+   [
+    "title",
+    "จรรยาบรรณ เพื่อสวัสดิภาพของม้าโดย FEI"
+   ],
+   [
+    "title-en",
+    "THE FEI CODE OF CONDUCT FOR THE WELFARE OF THE HORSES"
+   ],
+   [
+    "p",
+    "FEI ต้องการให้ใครก็ตามที่มีส่วนเกี่ยวข้องกับกีฬาขี่ม้าระดับนานาชาติต้องทำตามกฎจรรยาบรรณเพื่อสวัสดิภาพม้านี้ และให้รับทราบและยอมรับตลอดเวลาว่าสวัสดิภาพม้าเป็นสิ่งที่สำคัญสูงสุด สวัสดิภาพของม้าต้องไม่เป็นรองอิทธิพลด้านการแข่งขันหรือการค้า จุดสำคัญต่อไปนี้ต้องได้รับการยึดถือเป็นพิเศษ"
+   ],
+   [
+    "sec",
+    "1. สวัสดิภาพทั่วๆ ไป"
+   ],
+   [
+    "item",
+    "a) การจัดการม้าที่ดี"
+   ],
+   [
+    "p",
+    "การจัดการเรื่องคอกและอาหารต้องให้เป็นไปตามการจัดการม้าที่ดีที่สุด ที่ปฏิบัติกันอยู่ หญ้าแห้ง อาหาร คุณภาพดี และน้ำที่สะอาดต้องมีให้ม้าเสมอ"
+   ],
+   [
+    "item",
+    "b) วิธีการฝึกม้า"
+   ],
+   [
+    "p",
+    "ม้าจะต้องได้รับการฝึกที่เหมาะสมกับความสามารถทางกายภาพม้า และเหมาะกับขั้นตอนของการเจริญเติบโตของม้า สำหรับแต่ละประเภทกีฬา (Disciplines) ม้าต้องไม่ถูกฝึกด้วยวิธีที่เป็นการทารุณม้า หรือทำให้ม้าเกิดความกลัว"
+   ],
+   [
+    "item",
+    "c) การตอกเกือกและเครื่องอาน"
+   ],
+   [
+    "p",
+    "การดูแลกีบและการตอกเกือกม้าต้องทำด้วยมาตรฐานที่สูง เครื่องอานต้องออกแบบและวัดขนาดให้พอดีกับม้า โดยหลีกเลี่ยงความเสี่ยงต่อการเจ็บปวดและการบาดเจ็บ"
+   ],
+   [
+    "item",
+    "d) การเดินทาง"
+   ],
+   [
+    "p",
+    "ในระหว่างการขนย้ายม้า ม้าต้องได้รับการป้องกันจากการบาดเจ็บ และจากความเสี่ยงต่อสุขภาพม้าด้านอื่นๆ ยานพาหนะต้องปลอดภัย อากาศถ่ายเทได้ดี ได้รับการดูแลรักษาด้วยมาตรฐานสูง ทำความสะอาดฆ่าเชื้อโรคอยู่สม่ำเสมอ และคนขับต้องมีความสามารถพอ ต้องมีคนจัดการดูแลม้าที่มีความสามารถอยู่ด้วยเสมอ"
+   ],
+   [
+    "item",
+    "e) การพักระหว่างการเดินทาง"
+   ],
+   [
+    "p",
+    "การเดินทางทุกครั้งต้องมีการวางแผนอย่างระมัดระวัง ม้าต้องได้หยุดพักอย่างสม่ำเสมอ โดยให้ม้าสามารถเข้าถึงอาหารและน้ำได้ โดยให้เป็นไปตามคำแนะนำของ FEI (FEI Guidelines)"
+   ],
+   [
+    "sec",
+    "2. ความแข็งแรงพอสำหรับการแข่งขัน"
+   ],
+   [
+    "p",
+    "a) ความแข็งแรงและความสามารถการเข้าร่วมการแข่งขันต้องถูกจำกัดไว้เฉพาะม้าที่แข็งแรงพอ และนักกีฬาที่พิสูจน์แล้วว่ามีความสามารถพอ ม้าต้องได้ช่วงเวลาพักผ่อนที่เหมาะสม ระหว่างการฝึกซ้อมกับการแข่งขัน และควรได้รับช่วงเวลาที่พักผ่อนเพิ่มหลังจากการเดินทาง"
+   ],
+   [
+    "item",
+    "b) สถานภาพของสุขภาพ"
+   ],
+   [
+    "p",
+    "ม้าที่เห็นว่าไม่แข็งแรงพอที่จะเข้าแข่งขันต้องไม่เข้าแข่งขัน หรือ แข่งขันต่อ ควรปรึกษาสัตวแพทย์เมื่อใดก็ตามที่มีความสงสัย"
+   ],
+   [
+    "item",
+    "c) การใช้สารกระตุ้น และการใช้ยา"
+   ],
+   [
+    "p",
+    "จะไม่มีการอดทนต่อการกระทำใดๆ หรือความตั้งใจใดๆ ที่ใช้สารกระตุ้นและการใช้ยาอย่างเป็นอันตรายซึ่งก่อให้เกิดปัญหาด้านสวัสดิภาพม้าอย่างร้ายแรง หลังการรักษาโดยสัตวแพทย์ ต้องให้ม้าได้พักอย่างเต็มที่ก่อนจะเริ่มการแข่งขันอีกครั้งหนึ่ง"
+   ],
+   [
+    "item",
+    "d) ขั้นตอนการผ่าตัด"
+   ],
+   [
+    "p",
+    "ต้องไม่อนุญาตให้มีการผ่าตัดใดๆ ที่อาจทำร้ายสวัสดิภาพม้าที่จะเข้าแข่งขัน หรือ มีผลต่อความปลอดภัยของม้าอื่นๆ และ/หรือของนักกีฬา"
+   ],
+   [
+    "item",
+    "e) ม้าท้อง/ม้าที่เพิ่งคลอด"
+   ],
+   [
+    "p",
+    "แม่ม้าต้องไม่เข้าแข่งขันหลังท้อง 4 เดือนไปแล้ว หรือเมื่อลูกม้ายังอยู่ติดกับแม่ม้า"
+   ],
+   [
+    "item",
+    "f) การใช้เครื่องมือขี่ (Aids) ผิด"
+   ],
+   [
+    "p",
+    "จะไม่อดทนต่อการทารุณม้าโดยใช้เครื่องมือขี่ทั้งแบบธรรมชาติหรือเครื่องมือที่ทำขึ้น (เช่น แส้ สเปอร์ และอื่นๆ)"
+   ],
+   [
+    "sec",
+    "3. การแข่งขันต้องไม่กระทบสวัสดิภาพม้า"
+   ],
+   [
+    "item",
+    "a) บริเวณแข่งขัน"
+   ],
+   [
+    "p",
+    "ม้าต้องได้รับการฝึกและเข้าแข่งขันบนพื้นสนามที่เหมาะสมและปลอดภัย เครื่องกีดขวางทั้งหมดและสภาพแวดล้อมของการแข่งขันต้องถูกออกแบบโดยคำนึงถึงความปลอดภัยของม้า"
+   ],
+   [
+    "item",
+    "b) พื้นสนาม"
+   ],
+   [
+    "p",
+    "พื้นสนามทุกแห่งที่ม้าเดิน ฝึก หรือเข้าแข่งขันต้องออกแบบและดูแลรักษาเพื่อจำดักสิ่งใดก็ตามที่อาจนำไปสู่การบาดเจ็บ"
+   ],
+   [
+    "item",
+    "c) สภาพอากาศรุนแรง"
+   ],
+   [
+    "p",
+    "การแข่งขันต้องไม่เกิดขึ้นในสภาพอากาศรุนแรง เพื่อสวัสดิภาพและความปลอดภัยของม้า ต้องจัดให้มีการคูลม้า (Cooling) และมีอุปกรณ์พร้อมในการคูลม้าหลังการแข่งขัน"
+   ],
+   [
+    "item",
+    "d) คอกม้า ณ สถานที่แข่งขัน"
+   ],
+   [
+    "p",
+    "คอกม้าต้องปลอดภัย สะอาด สะดวกสบาย อากาศถ่ายเทสะดวก และมีขนาดที่พอเหมาะกับประเภทและนิสัยของม้าบริเวณอาบน้ำชำระล้างม้าและน้ำต้องมีอย่างพอเพียงเสมอ"
+   ],
+   [
+    "sec",
+    "4. การดูแลม้าอย่างมีมนุษยธรรม"
+   ],
+   [
+    "item",
+    "a) การดูแลรักษาโดยสัตวแพทย์"
+   ],
+   [
+    "p",
+    "ต้องมีสัตวแพทย์ที่เชี่ยวชาญเสมอ ณ สนามแข่งขัน ถ้าม้าได้รับบาดเจ็บหรือหมดแรงระหว่างการแข่งขันนักกีฬาต้องหยุดแข่งและต้องมีการประเมินจากสัตวแพทย์"
+   ],
+   [
+    "item",
+    "b) ศูนย์ส่งต่อม้า"
+   ],
+   [
+    "p",
+    "เมื่อมีความจำเป็น ม้าจะต้องถูกนำขึ้นรถพยาบาล และนำไปที่ศูนย์การรักษาที่เกี่ยวข้องที่ใกล้ที่สุด เพื่อการประเมินและการรักษาม้าที่บาดเจ็บต้องได้รับการช่วยเหลือดูแลรักษาอย่างเต็มที่ก่อนจะมีการเดินทาง"
+   ],
+   [
+    "item",
+    "c) การบาดเจ็บจากการแข่งขัน"
+   ],
+   [
+    "p",
+    "เหตุการณ์การบาดเจ็บที่เกิดขึ้นในการแข่งขัน ควรได้รับการสังเกตการณ์ ควรมีการตรวจสภาพพื้นสนาม ความถี่ของการแข่งขัน และปัจจัยเสี่ยงอื่นๆ อย่างระมัดระวัง เพื่อหาวิธีที่จะทำให้เกิดการบาดเจ็บน้อยที่สุด"
+   ],
+   [
+    "p",
+    "d) Euthanasia (การฆ่าหรือช่วยให้ม้าที่ทุกข์ทรมานจากโรค หรืออาการบาดเจ็บที่รักษาไม่ได้ ตายอย่างไม่เจ็บปวด)"
+   ],
+   [
+    "p",
+    "ถ้าการบาดเจ็บรุนแรงมากจริงๆ อาจต้องมีการการุณยฆาต (Euthanasia) โดยอยู่บนพื้นฐานของมนุษยธรรม โดยให้ทำโดยสัตวแพทย์ให้เร็วที่สุดเพื่อจุดประสงค์เดียวคือให้ม้าทรมานน้อยที่สุด"
+   ],
+   [
+    "item",
+    "c) การเกษียณม้า (Retirement)"
+   ],
+   [
+    "p",
+    "ม้าที่เกษียณจากการแข่งขันต้องได้รับการปฏิบัติด้วยความเห็นอกเห็นใจและมีมนุษยธรรม"
+   ],
+   [
+    "sec",
+    "5. การศึกษา"
+   ],
+   [
+    "p",
+    "FEI กระตุ้นให้ทุกคนที่เกี่ยวข้องกับกีฬาขี่ม้าให้ศึกษาด้านที่ตนเองมีความชำนาญที่เกี่ยวข้องกับการดูแลม้าและการจัดการม้าที่เข้าแข่งขัน โดยให้ศึกษาให้สูงที่สุดเท่าที่เป็นไปได้"
+   ],
+   [
+    "p",
+    "จรรยาบรรณเพื่อสวัสดิภาพม้านี้อาจมีการปรับเปลี่ยนบ้างเป็นบางคราว FEI ยินดีรับฟังความคิดเห็นจากทุกคน จะมีการให้ความสนใจเป็นพิเศษกับการค้นพบในการวิจัยใหม่ๆ และ FEI ส่งเสริมให้ทุนและการสนับสนุนการศึกษาด้านสวัสดิภาพม้าต่อไป"
+   ],
+   [
+    "cite",
+    "(Full Copy From FEI JUMPING RULES, 27th edition,  effective 1 January 2024 pages 8-9)"
+   ]
+  ]
  },
- "protest": "To be valid, all Protests and Appeals must be made in writing and accompanied by a deposit of THB 5,000. -",
- "annex1_head": "ANNEX I THE FEI CODE OF CONDUCT FOR THE WELFARE OF THE HORSE",
- "annex1_intro": "The FEI requires all those involved in international equestrian sport to adhere to the FEI Code of Conduct and to always acknowledge and accept that the welfare of the Horse must be paramount. Welfare of the horse must never be subordinated to competitive or commercial influences. The following points must be particularly adhered to:",
- "annex1": [
-  {
-   "h": "General Welfare:",
-   "items": [
-    "a) Good Horse management: Stabling and feeding must be compatible with the best Horse management practices. Clean and good quality forage, feed and water must always be available.",
-    "b) Training methods: Horses must only undergo training that matches their physical capabilities and level of maturity for their respective disciplines. They must not be subjected to methods which are abusive or cause fear.",
-    "c) Farriery and tack: Foot care and shoeing must be of a high standard. Tack must be designed and fitted to avoid the risk of pain or injury.",
-    "d) Transport: During transportation, Horses must be fully protected against injuries and other health risks. Vehicles must be safe, well ventilated, maintained to a high standard, disinfected regularly and driven by competent personnel. Competent handlers must always be available to manage the Horses.",
-    "e) Transit: All journeys must be planned carefully, and Horses allowed regular rest periods with access to food and water in line with current FEI guidelines."
-   ]
+ "en": {
+  "source": "toc.docx",
+  "rules_head": "GENERAL CONDITIONS",
+  "rules": [
+   "FEI Statutes 25th edition, effective 7 November 2025",
+   "FEI General Regulations, 24th Edition, 1 January 2020, updates effective 1 January 2026",
+   "FEI Dressage Rules 26th Edition,1 January 2023 Including updates effective 1 January 2026",
+   "FEI Dressage Tack & Equipment Requirements Effective from 1 January 2026",
+   "FEI Veterinary Regulations,15th Edition,1 January 2023, effective 01 January 2026",
+   "TEF National Rules and Regulations 2026",
+   "TEF Veterinary Regulation 2026"
+  ],
+  "rules_note": "** If any incident which may not be stated in those Rules and Regulations above, the President of the Ground Jury, the Represent of Thailand Equestrian Federation and the Dressage Sub-Committee must take a response.",
+  "approved": "Approved by the TEF, on DD-MM-YYYY",
+  "sign": [
+   "Major General Sompong Sukpradit",
+   "Chair of Sub-committee of Dressage",
+   "Thailand Equestrian Federation under the Royal Patronage"
+  ],
+  "sign_pony": [
+   "Major General Sompong Sukpradit",
+   "Chair of Sub-committee of Dressage",
+   "Thailand Equestrian Federation under the Royal Patronage"
+  ],
+  "coc_head": "THE FEI CODE OF CONDUCT FOR THE WELFARE OF THE HORSE",
+  "coc_intro": "The Fédération Equestre Internationale (FEI) expects all those involved in international equestrian sport to adhere to the FEI’s Code of Conduct and to acknowledge and accept that at all times the welfare of the horse must be paramount and must never be subordinated to competitive or commercial influences.",
+  "coc_items": [
+   "At all stages during the preparation and training of competition horses, welfare must take precedence over all other demands. This includes good horse management, training methods, farriery and tack, and transportation.",
+   "Horses and athletes must be fit, competent and in good health before they are allowed to compete. This encompasses medication use, surgical procedures that threaten welfare or safety, pregnancy in mares and the misuse of aids.",
+   "Events must not prejudice horse welfare. This involves paying careful attention to the competition areas, ground surfaces, weather conditions, stabling, site safety and fitness of the horse for onward travel after the event.",
+   "Every effort must be made to ensure that horses receive proper attention after they have competed and that they are treated humanely when their competition careers are over. This covers proper veterinary care, competition injuries, euthanasia and retirement.",
+   "The FEI urges all involved with the sport to attain the highest levels of education in their areas of expertise."
+  ],
+  "coc_note": "A full copy of this Code can be obtained from the Fédération Equestre Internationale, Chemin de la Joliette 8, CH-1006 Lausanne, Switzerland. Telephone: +41 21 310 47 47. The Code is available in English. The Code is also available on the FEI’s website: http://inside.fei.org/ or Event Technical Handbook ANNEX I",
+  "entries_intro": "Submission of the application form must be made by the club exclusively through the Show Secretary’s email address.",
+  "payment_note": "Confirmation of payment is required by submitting the payment slip to the Show Secretary via email.",
+  "noshow": [
+   "A full refund will be issued within 30 days after the completion of the competition, provided that a written notification of withdrawal is received via email prior to the definite date. No refunds will be given after the definite date.",
+   "Substitutions for Athletes or Horses may be made up to two days prior to the horse inspection."
+  ],
+  "timetable_note": "Competitions commencing before 08:00 or concluding after 17:00 shall require the Organiser to notify the relevant club at least three (3) days prior to the commencement of the horse inspection.",
+  "briefing_note": "(not later than one (1) hour after the horse inspection)",
+  "vet": {
+   "health": "HEALTH REQUIREMENTS: In accordance with the FEI Code of Conduct for the Welfare of the Horse it is imperative that all Horses are physically fit, free from infectious disease and meet the health requirements before being allowed to compete.",
+   "national": "NATIONAL REQUIREMENTS: For each horse coming to the event the following documents must be provided:",
+   "national_items": [
+    "A TEF/FEI passport.",
+    "A valid health certificate."
+   ],
+   "transport": "TRANSPORT OF HORSES: Horses must be fit to travel and be transported in suitable vehicles. Any government requirements for infectious disease testing and control must be requested well in advance, to ensure that the horse is in compliance by the time of arrival. Athletes, or their representatives, have the responsibility to comply with legislation in both their origin area and the venue. Where necessary athletes must contact local government authorities or veterinary advisors for information regarding animal health requirements and transport legislation",
+   "arrival_head": "VENUE ARRIVAL INFORMATION & FITNESS TO COMPETE",
+   "passports": "PASSPORTS: All Horses competing at the Events must be registered with TEF/FEI. Athletes who do not present a Horse’s Passport or one that is not correctly validated or fail to meet other passport requirements will be subject to Sanctions in accordance with the Veterinary Regulations and may not be allowed to compete.",
+   "passports_nb": "NB for Horses permanently resident in a venue, must have a TEF/FEI passport in compliance with TEF Regulations.",
+   "vaccinations": "VACCINATIONS: Horses competing at the Events must comply with the requirements of the TEF Veterinary Regulations 2025.",
+   "examination": "EXAMINATION ON ARRIVAL: On arrival at an Event venue, all Horses must undergo an examination by a veterinarian to confirm their identification from their passport and microchip (where present), their vaccination status and meet the health requirements to access the Stables Area. To protect all horses attending events, any Horse with a questionable health status concerning vaccination, infectious disease or other concerns, must be stabled within the isolation facilities provided by the Organising Committee pending a decision on entering the venue.",
+   "inspections": "HORSE INSPECTIONS: All Horses will be assessed for their fitness to compete during the Horse Inspection. Any Horse demonstrating questionable fitness may be referred to the Holding Box for further veterinary examination. Horses not deemed fit to compete by the Inspection Panel will not be permitted to compete."
   },
-  {
-   "h": "Fitness to compete:",
-   "items": [
-    "a) Fitness and competence: Participation in Competition must be restricted to fit Horses and Athletes of proven competence. Horses must be allowed suitable rest period between training and competitions; additional rest periods should be allowed following travelling.",
-    "b) Health status: No Horse deemed unfit to compete may compete or continue to compete, veterinary advice must be sought whenever there is any doubt.",
-    "c) Doping and Medication: Any action or intent of doping and illicit use of medication constitutes a serious welfare issue and will not be tolerated. After any veterinary treatment, sufficient time must be allowed for full recovery before Competition.",
-    "d) Surgical procedures: Any surgical procedures that threaten a competing Horse’s welfare or the safety of other Horses and/or Athletes must not be allowed.",
-    "e) Pregnant/recently foaled mares: Mares must not compete after their fourth month of pregnancy or with foal at foot. f) Misuse of aids Abuse of a Horse using natural riding aids or artificial aids (e.g. whips, spurs, etc.) will not be tolerated."
-   ]
-  },
-  {
-   "h": "Events must not prejudice Horse welfare:",
-   "items": [
-    "a) Competition areas: Horses must be trained and compete on suitable and safe surfaces. All obstacles and competition conditions must be designed with the safety of the Horse in mind.",
-    "b) Ground surfaces: All ground surfaces on which Horses walk, train or compete must be designed and maintained to reduce factors that could lead to injury.",
-    "c) Extreme weather: Competitions must not take place in extreme weather conditions that may compromise welfare or safety of the Horse. Provision must be made for cooling conditions and equipment for Horses after competing.",
-    "d) Stabling at Events: Stables must be safe, hygienic, comfortable, well-ventilated and of sufficient size for the type and disposition of the Horse. Washing-down areas and water must always be available."
-   ]
-  },
-  {
-   "h": "Humane treatment of horses:",
-   "items": [
-    "a) Veterinary treatment: Veterinary expertise must always be available at an Event. If a Horse is injured or exhausted during a Competition, the Athlete must stop competing and a veterinary evaluation must be performed.",
-    "b) Referral centres: Wherever necessary, Horses should be collected by ambulance and transported to the nearest relevant treatment centre for further assessment and therapy. Injured Horses must be given full supportive treatment before being transported.",
-    "c) Competition injuries: The incidence of injuries sustained in Competition should be monitored. Ground surface conditions, frequency of Competitions and any other risk factors should be examined carefully to indicate ways to minimise injuries.",
-    "d) Euthanasia: If injuries are sufficiently severe, a Horse may need to be euthanased on humane grounds by a veterinarian as soon as possible, with the sole aim of minimising suffering.",
-    "e) Retirement: Horses must be treated sympathetically and humanely when they retire from Competition."
-   ]
-  },
-  {
-   "h": "Education:",
-   "items": [
-    "The FEI urges all those involved in equestrian sport to attain the highest possible levels of education in areas of expertise relevant to the care and management of the Competition Horse.",
-    "This Code of Conduct for the Welfare of the Horse may be modified from time to time and the views of all are welcomed. Particular attention will be paid to new research findings and the FEI encourages further funding and support for welfare studies."
-   ]
-  }
- ],
- "annex2_head": "ANNEX II Primary Article",
- "annex2": [
-  {
-   "h": "FEI General Regulations, 24th Edition, 1 January 2020, updates effective 1 January 2026",
-   "items": [
-    "Article 140 - Protection of Athletes and Participates Support Personnel (p.28)",
-    "Article 141 - Protection of Horses (p.28)",
-    "Article 142 - Abuse of Horses (p.28)",
-    "Article 143 - Medication Control and Anti-Doping (p.29)",
-    "Article 161 - Protest (p.34)",
-    "Article 162 - Appeal (p.37)"
-   ]
-  },
-  {
-   "h": "FEI Dressage Rules 26th Edition, 1 January 2023, updates effective 01 January 2026",
-   "items": [
-    "Article 431 - Dress (p.44)",
-    "Article 434 - Saddlery – Equipment (p.47)"
-   ]
-  },
-  {
-   "h": "FEI Veterinary Regulations, 15th Edition, 1 January 2023, updates effective 01 January 2025",
-   "items": [
-    "Article 1035 - Presentation of Horses (p.31)"
-   ]
-  }
- ]
+  "protest": "To be valid, all Protests and Appeals must be made in writing and accompanied by a deposit of THB 5,000. -",
+  "annex1_head": "ANNEX I THE FEI CODE OF CONDUCT FOR THE WELFARE OF THE HORSE",
+  "annex1_intro": "The FEI requires all those involved in international equestrian sport to adhere to the FEI Code of Conduct and to always acknowledge and accept that the welfare of the Horse must be paramount. Welfare of the horse must never be subordinated to competitive or commercial influences. The following points must be particularly adhered to:",
+  "annex1": [
+   {
+    "h": "General Welfare:",
+    "items": [
+     "a) Good Horse management: Stabling and feeding must be compatible with the best Horse management practices. Clean and good quality forage, feed and water must always be available.",
+     "b) Training methods: Horses must only undergo training that matches their physical capabilities and level of maturity for their respective disciplines. They must not be subjected to methods which are abusive or cause fear.",
+     "c) Farriery and tack: Foot care and shoeing must be of a high standard. Tack must be designed and fitted to avoid the risk of pain or injury.",
+     "d) Transport: During transportation, Horses must be fully protected against injuries and other health risks. Vehicles must be safe, well ventilated, maintained to a high standard, disinfected regularly and driven by competent personnel. Competent handlers must always be available to manage the Horses.",
+     "e) Transit: All journeys must be planned carefully, and Horses allowed regular rest periods with access to food and water in line with current FEI guidelines."
+    ]
+   },
+   {
+    "h": "Fitness to compete:",
+    "items": [
+     "a) Fitness and competence: Participation in Competition must be restricted to fit Horses and Athletes of proven competence. Horses must be allowed suitable rest period between training and competitions; additional rest periods should be allowed following travelling.",
+     "b) Health status: No Horse deemed unfit to compete may compete or continue to compete, veterinary advice must be sought whenever there is any doubt.",
+     "c) Doping and Medication: Any action or intent of doping and illicit use of medication constitutes a serious welfare issue and will not be tolerated. After any veterinary treatment, sufficient time must be allowed for full recovery before Competition.",
+     "d) Surgical procedures: Any surgical procedures that threaten a competing Horse’s welfare or the safety of other Horses and/or Athletes must not be allowed.",
+     "e) Pregnant/recently foaled mares: Mares must not compete after their fourth month of pregnancy or with foal at foot. f) Misuse of aids Abuse of a Horse using natural riding aids or artificial aids (e.g. whips, spurs, etc.) will not be tolerated."
+    ]
+   },
+   {
+    "h": "Events must not prejudice Horse welfare:",
+    "items": [
+     "a) Competition areas: Horses must be trained and compete on suitable and safe surfaces. All obstacles and competition conditions must be designed with the safety of the Horse in mind.",
+     "b) Ground surfaces: All ground surfaces on which Horses walk, train or compete must be designed and maintained to reduce factors that could lead to injury.",
+     "c) Extreme weather: Competitions must not take place in extreme weather conditions that may compromise welfare or safety of the Horse. Provision must be made for cooling conditions and equipment for Horses after competing.",
+     "d) Stabling at Events: Stables must be safe, hygienic, comfortable, well-ventilated and of sufficient size for the type and disposition of the Horse. Washing-down areas and water must always be available."
+    ]
+   },
+   {
+    "h": "Humane treatment of horses:",
+    "items": [
+     "a) Veterinary treatment: Veterinary expertise must always be available at an Event. If a Horse is injured or exhausted during a Competition, the Athlete must stop competing and a veterinary evaluation must be performed.",
+     "b) Referral centres: Wherever necessary, Horses should be collected by ambulance and transported to the nearest relevant treatment centre for further assessment and therapy. Injured Horses must be given full supportive treatment before being transported.",
+     "c) Competition injuries: The incidence of injuries sustained in Competition should be monitored. Ground surface conditions, frequency of Competitions and any other risk factors should be examined carefully to indicate ways to minimise injuries.",
+     "d) Euthanasia: If injuries are sufficiently severe, a Horse may need to be euthanased on humane grounds by a veterinarian as soon as possible, with the sole aim of minimising suffering.",
+     "e) Retirement: Horses must be treated sympathetically and humanely when they retire from Competition."
+    ]
+   },
+   {
+    "h": "Education:",
+    "items": [
+     "The FEI urges all those involved in equestrian sport to attain the highest possible levels of education in areas of expertise relevant to the care and management of the Competition Horse.",
+     "This Code of Conduct for the Welfare of the Horse may be modified from time to time and the views of all are welcomed. Particular attention will be paid to new research findings and the FEI encourages further funding and support for welfare studies."
+    ]
+   }
+  ],
+  "annex2_head": "ANNEX II Primary Article",
+  "annex2": [
+   {
+    "h": "FEI General Regulations, 24th Edition, 1 January 2020, updates effective 1 January 2026",
+    "items": [
+     "Article 140 - Protection of Athletes and Participates Support Personnel (p.28)",
+     "Article 141 - Protection of Horses (p.28)",
+     "Article 142 - Abuse of Horses (p.28)",
+     "Article 143 - Medication Control and Anti-Doping (p.29)",
+     "Article 161 - Protest (p.34)",
+     "Article 162 - Appeal (p.37)"
+    ]
+   },
+   {
+    "h": "FEI Dressage Rules 26th Edition, 1 January 2023, updates effective 01 January 2026",
+    "items": [
+     "Article 431 - Dress (p.44)",
+     "Article 434 - Saddlery – Equipment (p.47)"
+    ]
+   },
+   {
+    "h": "FEI Veterinary Regulations, 15th Edition, 1 January 2023, updates effective 01 January 2025",
+    "items": [
+     "Article 1035 - Presentation of Horses (p.31)"
+    ]
+   }
+  ]
+ }
 };
+let LOCKED = LOCKED_ALL.en; /* this app is Dressage only, which uses the FEI-format handbook */
 const ALL = ['dressage','jumping','eventing'];
 const DISC = {
   dressage:{th:'ศิลปะบังคับม้า', en:'Dressage', c:'var(--dr)'},
   jumping:{th:'กระโดดข้ามเครื่องกีดขวาง', en:'Jumping', c:'var(--jp)'},
   eventing:{th:'อีเว้นติ้ง', en:'Eventing', c:'var(--ev)'}
 };
+/* Rules list: source order kept; each item scoped to the disciplines it belongs to */
+const RULE_SCOPE = [ALL, ['jumping'], ['jumping'], ['jumping'], ['dressage'], [], ALL, ALL];
+const RULES_TH = LOCKED_ALL.th.rules.map((t,i)=>({t, only:RULE_SCOPE[i]}));
+RULES_TH.splice(5,0,{t:'FEI Eventing Rules (ฉบับปัจจุบัน TEF Admin ระบุ edition)', only:['eventing'], prop:true});
+
+/* Field types: text | textnum (digits follow the Thai-numeral switch) | email | money | daterange | datetime | textarea
+   Marks: fill = yellow highlight, colon = blank after ":", x = xxxx value, prop = proposed */
+const F_TH = {
+  event_name:{label:'ชื่อการแข่งขัน', type:'text', mark:'fill', req:true, hint:'ใช้ทั้งหน้าปก รายละเอียดการแข่งขัน และท้ายกระดาษ'},
+  event_dates:{label:'วันที่', type:'daterange', mark:'colon', req:true},
+  venue:{label:'สถานที่', type:'text', mark:'colon', req:true},
+  stable_open:{label:'การอนุญาตนำม้าเข้า (Stable open on)', type:'textnum', mark:'fill', req:true, ph:'เช่น 08.00 – 18.00 น. ของวันที่ 11 มีนาคม 2570'},
+  box_size:{label:'ขนาดคอก (Size of boxes)', type:'textnum', mark:'x', unit:'เมตร', req:true, ph:'3 x 3'},
+  fee_perm:{label:'ค่าคอกม้าถาวร', type:'money', mark:'x', unit:'บาท/วัน', req:true},
+  fee_temp:{label:'ค่าคอกม้าชั่วคราว', type:'money', mark:'x', unit:'บาท/วัน', req:true},
+  fee_tack:{label:'ค่าห้องเก็บอุปกรณ์ (Tacks Box)', type:'money', mark:'x', unit:'บาท/1 ช่อง', req:true},
+  booking_email:{label:'อีเมลรับแบบฟอร์มจองคอก', type:'email', mark:'fill', req:true},
+  booking_deadline:{label:'กำหนดส่งแบบฟอร์มจองคอก', type:'datetime', mark:'fill', req:true},
+  bank:{label:'ธนาคาร', type:'text', mark:'fill', req:true},
+  account_name:{label:'ชื่อบัญชี', type:'text', mark:'fill', req:true},
+  account_no:{label:'เลขที่บัญชี', type:'textnum', mark:'fill', req:true},
+  slip_email:{label:'อีเมลส่งหลักฐานการโอน', type:'email', mark:'fill', req:true},
+  pay_deadline:{label:'กำหนดส่งหลักฐานการโอน', type:'datetime', mark:'fill', req:true},
+  vet_doc:{label:'ข้อกำหนดทางสัตวแพทย์ที่ใช้', type:'textarea', mark:'fill', req:true, hint:'ค่าเริ่มต้นดึงจากฉบับก่อนหน้า'},
+  rules_basis:{label:'ประกาศหรือระเบียบการแข่งขันที่อ้างอิง', type:'textarea', mark:'prop', req:false, hint:'ในต้นฉบับเป็นข้อความปกติ เสนอให้เป็นช่องกรอกเพราะเปลี่ยนตามรายการ'},
+  appeal_deposit:{label:'เงินประกันการประท้วง', type:'money', mark:'prop', unit:'บาท', req:false, hint:'ในต้นฉบับเขียนตายตัว 5,000 บาท'},
+  arena_main:{label:'สนามแข่งขัน (Competition Arena)', type:'textnum', mark:'colon', req:true, ph:'เช่น ทราย 55 x 90 เมตร'},
+  arena_warm:{label:'สนามวอร์ม (Warm up Arena)', type:'textnum', mark:'colon', req:true, ph:'เช่น ทราย 45 x 65 เมตร'},
+  xc_course:{label:'สนามครอสคันทรี (Cross Country Course)', type:'textnum', mark:'prop', req:false, ph:'เช่น ระยะทาง และจำนวนเครื่องกีดขวาง'}
+};
+
+const SECS_TH = [
+  {id:'event', title:'ข้อมูลการแข่งขัน'},
+  {id:'logos', title:'โลโก้บนหน้าปก'},
+  {id:'committee', title:'คณะกรรมการจัดการแข่งขัน'},
+  {id:'officials', title:'คณะกรรมการตัดสิน'},
+  {id:'rules', title:'กฎ กติกา และจรรยาบรรณ', locked:true},
+  {id:'stable', title:'คอกม้า (Stabling)'},
+  {id:'booking', title:'การจองคอกและการชำระเงิน'},
+  {id:'conduct', title:'การนำม้าเข้า กติกา การประท้วง'},
+  {id:'tech', title:'ข้อมูลทางเทคนิค'}
+];
+const DR=['dressage'], JP=['jumping'], EV=['eventing'];
+/* The Thai handbook, block by block. p = page, s = form section */
+const B_TH = [
+  {p:1, s:'event', t:'cover'},
+  {p:2, t:'h', x:'รายละเอียดการแข่งขัน'},
+  {p:2, s:'event', t:'kv', f:'event_name'},
+  {p:2, s:'event', t:'kv', f:'event_dates'},
+  {p:2, s:'event', t:'kv', f:'venue'},
+  {p:2, s:'event', t:'ppl', r:'organizer', l:'ผู้จัดการแข่งขัน', min:2},
+  {p:2, t:'h', x:'คณะกรรมการจัดการแข่งขัน'},
+  {p:2, s:'committee', t:'ppl', r:'hon_president', l:'ประธานกิตติมศักดิ์', min:2, opt:true},
+  {p:2, s:'committee', t:'ppl', r:'president', l:'ประธานจัดการแข่งขัน', min:2},
+  {p:2, s:'committee', t:'ppl', r:'advisor', l:'ที่ปรึกษาการจัดการแข่งขัน', min:3},
+  {p:2, s:'committee', t:'ppl', r:'secretary', l:'เลขานุการ', min:4},
+  {p:2, s:'committee', t:'ppl', r:'stable_mgr', l:'ฝ่ายคอกม้า', min:1},
+  {p:2, s:'committee', t:'ppl', r:'vet_delegate', l:'สัตว์แพทย์ประจำการแข่งขัน (Vet. Delegate)', min:1},
+  {p:2, s:'committee', t:'ppl', r:'treating_vet', l:'ผู้ช่วยสัตว์แพทย์ (Treating Vet.)', min:3},
+  {p:2, t:'h', x:'คณะกรรมการตัดสิน'},
+  {p:2, t:'sh', x:'ประเภทศิลปะบังคับม้า', only:DR},
+  {p:2, s:'officials', t:'ppl', r:'gj_president', l:'ประธานกรรมการตัดสิน', min:1, only:DR},
+  {p:2, s:'officials', t:'ppl', r:'judge', l:'กรรมการตัดสิน', min:1, only:DR},
+  {p:2, s:'officials', t:'ppl', r:'scriber', l:'ผู้ช่วยกรรมการตัดสิน (Scriber)', min:2, only:DR},
+  {p:2, s:'officials', t:'ppl', r:'chief_steward', l:'หัวหน้ากรรมการประจำสนาม (Chief Steward)', min:1, only:DR},
+  {p:2, s:'officials', t:'ppl', r:'asst_steward', l:'ผู้ช่วยกรรมการประจำสนาม (Asst. Steward)', min:3, only:DR},
+  {p:2, t:'sh', x:'ประเภทกระโดดข้ามเครื่องกีดขวาง', only:JP},
+  {p:2, s:'officials', t:'ppl', r:'gj_president', l:'ประธานกรรมการตัดสิน', min:1, only:JP},
+  {p:2, s:'officials', t:'ppl', r:'judge', l:'กรรมการตัดสิน', min:2, only:JP},
+  {p:2, s:'officials', t:'ppl', r:'course_designer', l:'ผู้ออกแบบสนามแข่งขัน', min:1, only:JP},
+  {p:2, s:'officials', t:'ppl', r:'asst_cd', l:'ผู้ช่วยผู้ออกแบบสนามแข่งขัน', min:2, only:JP},
+  {p:2, s:'officials', t:'ppl', r:'chief_steward', l:'หัวหน้ากรรมการประจำสนาม (Chief Steward)', min:1, only:JP},
+  {p:2, s:'officials', t:'ppl', r:'asst_steward', l:'ผู้ช่วยกรรมการประจำสนาม (Asst. Steward)', min:3, only:JP},
+  {p:2, t:'sh', x:'ประเภทอีเว้นติ้ง (Eventing)', only:EV, prop:true},
+  {p:2, s:'officials', t:'ppl', r:'gj_president', l:'ประธานกรรมการตัดสิน', min:1, only:EV},
+  {p:2, s:'officials', t:'ppl', r:'judge', l:'กรรมการตัดสิน', min:2, only:EV},
+  {p:2, s:'officials', t:'ppl', r:'td', l:'ผู้แทนด้านเทคนิค (Technical Delegate)', min:1, only:EV, prop:true},
+  {p:2, s:'officials', t:'ppl', r:'xc_designer', l:'ผู้ออกแบบสนามครอสคันทรี (Cross Country Course Designer)', min:1, only:EV, prop:true},
+  {p:2, s:'officials', t:'ppl', r:'course_designer', l:'ผู้ออกแบบสนามกระโดดข้ามเครื่องกีดขวาง', min:1, only:EV, prop:true},
+  {p:2, s:'officials', t:'ppl', r:'chief_steward', l:'หัวหน้ากรรมการประจำสนาม (Chief Steward)', min:1, only:EV},
+  {p:2, s:'officials', t:'ppl', r:'asst_steward', l:'ผู้ช่วยกรรมการประจำสนาม (Asst. Steward)', min:3, only:EV},
+  {p:2, s:'officials', t:'ppl', r:'scorer', l:'เจ้าหน้าที่บันทึกผล', min:1},
+  {p:2, s:'officials', t:'ppl', r:'timekeeper', l:'เจ้าหน้าที่จับเวลา', min:1, only:['jumping','eventing']},
+  {p:2, s:'officials', t:'ppl', r:'medical', l:'หน่วยพยาบาล (Medical Service)', min:1},
+  {p:3, s:'rules', t:'rules'},
+  {p:3, s:'rules', t:'coc'},
+  {p:4, t:'h3', x:'คอกม้า (Stabling)'},
+  {p:4, s:'stable', t:'li', n:1, l:'การอนุญาตนำม้าเข้า (Stable open on)', parts:['เวลา ',{f:'stable_open'},' เท่านั้น']},
+  {p:4, s:'stable', t:'li', n:2, l:'ขนาดคอก (Size of boxes)', parts:[{f:'box_size'},' เมตร']},
+  {p:4, s:'stable', t:'li', n:3, l:'ค่าคอกม้าถาวร (Stabling Permanent fees)', parts:[{f:'fee_perm'},' บาท/วัน']},
+  {p:4, s:'stable', t:'li', n:4, l:'ค่าคอกม้าชั่วคราว (Stabling Temporary Fees)', parts:[{f:'fee_temp'},' บาท/วัน']},
+  {p:4, s:'stable', t:'li', n:5, l:'ค่าห้องเก็บอุปกรณ์ (Tacks Box)', parts:[{f:'fee_tack'},' บาท/1 ช่อง (เหมารวมตลอดงาน)']},
+  {p:4, t:'note', x:['*อนุญาตให้นำม้าเข้า-ออก ได้ตามเวลาที่กำหนดเท่านั้น','**ไม่อนุญาตให้เก็บอุปกรณ์สัมภาระ (tacks) ไว้หน้าคอกม้า','***ไม่อนุญาตให้กรูมหรือทีมอยู่ในบริเวณคอกม้า หลังจากเวลาปิดคอก (22:00 – 05:00)']},
+  {p:4, t:'h3', x:'การจองคอกม้า'},
+  {p:4, s:'booking', t:'para', parts:['ให้ชมรม/สโมสร ที่ม้าสังกัด เป็นผู้รวบรวมและกรอกแบบฟอร์ม ส่งมาที่ ',{f:'booking_email'},' ภายในวันที่ ',{f:'booking_deadline'}]},
+  {p:4, t:'h3', x:'การชำระเงิน (PAYMENT)'},
+  {p:4, s:'booking', t:'para', parts:['ผ่าน',{f:'bank'},' ชื่อบัญชี ',{f:'account_name'},' เลขที่บัญชี ',{f:'account_no'},' และส่งหลักฐานการโอนเงินที่ ',{f:'slip_email'},' ภายในวันที่ ',{f:'pay_deadline'}]},
+  {p:4, t:'h3', x:'การนำม้าเข้าพื้นที่'},
+  {p:4, s:'conduct', t:'para', parts:['เป็นไปตาม “',{f:'vet_doc'},'”']},
+  {p:4, t:'h3', x:'กติกาการแข่งขัน (RULES OF COMPETITION)'},
+  {p:4, s:'conduct', t:'para', parts:['การแข่งขันจะอยู่ภายใต้กติกาของ สหพันธ์ขี่ม้านานาชาติ (FEI) สมาคมกีฬาขี่ม้าแห่งประเทศไทย (TEF) ',{f:'rules_basis'},' ในกรณีที่เกิดปัญหาที่ไม่ได้ระบุไว้ในข้อบังคับหรือกติกาการแข่งขันของ FEI การวินิจฉัยในกรณีนั้น ๆ ให้เป็นหน้าที่ของผู้แทนสมาคมกีฬาขี่ม้าแห่งประเทศไทย ผู้แทนกรมพลศึกษา หรือ กรรมการตัดสิน']},
+  {p:4, t:'h3', x:'การประท้วงการตัดสิน (Appeal)'},
+  {p:4, s:'conduct', t:'para', parts:['ต้องยื่นหนังสือประท้วงเป็นลายลักษณ์อักษรต่อกรรมการผู้ตัดสิน (Ground Jury) ตามกฎกติกาการแข่งขันของสหพันธ์ขี่ม้านานาชาติ (FEI) ตามข้อกำหนด GA Reg. 162 ควบคู่กับ ระเบียบกรมพลศึกษา ว่าด้วยการแข่งขันกีฬาระหว่างโรงเรียน พ.ศ. 2560 หมวด 5 เรื่อง การประท้วง ภายใน 30 นาที หลังการประกาศผลการแข่งขัน โดยยึดตามเวลาที่กรรมการตัดสินเซ็นต์รับรองผลการแข่งขัน การประท้วงต้องวางเงินประกัน จำนวน ',{f:'appeal_deposit'},' บาท และจะได้รับเงินประกันคืนต่อเมื่อการประท้วงมีผลชนะ และในกรณีที่การประท้วงมีผลแพ้ จะต้องถูกริบเงินประกัน']},
+  {p:4, t:'h3', x:'ข้อมูลทางเทคนิค (TECHNICAL INFORMATION)'},
+  {p:4, s:'tech', t:'kv', f:'arena_main'},
+  {p:4, s:'tech', t:'kv', f:'arena_warm'},
+  {p:4, s:'tech', t:'kv', f:'xc_course', only:EV},
+  {p:4, t:'sign'}
+];
+
 /* Rules list: exactly the GENERAL CONDITIONS of the Word file (Dressage).
    Jumping and Eventing swap the two Dressage-only lines for their own; those two are proposed
    until TEF confirms the edition, so they are marked prop. */
-const DRESSAGE_ONLY = [2, 3];
-const RULES = LOCKED.rules.flatMap((t, i) => DRESSAGE_ONLY.includes(i) ? [{t, only:['dressage']}] : [{t, only:ALL}]);
-RULES.splice(4, 0,
+const EN_DRESSAGE_ONLY = [2, 3];
+const RULES_EN = LOCKED_ALL.en.rules.flatMap((t, i) => EN_DRESSAGE_ONLY.includes(i) ? [{t, only:['dressage']}] : [{t, only:ALL}]);
+RULES_EN.splice(4, 0,
   {t:'FEI Jumping Rules, 28th edition, updates effective 1 January 2026', only:['jumping'], prop:true},
   {t:'FEI Jumping Tack & Equipment Requirements, effective 1 January 2026', only:['jumping'], prop:true},
   {t:'FEI Eventing Rules, 26th edition, updates effective 1 January 2026', only:['eventing'], prop:true});
 
 /* Field types: text | textnum | email | money | daterange | datetime | textarea | choice
    Marks: fill = yellow highlight, colon = blank after ":", x = xxxx value, prop = proposed */
-const TOC = [
+const TOC_EN = [
   ['DENOMINATION OF EVENT'], ['GENERAL CONDITIONS'], ['THE FEI CODE OF CONDUCT FOR THE WELFARE OF THE HORSE'],
   ['GENERAL INFORMATION'], ['ORGANISER', 1], ['ORGANISING COMMITTEE', 1], ['EVENT DIRECTOR', 1],
   ['OFFICIALS'], ['ENTRIES'], ['ENTRY DATE AND FEE', 1], ['NO-SHOWA/LATE WITHDRAWALS', 1],
@@ -777,7 +1106,7 @@ const TOC = [
   ['VENUE ARRIVAL INFORMATION & FITNESS TO COMPETE', 1], ['EQUINE ANTI-DOPING AND CONTROLLED MEDICATION PROGRAMME(EADCMP)', 1],
   ['PROTESTS/APPEALS'], ['ANNEXES']
 ];
-const F = {
+const F_EN = {
   /* 1. DENOMINATION OF EVENT */
   event_name:{label:'Name of event', type:'text', mark:'fill', req:true, hint:'Used on the cover and in every email the system sends'},
   venue:{label:'Venue', type:'text', mark:'colon', req:true},
@@ -827,7 +1156,7 @@ const F = {
   parking:{label:'Parking', type:'textarea', mark:'fill', req:true}
 };
 
-const SECS = [
+const SECS_EN = [
   {id:'event', title:'1. Denomination of event'},
   {id:'logos', title:'Logos on the cover'},
   {id:'organiser', title:'4.1 Organiser'},
@@ -839,13 +1168,12 @@ const SECS = [
   {id:'tech', title:'8. Logistical / administrative / technical information'},
   {id:'rules', title:'Locked text: conditions, code of conduct, annexes', locked:true}
 ];
-const DR=['dressage'], JP=['jumping'], EV=['eventing'];
 
 /* The handbook, block by block, in the order of the Word file. p = page group, s = form section.
    Anything with t:'lock', 'ul', 'cond', 'coc', 'annex1', 'annex2' or 'toc' is locked text taken
    from tools/locked.json; only TEF Admin changes it, by editing the Word file. */
-const B = [
-  {p:1, s:'event', t:'cover'},
+const B_EN = [
+  {p:1, s:'event', t:'cover2'},
   {p:1, s:'event', t:'kv', f:'event_name'},
   {p:1, s:'event', t:'kv', f:'venue'},
   {p:1, s:'event', t:'kv', f:'event_dates'},
@@ -856,7 +1184,7 @@ const B = [
   {p:2, t:'toc'},
 
   {p:3, t:'h', x:'3. THE FEI CODE OF CONDUCT FOR THE WELFARE OF THE HORSE'},
-  {p:3, t:'coc'},
+  {p:3, t:'coc2'},
   {p:3, t:'h', x:'4. GENERAL INFORMATION'},
   {p:3, t:'h3', x:'4.1 ORGANISER'},
   {p:3, s:'organiser', t:'kv', f:'org_name'},
@@ -955,6 +1283,18 @@ const B = [
 ];
 
 
+/* Dressage moved to the FEI-format English handbook on 11 Nov 2026; the other two still use the Thai one. */
+let F = F_TH, SECS = SECS_TH, B = B_TH, RULES = RULES_TH;
+const EN_DISC = ['dressage'];
+function useModel(){
+  const en = EN_DISC.includes(S.disc);
+  LOCKED = en ? LOCKED_ALL.en : LOCKED_ALL.th;
+  F = en ? F_EN : F_TH;
+  SECS = en ? SECS_EN : SECS_TH;
+  B = en ? B_EN : B_TH;
+  RULES = en ? RULES_EN : RULES_TH;
+}
+
 
 /* ---------- formatting ---------- */
 const TH_M = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
@@ -1015,7 +1355,18 @@ function pspan(r, i, name){
   return `<span class="v m-colon${ok ? '' : ' empty'}" data-r="${r}" data-i="${i}" role="button" tabindex="0">${esc(txt)}</span>`;
 }
 const kv = (k, val, extra='') => `<div class="kv${extra}"><div class="k">${k}</div><div class="c">:</div><div class="val">${val}</div></div>`;
-
+const coverOwn = () => String(D().values.cover_line ?? '').trim();
+const coverHint = own => own ? 'แก้เองแล้ว ข้อความนี้จะไม่เปลี่ยนตามสถานที่ วันที่ หรือผู้จัด' : 'สร้างจากสถานที่ วันที่ และผู้จัดการแข่งขันลำดับแรก พิมพ์แก้ได้ถ้าต้องการข้อความอื่น';
+function coverLine(){
+  const d = D(), v = d.values, org = (d.people.organizer||[]).find(x => x && x.trim());
+  const own = coverOwn(), ch = changed('cover_line', v.cover_line) ? ' chg' : '';
+  if (own) return `<span class="v m-fill${ch}" data-cover="1" role="button" tabindex="0" title="บรรทัดบนหน้าปก แก้เอง (คลิกเพื่อแก้)">${esc(td(own))}</span>`;
+  const ok = filled('venue', v.venue) && filled('event_dates', v.event_dates) && !!org;
+  let txt;
+  if (!M && !ok) txt = 'ณ ที่ไหน เมื่อไหร่ โดยใคร';
+  else txt = `ณ ${filled('venue', v.venue) ? v.venue : '[สถานที่]'} วันที่ ${filled('event_dates', v.event_dates) ? td(fmtRange(v.event_dates)) : '[วันที่]'} โดย ${org || '[ผู้จัดการแข่งขัน]'}`;
+  return `<span class="v m-fill${ok ? '' : ' empty'}${ch}" data-cover="1" role="button" tabindex="0" title="สร้างอัตโนมัติจาก สถานที่ วันที่ และผู้จัดการแข่งขัน (คลิกเพื่อแก้)">${esc(txt)}</span>`;
+}
 function stamp(){
   const d = D();
   if (d.status === 'approved') return `<div class="stamp">อนุมัติโดย TEF<small>ฉบับ v${d.ver}</small></div>`;
@@ -1027,6 +1378,14 @@ function block(b){
   const d = D();
   switch (b.t) {
     case 'cover': {
+      const dn = DISC[S.disc];
+      return `<div class="d-title">คู่มือการแข่งขันขี่ม้า</div>
+        <div class="d-title">${vspan('event_name')}</div>
+        <div class="d-title" style="font-size:1.55em">${coverLine()}</div>
+        <div class="d-title en">(Technical Handbook)</div>
+        <div class="d-disc propblk" title="เสนอเพิ่ม: บอกประเภทบนหน้าปก">ประเภท${dn.th} (${dn.en})</div>`;
+    }
+    case 'cover2': {
       const dn = DISC[S.disc];
       return `<div class="lockblk" data-lock="cover">${LOCK_TAG}<div class="d-sub">Technical Handbook Guideline</div>
         <div class="d-title en">Technical Handbook</div></div>
@@ -1064,7 +1423,7 @@ function block(b){
     }
     case 'toc': {
       return `<div class="lockblk" data-lock="toc">${LOCK_TAG}<div class="d-h">TABLE OF CONTENTS</div>
-        <ol class="d-toc">${TOC.map(([t, sub]) => `<li class="${sub ? 'sub' : ''}">${esc(t)}</li>`).join('')}</ol></div>`;
+        <ol class="d-toc">${TOC_EN.map(([t, sub]) => `<li class="${sub ? 'sub' : ''}">${esc(t)}</li>`).join('')}</ol></div>`;
     }
     case 'annex1': {
       return `<div class="lockblk" data-lock="annex1">${LOCK_TAG}<div class="d-h">${esc(LOCKED.annex1_head)}</div>
@@ -1074,6 +1433,12 @@ function block(b){
     case 'annex2': {
       return `<div class="lockblk" data-lock="annex2">${LOCK_TAG}<div class="d-h">${esc(LOCKED.annex2_head)}</div>
         ${LOCKED.annex2.map(g => `<div class="coc-sec">${esc(g.h)}</div><ul class="d-ul">${g.items.map(t => `<li>${esc(t)}</li>`).join('')}</ul>`).join('')}</div>`;
+    }
+    case 'coc2': {
+      return `<div class="lockblk" data-lock="coc">${LOCK_TAG}
+        <div class="coc-p" style="margin-left:0">${esc(LOCKED.coc_intro)}</div>
+        <ol class="d-ol">${LOCKED.coc_items.map(t => `<li>${esc(t)}</li>`).join('')}</ol>
+        <div class="coc-cite">${esc(LOCKED.coc_note)}</div></div>`;
     }
     case 'sign': return typeof approvalSign === 'function' ? approvalSign() : ''; /* approver e-signatures, Dressage app only */
     case 'h': return `<div class="d-h">${esc(b.x)}</div>`;
@@ -1096,19 +1461,30 @@ function block(b){
     case 'li': return kv(`${b.n}. ${esc(b.l)}`, b.parts.map(p => typeof p === 'string' ? esc(p) : vspan(p.f)).join(''), ' li');
     case 'para': return `<p class="d-p">${b.parts.map(p => typeof p === 'string' ? esc(p) : vspan(p.f)).join('')}</p>`;
     case 'note': return b.x.map(t => `<div class="d-note">${esc(t)}</div>`).join('');
-        case 'coc': {
-      return `<div class="lockblk" data-lock="coc">${LOCK_TAG}
-        <div class="coc-p" style="margin-left:0">${esc(LOCKED.coc_intro)}</div>
-        <ol class="d-ol">${LOCKED.coc_items.map(t => `<li>${esc(t)}</li>`).join('')}</ol>
-        <div class="coc-cite">${esc(LOCKED.coc_note)}</div></div>`;
+    case 'rules': {
+      const list = RULES.filter(r => r.only.includes(S.disc));
+      return `<div class="lockblk" data-lock="rules">${LOCK_TAG}<div class="d-h" style="margin-top:.2em">${esc(LOCKED.rules_head)}</div><ol class="d-ol">${list.map(r => `<li${r.prop ? ' class="px" title="เสนอเพิ่ม รอ TEF ยืนยัน"' : ''}>${esc(r.t)}</li>`).join('')}</ol></div>`;
+    }
+    case 'coc': {
+      const html = LOCKED.coc.map(([k, t]) => {
+        if (k === 'title') return `<div class="coc-t">${esc(t)}</div>`;
+        if (k === 'title-en') return `<div class="coc-en">${esc(t)}</div>`;
+        if (k === 'sec') return `<div class="coc-sec">${esc(t)}</div>`;
+        if (k === 'item') return `<div class="coc-item">${esc(t)}</div>`;
+        if (k === 'cite') return `<div class="coc-cite">${esc(t)}</div>`;
+        return `<div class="coc-p">${esc(t)}</div>`;
+      }).join('');
+      return `<div class="lockblk" data-lock="coc" style="margin-top:1.2em">${LOCK_TAG}${html}</div>`;
     }
   }
   return '';
 }
 function renderDoc(){
+  useModel();
   const doc = document.getElementById('doc');
   M = S.marks && S.role !== 'public';
   doc.classList.toggle('marks', M);
+  doc.classList.toggle('en', EN_DISC.includes(S.disc));
   if (S.role === 'public' && D().status !== 'published') {
     doc.innerHTML = `<section class="page"><div class="body" style="display:grid;place-items:center;text-align:center"><div><div class="d-title" style="font-size:1.5em">ยังไม่เผยแพร่</div><p>คู่มือ ${DISC[S.disc].en} ฉบับนี้อยู่ระหว่างจัดทำ สาธารณะจะเห็นเมื่อผู้อนุมัติกดเผยแพร่</p></div></div></section>`;
     return;
@@ -1202,15 +1578,19 @@ function secBody(sec){
   if (sec.id === 'logos') return logoSecHtml();
   if (sec.id === 'rules') {
     const list = RULES.filter(r => r.only.includes(S.disc));
-    const n = LOCKED.annex1.reduce((a, g) => a + g.items.length + 1, 0) + LOCKED.coc_items.length + LOCKED.annex2.reduce((a, g) => a + g.items.length + 1, 0);
-    return `<div class="lockcard"><span>The organiser sees this text but cannot change it. It is copied from the Word file, character for character.</span>
-      <b style="color:var(--ink)">${esc(LOCKED.rules_head)} — ${DISC[S.disc].en} (${list.length})</b>
-      <ul>${list.map(r => `<li${r.prop ? ' class="px"' : ''}>${esc(r.t)}${r.prop ? ' · proposed' : ''}</li>`).join('')}</ul>
-      <span>Plus the FEI Code of Conduct, Annex I and Annex II: ${n} locked paragraphs in all.</span>
-      <button type="button" class="add" data-goto="rules">Show in the handbook →</button></div>`;
+    if (LOCKED.annex1) {
+      const n = LOCKED.coc_items.length + LOCKED.annex1.reduce((a, g) => a + g.items.length + 1, 0) + LOCKED.annex2.reduce((a, g) => a + g.items.length + 1, 0);
+      return `<div class="lockcard"><span>The organiser sees this text but cannot change it. It is copied from the Word file, character for character.</span>
+        <b style="color:var(--ink)">${esc(LOCKED.rules_head)} — ${DISC[S.disc].en} (${list.length})</b>
+        <ul>${list.map(r => `<li${r.prop ? ' class="px"' : ''}>${esc(r.t)}${r.prop ? ' · proposed' : ''}</li>`).join('')}</ul>
+        <span>Plus the FEI Code of Conduct, Annex I and Annex II: ${n} locked paragraphs in all.</span>
+        <button type="button" class="add" data-goto="rules">Show in the handbook →</button></div>`;
+    }
+    return `<div class="lockcard"><span>ผู้จัดเห็นแต่แก้ไม่ได้ ข้อความตรงตามไฮไลต์แดงในไฟล์ต้นฉบับ</span><b style="color:var(--ink)">กฎที่ใช้ในฉบับ ${DISC[S.disc].en} (${list.length} รายการ)</b><ul>${list.map(r => `<li${r.prop ? ' class="px"' : ''}>${esc(r.t)}${r.prop ? ' · เสนอเพิ่ม' : ''}</li>`).join('')}</ul><span>และจรรยาบรรณเพื่อสวัสดิภาพม้าของ FEI ฉบับเต็ม ${LOCKED.coc.length} ย่อหน้า</span><button type="button" class="add" data-goto="rules">ดูในเอกสาร →</button></div>`;
   }
 
   let out = '';
+  if (sec.id === 'event' && !EN_DISC.includes(S.disc)) { const own = coverOwn(); out += `<div class="fld" data-key="cover"><label for="f-cover">บรรทัดบนหน้าปก <span class="mk ${own ? 'mk-own' : 'mk-auto'}" id="cover-mode">${own ? 'แก้เอง' : 'อัตโนมัติ'}</span></label><textarea class="inp" id="f-cover" data-cover="1" rows="2">${esc(own ? D().values.cover_line : coverLineText())}</textarea><div class="cover-row"><span class="hint" id="cover-hint">${coverHint(own)}</span><button type="button" class="add" data-cover-reset="1"${own ? '' : ' hidden'}>กลับเป็นอัตโนมัติ</button></div></div>`; }
   const seen = new Set();
   B.filter(b => b.s === sec.id && vis(b)).forEach(b => {
     if (b.t === 'ppl') out += pcontrol(b);
@@ -1219,6 +1599,7 @@ function secBody(sec){
   return out;
 }
 function renderRail(){
+  useModel();
   const rail = document.getElementById('rail');
   if (S.role === 'public') { rail.innerHTML = ''; return; }
   const open = {};
@@ -1261,6 +1642,19 @@ function updateProgress(){
   const box = $('pg-miss');
   if (S.showMiss && miss.length && editable()) box.innerHTML = `<div class="miss"><span><b>ยังส่งไม่ได้</b> ขาดอีก ${miss.length} ช่อง คลิกเพื่อไปกรอก</span><ul>${miss.map(m => `<li><button type="button" data-jump="${m.kind === 'r' ? 'r:' + m.key : m.key}">${esc(m.label)}</button></li>`).join('')}</ul></div>`;
   else box.innerHTML = '';
+  syncCover();
+}
+function syncCover(){
+  const ta = document.getElementById('f-cover'); if (!ta) return;
+  const own = coverOwn();
+  if (!own && document.activeElement !== ta) ta.value = coverLineText();
+  const m = document.getElementById('cover-mode'); if (m) { m.textContent = own ? 'แก้เอง' : 'อัตโนมัติ'; m.className = 'mk ' + (own ? 'mk-own' : 'mk-auto'); }
+  const h = document.getElementById('cover-hint'); if (h) h.textContent = coverHint(own);
+  const b = document.querySelector('#rail [data-cover-reset]'); if (b) b.hidden = !own;
+}
+function coverLineText(){
+  const d = D(), v = d.values, org = (d.people.organizer||[]).find(x => x && x.trim());
+  return `ณ ${v.venue || '…'} วันที่ ${filled('event_dates', v.event_dates) ? td(fmtRange(v.event_dates)) : '…'} โดย ${org || '…'}`;
 }
 
 
@@ -1285,6 +1679,7 @@ const rail = document.getElementById('rail');
 rail.addEventListener('input', e => {
   const t = e.target, d = D();
   if (t.dataset.llabel) { const l = findLogo(t.dataset.llabel); if (l) l.label = t.value; soon(); return; }
+  if (t.dataset.cover) { const x = t.value.trim(); if (!x || x === coverLineText()) delete d.values.cover_line; else d.values.cover_line = t.value; soon(); return; }
   if (t.dataset.f) {
     const f = t.dataset.f;
     if (t.dataset.part) { d.values[f] = Object.assign({}, d.values[f] || {}); d.values[f][t.dataset.part] = t.value; }
@@ -1302,7 +1697,8 @@ rail.addEventListener('input', e => {
 rail.addEventListener('focusin', e => {
   const t = e.target; document.querySelectorAll('#doc .hot').forEach(x => x.classList.remove('hot'));
   let target = null;
-  if (t.dataset.f) target = document.querySelector(`#doc [data-f="${t.dataset.f}"]`);
+  if (t.dataset.cover) target = document.querySelector('#doc [data-cover]');
+  else if (t.dataset.f) target = document.querySelector(`#doc [data-f="${t.dataset.f}"]`);
   else if (t.dataset.r) target = document.querySelector(`#doc [data-r="${t.dataset.r}"][data-i="${t.dataset.i}"]`) || document.querySelector(`#doc [data-r="${t.dataset.r}"]`);
   if (target) { target.classList.add('hot'); const r = target.getBoundingClientRect(); if (window.innerWidth > 980 && (r.top < 80 || r.bottom > window.innerHeight)) target.scrollIntoView({block:'center', behavior:'smooth'}); }
 });
@@ -1310,6 +1706,7 @@ rail.addEventListener('click', e => {
   const t = e.target.closest('button'); if (!t) return;
   const d = D();
   if (t.dataset.roleOff || t.dataset.roleOn) { d.off = Object.assign({}, d.off); if (t.dataset.roleOff) d.off[t.dataset.roleOff] = true; else delete d.off[t.dataset.roleOn]; save(); renderRail(); renderDoc(); renderStatus(); if (t.dataset.roleOn) focusLast(t.dataset.roleOn); return; }
+  if (t.dataset.coverReset) { delete d.values.cover_line; const ta = document.getElementById('f-cover'); if (ta) ta.value = coverLineText(); soon(); return; }
   if (t.dataset.logoAdd) { logoAdd(t.dataset.logoAdd); return; }
   if (t.dataset.lpick) { selectLogo(t.dataset.lpick); pickFile(t.dataset.lpick); return; }
   if (t.dataset.lrm) { removeLogo(t.dataset.lrm); return; }
@@ -1343,16 +1740,24 @@ docEl.addEventListener('click', fromDoc);
 docEl.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { if (e.target.closest('.v')) { e.preventDefault(); fromDoc(e); } } });
 
 /* ---------- logo slots on the cover ---------- */
-const LOGO_DEFAULT = [
+const LOGO_DEFAULT_EN = [
   {label:'TEF', x:4, y:1.5, w:11, r:1},
   {label:'Organiser', x:85, y:1.5, w:11, r:1}
+];
+const LOGO_DEFAULT = [
+  {label:'TEF', x:33, y:6, w:14, r:1},
+  {label:'ผู้จัดการแข่งขัน', x:53, y:6, w:14, r:1},
+  {label:'ผู้สนับสนุน', x:14, y:82, w:15, r:1.6},
+  {label:'ผู้สนับสนุน', x:33, y:82, w:15, r:1.6},
+  {label:'ผู้สนับสนุน', x:52, y:82, w:15, r:1.6},
+  {label:'ผู้สนับสนุน', x:71, y:82, w:15, r:1.6}
 ];
 const A4 = 210 / 297;
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const r2 = v => Math.round(v * 100) / 100;
 let lseq = 0, selLogo = null, pickFor = null, drag = null;
 const newId = () => 'L' + Date.now().toString(36) + (lseq++);
-function logosOf(d){ if (!Array.isArray(d.logos)) d.logos = LOGO_DEFAULT.map(l => Object.assign({id:newId(), src:''}, l)); return d.logos; }
+function logosOf(d){ if (!Array.isArray(d.logos)) d.logos = (EN_DISC.includes(S.disc) ? LOGO_DEFAULT_EN : LOGO_DEFAULT).map(l => Object.assign({id:newId(), src:''}, l)); return d.logos; }
 const findLogo = id => logosOf(D()).find(l => l.id === id);
 const logoEditable = () => editable() && S.role !== 'public';
 const hPct = (l, ratio) => l.w * ratio / l.r;
