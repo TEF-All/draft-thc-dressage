@@ -518,6 +518,8 @@ fieldset:disabled .btn.up{display:none}
 .note{font-size:13px;color:var(--ink-3)}
 .err{background:var(--lock-soft);color:var(--lock);border-radius:14px;padding:9px 13px;font-size:13.5px;margin-top:10px}
 .err ul{margin:4px 0 0;padding-left:18px}
+.steps .cnt{display:inline-grid;place-items:center;min-width:17px;height:17px;padding:0 5px;border-radius:999px;background:var(--accent);color:var(--on-accent);font-size:11px;font-weight:700;margin-left:3px}
+.who{display:flex;align-items:center;gap:8px}
 h1{font-size:25px}
 </style>
 
@@ -538,7 +540,7 @@ h1{font-size:25px}
 /* ---------- ข้อมูลตัวอย่าง ---------- */
 const EVENT = {name:'TEF Dressage Championship 2026', disc:'ศิลปะบังคับม้า (Dressage)', date:'20–21 มีนาคม 2026',
   venue:'สนามขี่ม้า ค่ายอดิศร สระบุรี', deadline:'6 มีนาคม 2026',
-  sec:'คุณสุขุมาลี มณีใส', secMail:'show.secretary@tefdressage.com', secTel:'081-234-5678',
+  sec:'เลขานุการการแข่งขัน (Show Secretary)', secMail:'show.secretary@event.example', secTel:'08x-xxx-xxxx',
   bank:'บัญชีสมาคม · ไทยพาณิชย์ (SCB) ชื่อบัญชี สมาคมกีฬาขี่ม้าแห่งประเทศไทย เลขที่ 080-253-7091'};
 const CLASSES = [
   {d:1, k:'d1p', lv:'Preliminary', fee:2000}, {d:1, k:'d1n', lv:'Novice', fee:3000}, {d:1, k:'d1e', lv:'Elementary', fee:5000},
@@ -556,7 +558,12 @@ const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp
 const baht = n => Number(n || 0).toLocaleString('en-US') + ' บาท';
 const uid = () => Math.random().toString(36).slice(2, 9);
 
-const S = {step:0, mode:'login', club:'', mail:'', checked:null, contact:'', tel:'', riders:[], done:null, showErr:false};
+/* S.sent เก็บใบที่ส่งไปแล้วทุกใบ กลับมาดูได้ตลอด และจำไว้ในเครื่องเมื่อรีเฟรชหน้า */
+const BLANK = {step:0, mode:'login', club:'', mail:'', checked:null, contact:'', tel:'', riders:[], sent:[], open:'', showErr:false, flash:''};
+const S = Object.assign({}, BLANK);
+const KEY = 'tef-entry-mock-v1';
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+function load(){ try { const r = JSON.parse(localStorage.getItem(KEY) || 'null'); if (r && r.mail) { Object.assign(S, BLANK, r); return true; } } catch (e) {} return false; }
 
 function horse(){ return {id:uid(), name:'', age:'', pass:'', cls:{}}; }
 function rider(name, yob, fid){ return {id:uid(), name:name || '', yob:yob || '', fid:fid || '', g:{name:'', tel:'', sig:''}, horses:[horse()]}; }
@@ -572,13 +579,14 @@ function seed(){
 }
 const age = yob => (/^\d{4}$/.test(yob) ? THIS_YEAR - Number(yob) : null);
 const isU18 = r => { const a = age(r.yob); return a !== null && a < 18; };
-function totals(){
+function totals(rs){
   let pairs = 0, entries = 0, fee = 0;
-  S.riders.forEach(r => r.horses.forEach(h => { pairs++; CLASSES.forEach(c => { if (h.cls[c.k]) { entries++; fee += c.fee; } }); }));
-  return {riders:S.riders.length, pairs, entries, fee};
+  (rs || S.riders).forEach(r => r.horses.forEach(h => { pairs++; CLASSES.forEach(c => { if (h.cls[c.k]) { entries++; fee += c.fee; } }); }));
+  return {riders:(rs || S.riders).length, pairs, entries, fee};
 }
 function problems(){
   const p = [];
+  if (!S.riders.length) p.push('ยังไม่มีรายชื่อผู้สมัคร กด “+ เพิ่มนักกีฬา” ก่อน');
   if (!S.contact.trim()) p.push('ยังไม่กรอกชื่อผู้ติดต่อของชมรม');
   if (!S.tel.trim()) p.push('ยังไม่กรอกเบอร์ติดต่อ');
   if (S.riders.length > MAX_RIDERS) p.push('ส่งได้ครั้งละไม่เกิน ' + MAX_RIDERS + ' คน ตอนนี้ ' + S.riders.length + ' คน');
@@ -597,10 +605,9 @@ function problems(){
 
 /* ---------- ขั้นที่ 1 เข้าระบบ ---------- */
 function viewLogin(){
-  const chips = `<button type="button" class="chip" data-fill="demo@club.example">demo@club.example (อีเมลสมมติสำหรับลองใช้)</button>`;
   const found = S.checked;
   return `<div class="pubdl">
-      <div><b>ดาวน์โหลดใบสมัครเป็นไฟล์ Excel</b><div class="note">ไม่ต้องเข้าระบบ ไฟล์เป็น .xlsx เท่านั้น หัวใบเติมชื่อรายการ รุ่น และค่าสมัครของรายการนี้มาแล้ว กรอกเสร็จส่งกลับที่ ${esc(EVENT.secMail)}</div></div>
+      <div><b>ดาวน์โหลดใบสมัครเป็นไฟล์ Excel</b><div class="note">ไม่ต้องเข้าระบบ ไฟล์เป็น .xlsx เท่านั้น หัวใบเติมชื่อรายการ รุ่น และค่าสมัครของรายการนี้มาแล้ว กรอกเสร็จส่งกลับที่อีเมลเลขานุการการแข่งขัน</div></div>
       <button type="button" class="btn primary" data-do="dl">ดาวน์โหลด ใบสมัคร.xlsx</button></div>
     <div class="login-wrap"><div class="login-mock">
       <div class="seal">TEF</div>
@@ -619,7 +626,7 @@ function viewLogin(){
           <button type="button" class="btn primary" data-do="login">บันทึกรหัสผ่านและเข้าใช้งาน</button>`
           : `<div class="banner warn"><b>อีเมลนี้ไม่อยู่ในทะเบียนสมาชิก</b>ติดต่อสมาคมเพื่อเพิ่มหรือแก้อีเมลของชมรม · ขณะนี้มี ${NO_MAIL_COUNT} ชมรมที่ยังไม่มีอีเมลในทะเบียน</div>`}`}
       <div class="note" style="margin-top:4px">ลองใช้งานด้วยอีเมลสมมติ (ไม่ใช่อีเมลของสมาชิกจริง)</div>
-      <div class="chips">${chips}</div>
+      <div class="chips"><button type="button" class="chip" data-fill="demo@club.example">demo@club.example</button></div>
     </div></div>`;
 }
 
@@ -660,7 +667,8 @@ function viewForm(){
   const cnt = {};
   CLASSES.forEach(c => { cnt[c.k] = 0; });
   S.riders.forEach(r => r.horses.forEach(h => CLASSES.forEach(c => { if (h.cls[c.k]) cnt[c.k]++; })));
-  return `<div class="ap-head">
+  return `${S.flash ? `<div class="banner ok" style="margin-bottom:12px"><b>${esc(S.flash)}</b>ดูใบที่ส่งแล้วได้ที่ขั้นที่ 3 ตลอดเวลา</div>` : ''}
+    <div class="ap-head">
       <div class="panel"><div class="eyebrow">ดึงจากคู่มือการแข่งขัน แก้ไม่ได้</div>
         <div class="kvs" style="margin-top:6px"><span class="lockf">ชื่อรายการ</span><b>${esc(EVENT.name)}</b>
           <span class="lockf">ประเภท</span><b>${esc(EVENT.disc)}</b><span class="lockf">วันที่</span><b>${esc(EVENT.date)}</b>
@@ -673,9 +681,11 @@ function viewForm(){
 
     <div class="head-row" style="display:flex;flex-wrap:wrap;gap:10px 16px;align-items:flex-end;justify-content:space-between;margin-bottom:8px">
       <div><h1>รายชื่อผู้สมัคร</h1><p class="note" style="margin:3px 0 0">1 บรรทัด = นักกีฬา 1 คน คู่กับม้า 1 ตัว · คนเดิมลงได้หลายม้า กด “+ เพิ่มม้า” · ส่งได้ครั้งละไม่เกิน ${MAX_RIDERS} คน</p></div>
-      <div class="row-acts" style="display:flex;gap:8px"><button type="button" class="btn" data-do="add-rider"${t.riders >= MAX_RIDERS ? ' disabled' : ''}>+ เพิ่มนักกีฬา</button><button type="button" class="btn" data-do="dl">ดาวน์โหลด .xlsx</button></div></div>
+      <div class="row-acts" style="display:flex;gap:8px"><button type="button" class="btn" data-do="add-rider"${t.riders >= MAX_RIDERS ? ' disabled' : ''}>+ เพิ่มนักกีฬา</button>
+        <button type="button" class="btn" data-do="dl">ดาวน์โหลด .xlsx</button>
+        ${S.sent.length ? `<button type="button" class="btn" data-step="2">ใบที่ส่งแล้ว (${S.sent.length})</button>` : ''}</div></div>
 
-    <div class="grid-wrap"><table class="egrid"><thead>
+    ${t.riders ? `<div class="grid-wrap"><table class="egrid"><thead>
       <tr><th rowspan="2" class="sk0">#</th><th colspan="4">นักกีฬา</th><th colspan="3">ม้า</th>
         ${DAYS.map(d => `<th colspan="${CLASSES.filter(c => c.d === d.d).length}" class="dayh">${esc(d.label)}</th>`).join('')}
         <th rowspan="2">คลาส</th><th rowspan="2">ค่าสมัคร</th><th rowspan="2"></th></tr>
@@ -683,8 +693,8 @@ function viewForm(){
         ${CLASSES.map(c => `<th class="ch"><label>${esc(c.lv)}<small>${c.fee.toLocaleString('en-US')} บาท</small></label></th>`).join('')}</tr>
       </thead><tbody>${gridRows()}</tbody>
       <tfoot><tr>${footRow('จำนวนที่สมัคร', c => cnt[c.k])}</tr>
-        <tr>${footRow('ค่าสมัครรวมต่อรุ่น (บาท)', c => (cnt[c.k] * c.fee).toLocaleString('en-US'))}</tr>
-        <tr><td class="lbl" colspan="${8 + CLASSES.length}">รวมค่าสมัครทั้งใบ</td><td colspan="3" style="text-align:right">${baht(totals().fee)}</td></tr></tfoot></table></div>
+        <tr>${footRow('ค่าสมัครรวมต่อรุ่น (บาท)', c => (cnt[c.k] * c.fee).toLocaleString('en-US'))}</tr></tfoot></table></div>`
+      : `<div class="panel" style="text-align:center;color:var(--ink-3);padding:26px">ยังไม่มีรายชื่อในใบนี้ กด “+ เพิ่มนักกีฬา” เพื่อเริ่มกรอก</div>`}
 
     ${u18.length ? `<div class="panel" style="margin-top:14px"><div class="eyebrow">บังคับกรอก · ขึ้นอัตโนมัติจากปีเกิด</div>
       <h3 style="margin:4px 0 8px">หนังสือยินยอมของผู้ปกครอง (นักกีฬาอายุต่ำกว่า 18 ปี)</h3>
@@ -699,32 +709,48 @@ function viewForm(){
     <div class="ap-bar" id="ap-bar">${barHtml()}</div>`;
 }
 
-/* ---------- ขั้นที่ 3 ส่งแล้ว ---------- */
-function viewDone(){
-  const d = S.done || {no:'—', riders:0, pairs:0, entries:0, fee:0};
-  return `<div class="done">
-    <h1>ส่งใบสมัครแล้ว</h1>
-    <p class="lead" style="margin:0">เลขที่ใบสมัคร <b>${esc(d.no)}</b> · นักกีฬา ${d.riders} คน · ${d.pairs} คู่ · ${d.entries} คลาส · ยอดชำระ <b>${baht(d.fee)}</b></p>
-    <div class="mailcard"><div class="m"><span>ถึง</span><b>${esc(EVENT.sec)} · ${esc(EVENT.secMail)}</b>
-      <span>สำเนา</span><b>${esc(S.mail)}</b>
-      <span>เรื่อง</span><b>ใบสมัคร ${esc(EVENT.name)} · ${esc(S.club)} (${d.pairs} คู่)</b></div>
-      <div><span class="att">📄 ใบสมัคร-${esc(S.club).slice(0, 12)}-${esc(d.no)}.xlsx</span><span class="att">📄 สรุปใบสมัคร.pdf</span>${d.u18 ? `<span class="att">📄 หนังสือยินยอมผู้ปกครอง ${d.u18} ฉบับ</span>` : ''}</div>
+/* ---------- ขั้นที่ 3 ใบที่ส่งแล้ว (เก็บทุกใบ กลับมาดูได้) ---------- */
+function sentDetail(s){
+  return `<div class="mailcard" style="margin-top:10px"><b>รายชื่อในใบนี้</b>
+      <ol style="margin:6px 0 0;padding-left:20px">${s.lines.map(r => `<li>${esc(r.name)}${r.age !== null ? ` · อายุ ${r.age} ปี` : ''}${r.u18 ? ' · มีหนังสือยินยอมผู้ปกครอง' : ''}
+        <ul style="margin:2px 0 6px;padding-left:16px;color:var(--ink-2)">${r.horses.map(h => `<li>${esc(h.name)} — ${h.cls.length ? esc(h.cls.join(', ')) : 'ไม่ได้เลือกรุ่น'}</li>`).join('')}</ul></li>`).join('')}</ol></div>
+    <div class="mailcard" style="margin-top:10px"><div class="m"><span>ถึง</span><b>${esc(EVENT.sec)} · ${esc(EVENT.secMail)}</b>
+      <span>สำเนา</span><b>${esc(s.from)}</b><span>ส่งเมื่อ</span><b>${esc(s.when)}</b>
+      <span>เรื่อง</span><b>ใบสมัคร ${esc(EVENT.name)} · ${esc(s.club)} (${s.pairs} คู่)</b></div>
+      <div><span class="att">📄 ใบสมัคร-${esc(s.no)}.xlsx</span><span class="att">📄 สรุปใบสมัคร.pdf</span>${s.u18 ? `<span class="att">📄 หนังสือยินยอมผู้ปกครอง ${s.u18} ฉบับ</span>` : ''}</div>
       <p class="note" style="margin:8px 0 0">ไฟล์แนบเป็น .xlsx รูปแบบเดียวกับใบสมัครต้นฉบับของสมาคม (ชีต Entry Form และ under 18)</p></div>
-    <div class="mailcard"><b>ชำระค่าสมัคร</b><div class="note" style="margin-top:4px">${esc(EVENT.bank)}</div>
-      <div class="note">ส่งหลักฐานการโอนที่ ${esc(EVENT.secMail)} ภายใน ${esc(EVENT.deadline)}</div></div>
-    <div class="row-acts" style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
-      <button type="button" class="btn primary" data-do="again">สมัครเพิ่มอีกชุด</button>
-      <button type="button" class="btn" data-do="back-form">กลับไปดูใบที่ส่ง</button></div></div>`;
+    <div class="row-acts" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+      <button type="button" class="btn" data-do="dl">ดาวน์โหลดไฟล์ใบนี้ (.xlsx)</button>
+      <button type="button" class="btn" data-do="resend">ส่งอีเมลซ้ำ</button>
+      <button type="button" class="btn" data-do="copy" data-no="${esc(s.no)}">คัดลอกเป็นใบใหม่</button></div>`;
+}
+function viewSent(){
+  if (!S.sent.length) return `<div class="done"><h1>ยังไม่มีใบสมัครที่ส่ง</h1>
+    <p class="note" style="margin:0">เมื่อกดส่งในขั้นที่ 2 แล้ว ใบจะมาเก็บไว้ที่นี่ทุกใบ กลับมาเปิดดูได้ตลอด</p>
+    <button type="button" class="btn primary" data-step="1">ไปกรอกใบสมัคร</button></div>`;
+  const sum = S.sent.reduce((a, s) => ({pairs:a.pairs + s.pairs, fee:a.fee + s.fee}), {pairs:0, fee:0});
+  return `<div class="head-row" style="display:flex;flex-wrap:wrap;gap:10px 16px;align-items:flex-end;justify-content:space-between;margin-bottom:10px">
+      <div><h1>ใบสมัครที่ส่งแล้ว</h1><p class="note" style="margin:3px 0 0">${esc(S.club)} · ส่งแล้ว ${S.sent.length} ใบ · รวม ${sum.pairs} คู่ · ${baht(sum.fee)}</p></div>
+      <button type="button" class="btn primary" data-step="1">กรอกใบใหม่</button></div>
+    <div class="u18">${S.sent.map(s => `<div class="card" style="grid-template-columns:minmax(0,1fr) auto;align-items:center">
+      <div><b style="font-size:15px">เลขที่ ${esc(s.no)}</b>
+        <div class="note">ส่งเมื่อ ${esc(s.when)} · นักกีฬา ${s.riders} คน · ${s.pairs} คู่ · ${s.entries} คลาส · ${baht(s.fee)}</div></div>
+      <button type="button" class="btn" data-do="open" data-no="${esc(s.no)}">${S.open === s.no ? 'ซ่อนรายละเอียด' : 'ดูรายละเอียด'}</button>
+      ${S.open === s.no ? `<div style="grid-column:1/-1">${sentDetail(s)}</div>` : ''}</div>`).join('')}</div>
+    <div class="mailcard" style="margin-top:14px"><b>ชำระค่าสมัคร</b><div class="note" style="margin-top:4px">${esc(EVENT.bank)}</div>
+      <div class="note">ส่งหลักฐานการโอนที่ ${esc(EVENT.secMail)} ภายใน ${esc(EVENT.deadline)}</div></div>`;
 }
 
 /* ---------- render ---------- */
-const STEPS = ['1 เข้าระบบ', '2 กรอกใบสมัคร', '3 ส่งแล้ว'];
+const STEPS = ['1 เข้าระบบ', '2 กรอกใบสมัคร', '3 ใบที่ส่งแล้ว'];
 function render(){
+  if (S.step && !S.club) S.step = 0;
   document.getElementById('steps').innerHTML = STEPS.map((s, i) =>
-    `<button type="button" class="${i === S.step ? 'on' : ''}" data-step="${i}">${esc(s)}</button>`).join('');
+    `<button type="button" class="${i === S.step ? 'on' : ''}" data-step="${i}">${esc(s)}${i === 2 && S.sent.length ? ` <span class="cnt">${S.sent.length}</span>` : ''}</button>`).join('');
   document.getElementById('who').innerHTML = S.step === 0 ? '<span class="note">ยังไม่เข้าสู่ระบบ</span>'
-    : `<span class="note">${esc(S.club)}<br>${esc(S.mail)}</span>`;
-  document.getElementById('view').innerHTML = [viewLogin, viewForm, viewDone][S.step]();
+    : `<span class="note">${esc(S.club)}<br>${esc(S.mail)}</span> <button type="button" class="chip" data-do="logout">ออกจากระบบ</button>`;
+  document.getElementById('view').innerHTML = [viewLogin, viewForm, viewSent][S.step]();
+  save();
 }
 function findRider(el){ const tr = el.closest('[data-r]'); return S.riders.find(r => r.id === tr.dataset.r); }
 function findHorse(el){ const tr = el.closest('[data-h]'); const r = findRider(el); return r.horses.find(h => h.id === tr.dataset.h); }
@@ -732,7 +758,7 @@ function findHorse(el){ const tr = el.closest('[data-h]'); const r = findRider(e
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-do],[data-step],[data-mode],[data-fill]');
   if (!b) return;
-  if (b.dataset.step !== undefined) { const i = +b.dataset.step; if (i === 1 && !S.club) { alert('เข้าสู่ระบบด้วยอีเมลชมรมก่อน'); return; } if (i === 2 && !S.done) { alert('กดส่งใบสมัครในขั้นที่ 2 ก่อน'); return; } S.step = i; render(); return; }
+  if (b.dataset.step !== undefined) { S.step = +b.dataset.step; S.flash = ''; render(); return; }
   if (b.dataset.mode) { S.mode = b.dataset.mode; S.checked = null; render(); return; }
   if (b.dataset.fill) { S.mail = b.dataset.fill; S.checked = null; render(); return; }
   const mailBox = document.getElementById('l-mail');
@@ -740,41 +766,54 @@ document.addEventListener('click', e => {
     case 'dl': alert('ต้นแบบ: ของจริงจะดาวน์โหลดไฟล์ ใบสมัคร.xlsx ทันที ไม่ต้องเข้าระบบ และไม่เปลี่ยนเป็น CSV'); break;
     case 'check': { S.mail = (mailBox ? mailBox.value : S.mail).trim().toLowerCase(); S.checked = WHITELIST[S.mail] || false; render(); break; }
     case 'forgot': alert('ต้นแบบ: ส่งลิงก์ตั้งรหัสผ่านใหม่ไปที่อีเมลชมรมในทะเบียน'); break;
+    case 'logout': { try { localStorage.removeItem(KEY); } catch (e) {} Object.assign(S, BLANK, {riders:[], sent:[]}); render(); break; }
     case 'login': {
       const m = (mailBox ? mailBox.value : S.mail).trim().toLowerCase();
       if (!WHITELIST[m]) { S.mail = m; S.checked = false; S.mode = 'new'; render(); return; }
-      S.mail = m; S.club = WHITELIST[m]; S.contact = ''; S.tel = ''; if (!S.riders.length) seed(); S.step = 1; render(); break; }
+      S.mail = m; S.club = WHITELIST[m]; if (!S.riders.length && !S.sent.length) seed(); if (!S.riders.length) S.riders = [rider()];
+      S.step = 1; render(); break; }
     case 'add-rider': if (S.riders.length < MAX_RIDERS) { S.riders.push(rider()); render(); } break;
     case 'add-horse': { findRider(b).horses.push(horse()); render(); break; }
     case 'del-row': { const r = findRider(b), h = findHorse(b); r.horses = r.horses.filter(x => x !== h);
       if (!r.horses.length) S.riders = S.riders.filter(x => x !== r); render(); break; }
     case 'sign': { const r = findRider(b); r.g.sig = r.g.sig ? '' : (r.g.name.trim() || 'ลายเซ็นผู้ปกครอง'); render(); break; }
+    case 'open': { S.open = S.open === b.dataset.no ? '' : b.dataset.no; render(); break; }
+    case 'resend': alert('ต้นแบบ: ของจริงจะส่งอีเมลฉบับเดิมซ้ำไปที่เลขานุการการแข่งขัน พร้อมไฟล์แนบชุดเดิม'); break;
+    case 'copy': {
+      const s = S.sent.find(x => x.no === b.dataset.no); if (!s) break;
+      S.riders = JSON.parse(JSON.stringify(s.data)); S.riders.forEach(r => { r.id = uid(); r.horses.forEach(h => { h.id = uid(); }); });
+      S.step = 1; S.flash = 'คัดลอกรายชื่อจากใบ ' + s.no + ' มาเป็นใบใหม่แล้ว แก้ไขได้ก่อนส่ง'; render(); break; }
     case 'submit': {
       const p = problems();
-      if (p.length) { S.showErr = true; render(); document.querySelector('.err').scrollIntoView({block:'center'}); return; }
-      const t = totals();
-      S.done = {no:'DR26-' + String(Math.floor(Math.random() * 900) + 100), riders:t.riders, pairs:t.pairs, entries:t.entries, fee:t.fee, u18:S.riders.filter(isU18).length};
-      S.step = 2; S.showErr = false; render(); break; }
-    case 'again': S.riders = [rider()]; S.done = null; S.step = 1; render(); break;
-    case 'back-form': S.step = 1; render(); break;
+      if (p.length) { S.showErr = true; render(); const el = document.querySelector('.err'); if (el) el.scrollIntoView({block:'center'}); return; }
+      const t = totals(), now = new Date();
+      S.sent.unshift({no:'DR26-' + String(100 + S.sent.length * 7 + Math.floor(Math.random() * 7)), club:S.club, from:S.mail,
+        when:now.toLocaleDateString('th-TH', {day:'numeric', month:'short', year:'numeric'}) + ' ' + now.toTimeString().slice(0, 5) + ' น.',
+        riders:t.riders, pairs:t.pairs, entries:t.entries, fee:t.fee, u18:S.riders.filter(isU18).length,
+        data:JSON.parse(JSON.stringify(S.riders)),
+        lines:S.riders.map(r => ({name:r.name, age:age(r.yob), u18:isU18(r),
+          horses:r.horses.map(h => ({name:h.name, cls:CLASSES.filter(c => h.cls[c.k]).map(c => c.lv + ' D' + c.d)}))}))});
+      S.riders = [rider()]; S.open = S.sent[0].no; S.showErr = false; S.step = 2; render(); break; }
   }
 });
 document.addEventListener('input', e => {
   const el = e.target;
-  if (el.dataset.s) { S[el.dataset.s] = el.value; return; }
-  if (el.dataset.g) { findRider(el).g[el.dataset.g] = el.value; return; }
+  if (el.dataset.s) { S[el.dataset.s] = el.value; save(); return; }
+  if (el.dataset.g) { findRider(el).g[el.dataset.g] = el.value; save(); return; }
   if (el.dataset.f) {
     const r = findRider(el), h = findHorse(el), f = el.dataset.f;
     if (f === 'name' || f === 'yob' || f === 'fid') { r[f] = el.value; if (f === 'yob') render(); }
     else h[{hname:'name', hage:'age', pass:'pass'}[f]] = el.value;
     if (f === 'hname') { const bar = document.getElementById('ap-bar'); if (bar) bar.innerHTML = barHtml(); }
+    save();
   }
 });
 document.addEventListener('change', e => {
   const el = e.target;
   if (el.dataset.c) { const h = findHorse(el); h.cls[el.dataset.c] = el.checked; render(); }
 });
-seed(); render();
+if (!load()) seed();
+render();
 </script>
 
 </body></html>
