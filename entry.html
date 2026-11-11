@@ -547,14 +547,10 @@ const CLASSES = [
   {d:2, k:'d2m', lv:'Medium', fee:4000}, {d:2, k:'d2a', lv:'Adv/PSG', fee:4000}];
 const DAYS = [{d:1, label:'Day 1 · 20 มี.ค. 2026'}, {d:2, label:'Day 2 · 21 มี.ค. 2026'}];
 const MAX_RIDERS = 20, THIS_YEAR = 2026;
-/* ตัวอย่างอีเมลจากทะเบียนสมาชิก (ของจริงมี 142 ชมรม 184 อีเมล) */
-const WHITELIST = {
-  'giantarmy@hotmail.com':'ชมรมขี่ม้าค่ายอดิศร / ชมรมกีฬาขี่ม้ากองทัพบก (CC)',
-  '1029cavalry@gmail.com':'ชมรมขี่ม้า ทหารม้ารักษาพระองค์ (HG)',
-  'kanokphan.b@rbsc.org':'สมาคมราชกรีฑาสโมสรโปโลคลับ (RBSC)',
-  'royalstableunit.office@gmail.com':'หน่วยม้าทรงประจำพระองค์ฯ (RSU)',
-  'catwalks11.ws@gmail.com':'ชมรมกีฬาขี่ม้า ค่ายทองฑีฆายุ (กส.ทบ.)'};
-const NO_MAIL_CLUBS = ['สมานฟาร์ม', 'ฮอร์ส คลับ ไทยแลนด์', 'มวกเหล็ก ไรดิ้ง คลับ', 'ฮอร์ส โกลด์ คิม', 'ลาดกระบังอีเควสเทรียน', 'ฟ้าใส', 'วังเพชรฟาร์ม', 'ธนัชฟาร์มม้าและสวนเกษตรพอเพียง'];
+/* อีเมลและชื่อชมรมในหน้านี้เป็นของสมมติทั้งหมด ห้ามใส่อีเมลจริงของสมาชิกลงในต้นแบบที่เผยแพร่
+   ของจริงตรวจกับทะเบียนสมาคม 142 ชมรม 184 อีเมล โดยไม่แสดงรายชื่อให้ใครเห็น */
+const WHITELIST = {'demo@club.example':'ชมรมขี่ม้าตัวอย่าง (DEMO)'};
+const NO_MAIL_COUNT = 8;
 
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'}[c]));
 const baht = n => Number(n || 0).toLocaleString('en-US') + ' บาท';
@@ -601,7 +597,7 @@ function problems(){
 
 /* ---------- ขั้นที่ 1 เข้าระบบ ---------- */
 function viewLogin(){
-  const chips = Object.keys(WHITELIST).map(m => `<button type="button" class="chip" data-fill="${esc(m)}">${esc(m)}</button>`).join('');
+  const chips = `<button type="button" class="chip" data-fill="demo@club.example">demo@club.example (อีเมลสมมติสำหรับลองใช้)</button>`;
   const found = S.checked;
   return `<div class="pubdl">
       <div><b>ดาวน์โหลดใบสมัครเป็นไฟล์ Excel</b><div class="note">ไม่ต้องเข้าระบบ ไฟล์เป็น .xlsx เท่านั้น หัวใบเติมชื่อรายการ รุ่น และค่าสมัครของรายการนี้มาแล้ว กรอกเสร็จส่งกลับที่ ${esc(EVENT.secMail)}</div></div>
@@ -621,8 +617,8 @@ function viewLogin(){
           <label>ตั้งรหัสผ่าน (อย่างน้อย 8 ตัว)<input class="inp" type="password" value="demo1234"></label>
           <label>ยืนยันรหัสผ่าน<input class="inp" type="password" value="demo1234"></label>
           <button type="button" class="btn primary" data-do="login">บันทึกรหัสผ่านและเข้าใช้งาน</button>`
-          : `<div class="banner warn"><b>อีเมลนี้ไม่อยู่ในทะเบียนสมาชิก</b>ติดต่อสมาคมเพื่อเพิ่มหรือแก้อีเมลของชมรม · ขณะนี้มี ${NO_MAIL_CLUBS.length} ชมรมที่ยังไม่มีอีเมลในทะเบียน</div>`}`}
-      <div class="note" style="margin-top:4px">ลองด้วยอีเมลตัวอย่างจากทะเบียน</div>
+          : `<div class="banner warn"><b>อีเมลนี้ไม่อยู่ในทะเบียนสมาชิก</b>ติดต่อสมาคมเพื่อเพิ่มหรือแก้อีเมลของชมรม · ขณะนี้มี ${NO_MAIL_COUNT} ชมรมที่ยังไม่มีอีเมลในทะเบียน</div>`}`}
+      <div class="note" style="margin-top:4px">ลองใช้งานด้วยอีเมลสมมติ (ไม่ใช่อีเมลของสมาชิกจริง)</div>
       <div class="chips">${chips}</div>
     </div></div>`;
 }
