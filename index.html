@@ -451,6 +451,11 @@ fieldset:disabled .btn.up{display:none}
 .d-sign.pony{margin-top:1.4em}
 .doc.marks .d-sign.pony{outline:1.5px dashed var(--paper-ok);outline-offset:3px}
 .d-blk{white-space:pre-line;margin:.1em 0 .5em}
+.ponyblk{color:var(--paper-ok)}
+.doc.marks .ponyblk{outline:1.5px dashed var(--paper-ok);outline-offset:2px;border-radius:3px}
+.d-intl{margin:.5em 0 .2em;font-size:.88em;color:var(--paper-muted);border:1px dashed var(--paper-line);border-radius:6px;padding:.35em .6em}
+.d-intl a{color:var(--paper-sel)}
+.d-intl small{display:block;font-size:.85em;margin-top:.15em}
 
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 
@@ -1342,9 +1347,69 @@ function useModel(){
   LOCKED = en ? LOCKED_ALL.en : LOCKED_ALL.th;
   F = en ? F_EN : F_TH;
   SECS = en ? SECS_EN : SECS_TH;
-  B = en ? B_EN : B_TH;
+  B = en ? B_DR : B_TH;
   RULES = en ? RULES_EN : RULES_TH;
 }
+
+/* ---------- เล่ม Dressage: ภาคไทย 4 หน้าแรก แล้วต่อด้วยภาคอังกฤษ ----------
+   ตามไฟล์ "TEF Technical Handbook - Dressage.docx" ของสมาคม (11 พ.ย. 2569) ไม่จัดหน้าใหม่
+   ช่องกรอกผูกกับฟิลด์ชุดเดียวกับภาคอังกฤษ กรอกครั้งเดียวขึ้นทั้งสองภาษา
+   บล็อกที่ไม่มี s = พิมพ์บนกระดาษอย่างเดียว ไม่สร้างช่องกรอกซ้ำในฟอร์ม */
+const B_TH_DR = [
+  {p:1, t:'cover'},
+
+  {p:2, t:'h', x:'รายละเอียดการแข่งขัน'},
+  {p:2, t:'kv', f:'event_name', l:'ชื่อการแข่งขัน'},
+  {p:2, t:'kv', f:'event_dates', l:'วันที่'},
+  {p:2, t:'kv', f:'venue', l:'สถานที่'},
+  {p:2, t:'kv', f:'org_name', l:'ผู้จัดการแข่งขัน'},
+  {p:2, t:'h', x:'คณะกรรมการจัดการแข่งขัน'},
+  {p:2, t:'ppl', r:'hon_president', l:'ประธานกิตติมศักดิ์', min:1, opt:true},
+  {p:2, t:'ppl', r:'president', l:'ประธานจัดการแข่งขัน', min:1},
+  {p:2, s:'committee', t:'ppl', r:'advisor', l:'ที่ปรึกษาการจัดการแข่งขัน', min:2, opt:true},
+  {p:2, t:'ppl', r:'secretary', l:'เลขานุการ', min:1},
+  {p:2, t:'ppl', r:'stable_mgr', l:'ฝ่ายคอกม้า', min:1},
+  {p:2, t:'ppl', r:'vet_delegate', l:'สัตวแพทย์ประจำการแข่งขัน (Vet. Delegate)', min:1},
+  {p:2, t:'ppl', r:'treating_vet', l:'ผู้ช่วยสัตวแพทย์ (Treating Vet.)', min:1},
+  {p:2, t:'h', x:'คณะกรรมการตัดสิน'},
+  {p:2, t:'shp', x:'ประเภทศิลปะบังคับม้า', px:'และม้าเล็ก'},
+  {p:2, t:'ppl', r:'gj_president', l:'ประธานกรรมการตัดสิน', min:1},
+  {p:2, t:'ppl', r:'judge', l:'กรรมการตัดสิน', min:2},
+  {p:2, t:'ppl', r:'scriber', l:'ผู้ช่วยกรรมการตัดสิน (Scriber)', min:1},
+  {p:2, t:'ppl', r:'chief_steward', l:'หัวหน้ากรรมการประจำสนาม (Chief Steward)', min:1},
+  {p:2, t:'ppl', r:'steward', l:'กรรมการประจำสนาม Steward (ESEE)', min:1},
+  {p:2, s:'officials', t:'ppl', r:'asst_steward', l:'ผู้ช่วยกรรมการประจำสนาม (Asst. Steward)', min:2, opt:true},
+  {p:2, s:'officials', t:'ppl', r:'scorer', l:'เจ้าหน้าที่บันทึกผล', min:1, opt:true},
+  {p:2, t:'ppl', r:'medical', l:'หน่วยพยาบาล (Medical Service)', min:1},
+  {p:2, t:'intl', x:'สามารถดูรายชื่อกรรมการ FEI Official ได้ที่นี้ ', url:'https://inside.fei.org/fei/your-role/officials'},
+
+  {p:3, t:'h', x:'คอกม้า (Stabling)'},
+  {p:3, t:'kv', f:'stable_open', l:'การอนุญาตนำม้าเข้า (Stable open on)'},
+  {p:3, t:'kv', f:'box_size', l:'ขนาดคอก (Size of boxes)'},
+  {p:3, t:'kv', f:'fee_perm', l:'ค่าคอกม้าถาวร (Stabling Permanent fees)'},
+  {p:3, t:'kv', f:'fee_temp', l:'ค่าคอกม้าชั่วคราว (Stabling Temporary Fees)'},
+  {p:3, t:'kv', f:'fee_tack', l:'ค่าห้องเก็บอุปกรณ์ (Tacks Box)'},
+  {p:3, t:'note', x:['*อนุญาตให้นำม้าเข้า-ออก ได้ตามเวลาที่กำหนดเท่านั้น',
+    '**ไม่อนุญาตให้เก็บอุปกรณ์สัมภาระ (tacks) ไว้หน้าคอกม้า',
+    '***ไม่อนุญาตให้กรูมหรือทีมอยู่ในบริเวณคอกม้า หลังจากเวลาปิดคอก (22:00 – 05:00)']},
+  {p:3, t:'h', x:'การจองคอกม้า'},
+  {p:3, t:'para', parts:['ให้ชมรม/สโมสร ที่ม้าสังกัด เป็นผู้รวบรวมและกรอกแบบฟอร์ม ส่งมาที่ ', {f:'sec_email'}, ' ภายในวันที่ ', {f:'booking_deadline'}]},
+  {p:3, t:'h', x:'การชำระเงิน (PAYMENT)'},
+  {p:3, t:'para', parts:['ผ่านธนาคาร ', {f:'bank'}, ' ชื่อบัญชี ', {f:'account_name'}, ' เลขที่บัญชี ', {f:'account_no'}]},
+  {p:3, t:'para', parts:['และส่งหลักฐานการโอนเงินที่ ', {f:'sec_email'}, ' ภายในวันที่ ', {f:'pay_deadline'}]},
+  {p:3, t:'h', x:'การนำม้าเข้าพื้นที่'},
+  {p:3, t:'para', parts:['เป็นไปตามข้อกำหนดทางสัตวแพทย์ของสมาคมกีฬาขี่ม้าแห่งประเทศไทย (TEF Veterinary Regulation 2026) และข้อกำหนดทางสัตวแพทย์ของสหพันธ์ขี่ม้านานาชาติ (FEI Veterinary Regulations) ฉบับที่มีผลบังคับใช้ในวันแข่งขัน']},
+
+  {p:4, t:'h', x:'กติกาการแข่งขัน (RULES OF COMPETITION)'},
+  {p:4, t:'para', parts:['การแข่งขันจะอยู่ภายใต้กติกาของ สหพันธ์ขี่ม้านานาชาติ (FEI) สมาคมกีฬาขี่ม้าแห่งประเทศไทย (TEF) เรื่องการแข่งขันกีฬาขี่ม้า วิธีการจัดการแข่งขัน ในกรณีที่เกิดปัญหาที่ไม่ได้ระบุไว้ในข้อบังคับหรือกติกาการแข่งขันของ FEI การวินิจฉัยในกรณีนั้น ๆ ให้เป็นหน้าที่ของผู้แทนสมาคมกีฬาขี่ม้าแห่งประเทศไทย กรรมการตัดสิน']},
+  {p:4, t:'h', x:'การประท้วงการตัดสิน (Appeal)'},
+  {p:4, t:'para', parts:['ต้องยื่นหนังสือประท้วงเป็นลายลักษณ์อักษรต่อกรรมการผู้ตัดสิน (Ground Jury) ตามกฎกติกาการแข่งขันของสหพันธ์ขี่ม้านานาชาติ (FEI) ตามข้อกำหนด GA Reg. 162 ภายใน 30 นาที หลังการประกาศผลการแข่งขัน โดยยึดตามเวลาที่กรรมการตัดสินเซ็นต์รับรองผลการแข่งขัน การประท้วงต้องวางเงินประกัน จำนวน 5,000 บาท และจะได้รับเงินประกันคืนต่อเมื่อการประท้วงมีผลชนะ และในกรณีที่การประท้วงมีผลแพ้ จะต้องถูกริบเงินประกัน']},
+  {p:4, t:'h', x:'ข้อมูลทางเทคนิค (TECHNICAL INFORMATION)'},
+  {p:4, t:'kv', f:'arena_main', l:'สนามแข่งขัน (Competition Arena)'},
+  {p:4, t:'kv', f:'arena_warm', l:'สนามวอร์ม (Warm up Arena)'}
+];
+/* ภาคอังกฤษเดิมทั้งเล่ม เลื่อนไปเริ่มที่หน้า 5 */
+const B_DR = B_TH_DR.concat(B_EN.map(x => Object.assign({}, x, {p:x.p + 4})));
 
 
 /* ---------- formatting ---------- */
@@ -1381,7 +1446,7 @@ function items(){
   const out = [], seen = new Set();
   B.filter(vis).forEach(b => {
     fieldsOf(b).forEach(f => { if (!seen.has(f)) { seen.add(f); out.push({kind:'f', key:f, label:F[f].label, s:b.s, req:F[f].req}); } });
-    if (b.t === 'ppl' && !roleOff(b.r) && !seen.has('r:'+b.r)) { seen.add('r:'+b.r); out.push({kind:'r', key:b.r, label:b.l, s:b.s, req:true}); }
+    if (b.t === 'ppl' && !roleOff(b.r) && !seen.has('r:'+b.r)) { seen.add('r:'+b.r); out.push({kind:'r', key:b.r, label:b.l, s:b.s, req:!b.opt}); }
   });
   return out;
 }
@@ -1409,7 +1474,7 @@ const kv = (k, val, extra='') => `<div class="kv${extra}"><div class="k">${k}</d
 const coverOwn = () => String(D().values.cover_line ?? '').trim();
 const coverHint = own => own ? 'แก้เองแล้ว ข้อความนี้จะไม่เปลี่ยนตามสถานที่ วันที่ หรือผู้จัด' : 'สร้างจากสถานที่ วันที่ และผู้จัดการแข่งขันลำดับแรก พิมพ์แก้ได้ถ้าต้องการข้อความอื่น';
 function coverLine(){
-  const d = D(), v = d.values, org = (d.people.organizer||[]).find(x => x && x.trim());
+  const d = D(), v = d.values, org = (d.people.organizer||[]).find(x => x && x.trim()) || (v.org_name||'').trim();
   const own = coverOwn(), ch = changed('cover_line', v.cover_line) ? ' chg' : '';
   if (own) return `<span class="v m-fill${ch}" data-cover="1" role="button" tabindex="0" title="บรรทัดบนหน้าปก แก้เอง (คลิกเพื่อแก้)">${esc(td(own))}</span>`;
   const ok = filled('venue', v.venue) && filled('event_dates', v.event_dates) && !!org;
@@ -1495,7 +1560,11 @@ function block(b){
     case 'h': return `<div class="d-h">${esc(b.x)}</div>`;
     case 'sh': return `<div class="d-sh${b.prop ? ' propblk' : ''}">${esc(b.x)}</div>`;
     case 'h3': return `<div class="d-h3">${esc(b.x)}</div>`;
-    case 'kv': return kv(esc(F[b.f].label), vspan(b.f), F[b.f].mark === 'prop' ? ' propblk' : '');
+    /* ไฮไลต์เขียวในไฟล์ Word: ส่วนต่อท้ายนี้ขึ้นเฉพาะรายการที่มีรุ่นโพนี */
+    case 'shp': return `<div class="d-sh">${esc(b.x)}${d.pony ? ` <span class="ponyblk">${esc(b.px)}</span>` : ''}</div>`;
+    /* เห็นเฉพาะผู้จัดกับ TEF ไม่พิมพ์ออกเมื่อเล่มเผยแพร่แล้ว */
+    case 'intl': return d.status === 'published' ? '' : `<div class="d-intl">${esc(b.x)}<a href="${esc(b.url)}" target="_blank" rel="noopener">${esc(b.url)}</a><small>ไม่แสดงเมื่อเอกสารได้รับอนุมัติแล้ว เฉพาะผู้จัดกับแอดมินเท่านั้นที่เห็น</small></div>`;
+    case 'kv': return kv(esc(b.l || F[b.f].label), vspan(b.f), F[b.f].mark === 'prop' ? ' propblk' : '');
     case 'ppl': {
       if (roleOff(b.r)) return '';
       const arr = d.people[b.r] || [], n = Math.max(pplLines(b), arr.length), any = arr.some(x => x && x.trim());
@@ -1641,7 +1710,7 @@ function secBody(sec){
   }
 
   let out = '';
-  if (sec.id === 'event' && !EN_DISC.includes(S.disc)) { const own = coverOwn(); out += `<div class="fld" data-key="cover"><label for="f-cover">บรรทัดบนหน้าปก <span class="mk ${own ? 'mk-own' : 'mk-auto'}" id="cover-mode">${own ? 'แก้เอง' : 'อัตโนมัติ'}</span></label><textarea class="inp" id="f-cover" data-cover="1" rows="2">${esc(own ? D().values.cover_line : coverLineText())}</textarea><div class="cover-row"><span class="hint" id="cover-hint">${coverHint(own)}</span><button type="button" class="add" data-cover-reset="1"${own ? '' : ' hidden'}>กลับเป็นอัตโนมัติ</button></div></div>`; }
+  if (sec.id === 'event') { const own = coverOwn(); out += `<div class="fld" data-key="cover"><label for="f-cover">บรรทัดบนหน้าปก <span class="mk ${own ? 'mk-own' : 'mk-auto'}" id="cover-mode">${own ? 'แก้เอง' : 'อัตโนมัติ'}</span></label><textarea class="inp" id="f-cover" data-cover="1" rows="2">${esc(own ? D().values.cover_line : coverLineText())}</textarea><div class="cover-row"><span class="hint" id="cover-hint">${coverHint(own)}</span><button type="button" class="add" data-cover-reset="1"${own ? '' : ' hidden'}>กลับเป็นอัตโนมัติ</button></div></div>`; }
   const seen = new Set();
   B.filter(b => b.s === sec.id && vis(b)).forEach(b => {
     if (b.t === 'ppl') out += pcontrol(b);
@@ -1704,7 +1773,7 @@ function syncCover(){
   const b = document.querySelector('#rail [data-cover-reset]'); if (b) b.hidden = !own;
 }
 function coverLineText(){
-  const d = D(), v = d.values, org = (d.people.organizer||[]).find(x => x && x.trim());
+  const d = D(), v = d.values, org = (d.people.organizer||[]).find(x => x && x.trim()) || (v.org_name||'').trim();
   return `ณ ${v.venue || '…'} วันที่ ${filled('event_dates', v.event_dates) ? td(fmtRange(v.event_dates)) : '…'} โดย ${org || '…'}`;
 }
 
