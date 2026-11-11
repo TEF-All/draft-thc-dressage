@@ -596,6 +596,7 @@ td .inp{min-width:180px}
 <dialog class="dlg" id="dlg"><form method="dialog" id="dlg-form"></form></dialog>
 <input type="file" id="xlsx-file" accept=".xlsx,.xls,.csv" hidden>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
 <script>
 (function(){
 "use strict";
@@ -1321,11 +1322,160 @@ const ST = {
 const KEY = 'tef-dressage-app-v1';
 const clone = o => JSON.parse(JSON.stringify(o));
 function fresh(){ return {v:2, disc:'dressage', marks:true, thai:true, me:null, view:'books', cur:null, clock:0, mineOnly:false, users:clone(TEAM), books:[], mail:[], reg:[]}; }
+
+/* ---------- backend: real accounts, roles and shared data ----------
+   ONLINE: everyone signs in with their own Google account, data is in the TEF database and the
+   database itself decides who may do what. Offline (no connection to the library): the old
+   browser-only demo, so the page still opens and can be shown without a network.  */
+const SUPA = {url:'https://uhdbfqhlzvffceulzlus.supabase.co', key:'sb_publishable_fzCPpev2p2YEiyTtnjI8yg_z0SWADKq'};
+const sb = window.supabase ? window.supabase.createClient(SUPA.url, SUPA.key,
+  {auth:{persistSession:true, autoRefreshToken:true, detectSessionInUrl:false}}) : null;
+const ONLINE = !!sb;
+const ERRS = {
+  google_not_configured:'ยังไม่ได้ตั้งค่า Google Client ID กรุณาติดต่อ TEF Admin',
+  invalid_google_token:'ข้อมูลจาก Google ไม่ถูกต้อง กรุณาลองใหม่',
+  email_not_verified:'บัญชี Google นี้ยังไม่ได้ยืนยันอีเมล',
+  origin_not_allowed:'เว็บนี้ยังไม่ได้รับอนุญาตให้เข้าสู่ระบบ แจ้ง TEF Admin',
+  bad_key:'รหัสติดตั้งไม่ถูกต้อง',
+  not_a_google_client_id:'รูปแบบ Client ID ไม่ถูกต้อง ต้องลงท้ายด้วย .apps.googleusercontent.com'
+};
+let CLIENT_ID = '', BOOTED = false, NETMSG = '';
+let REV = {}, SNAP = {}, MAILED = new Set(), pushing = false, dirty = false, pushTimer = 0;
+
 let S;
-try { S = JSON.parse(localStorage.getItem(KEY)); } catch(e) { S = null; }
+if (!ONLINE) {
+  try { S = JSON.parse(localStorage.getItem(KEY)); } catch(e) { S = null; }
+}
 if (!S || S.v !== 2 || !Array.isArray(S.books)) S = fresh();
 S.disc = 'dressage';
-function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); return true; } catch(e) { return false; } }
+
+function save(){
+  if (ONLINE) { if (S.me) { dirty = true; clearTimeout(pushTimer); pushTimer = setTimeout(pushNow, 400); } return true; }
+  try { localStorage.setItem(KEY, JSON.stringify(S)); return true; } catch(e) { return false; }
+}
+function netErr(e){
+  const m = (e && (e.message || e.error_description)) || String(e);
+  NETMSG = /row-level security|violates|42501|สิทธิ์|ไม่ได้/.test(m)
+    ? 'ระบบไม่อนุญาตให้ทำรายการนี้ด้วยสิทธิ์ของคุณ หน้าจอจะโหลดข้อมูลล่าสุดให้'
+    : 'บันทึกขึ้นเซิร์ฟเวอร์ไม่สำเร็จ: ' + m;
+  console.error(e);
+}
+async function pull(){
+  const [prof, bks, ml, rg] = await Promise.all([
+    sb.from('profiles').select('id,name,email,role,requested_at,decided_at').order('requested_at'),
+    sb.from('handbooks').select('id,rev,data').order('created_at', {ascending:false}),
+    sb.from('mail_log').select('id,book,recipients,data').order('at', {ascending:false}).limit(300),
+    sb.from('app_docs').select('data').eq('key', 'reg').maybeSingle()
+  ]);
+  for (const r of [prof, bks, ml, rg]) if (r.error) throw r.error;
+  REV = {}; SNAP = {};
+  S.users = (prof.data || []).map(x => ({id:x.id, name:x.name, email:x.email, role:x.role,
+    at:Date.parse(x.requested_at), okAt:x.decided_at ? Date.parse(x.decided_at) : null}));
+  S.users.forEach(u => { SNAP['u:' + u.id] = u.role; });
+  S.books = (bks.data || []).map(r => { REV[r.id] = r.rev; SNAP[r.id] = JSON.stringify(r.data); return r.data; });
+  S.mail = (ml.data || []).map(r => Object.assign({}, r.data, {id:r.id, book:r.book, ids:r.recipients || []}));
+  MAILED = new Set(S.mail.map(m => m.id));
+  S.reg = (rg.data && rg.data.data) || [];
+  SNAP.reg = JSON.stringify(S.reg);
+  if (S.cur && !S.books.some(b => b.id === S.cur)) { S.cur = null; if (S.view === 'edit') S.view = 'books'; }
+}
+/* send every local change to the database; the database re-checks each one against the signed-in role */
+async function pushNow(){
+  if (!ONLINE || !S.me || pushing) return;
+  pushing = true; dirty = false;
+  let reload = false;
+  try {
+    for (const b of S.books) {
+      const j = JSON.stringify(b);
+      if (SNAP[b.id] === j) continue;
+      if (REV[b.id] === undefined) {
+        const {error} = await sb.from('handbooks').insert({id:b.id, owner:b.owner, status:b.status, data:b});
+        if (error) throw error;
+        REV[b.id] = 1;
+      } else {
+        const {data, error} = await sb.from('handbooks').update({data:b}).eq('id', b.id).eq('rev', REV[b.id]).select('rev');
+        if (error) throw error;
+        if (!data.length) { reload = true; break; } /* someone else saved first */
+        REV[b.id] = data[0].rev;
+      }
+      SNAP[b.id] = j;
+    }
+    if (!reload) {
+      for (const m of [...S.mail].reverse()) {
+        if (MAILED.has(m.id)) continue;
+        const {error} = await sb.from('mail_log').insert({id:m.id, sender:S.me, book:m.book || null, recipients:m.ids || [], data:m});
+        if (error && error.code !== '23505') throw error;
+        MAILED.add(m.id);
+      }
+      for (const u of S.users) {
+        if (SNAP['u:' + u.id] === undefined || SNAP['u:' + u.id] === u.role) { SNAP['u:' + u.id] = u.role; continue; }
+        const {error} = await sb.from('profiles').update({role:u.role}).eq('id', u.id);
+        if (error) throw error;
+        SNAP['u:' + u.id] = u.role;
+      }
+      const rj = JSON.stringify(S.reg);
+      if (SNAP.reg !== rj) {
+        const {error} = await sb.from('app_docs').update({data:S.reg, updated_at:new Date().toISOString()}).eq('key', 'reg');
+        if (error) throw error;
+        SNAP.reg = rj;
+      }
+      NETMSG = '';
+    }
+  } catch (e) { netErr(e); reload = true; }
+  pushing = false;
+  if (reload) { try { await pull(); } catch (e) { netErr(e); } renderAll(); return; }
+  if (dirty) { clearTimeout(pushTimer); pushTimer = setTimeout(pushNow, 300); }
+}
+async function afterLogin(){
+  const {data:{session}} = await sb.auth.getSession();
+  S.me = session ? session.user.id : null;
+  if (S.me) { try { await pull(); } catch (e) { netErr(e); } }
+  BOOTED = true; renderAll();
+}
+function loginNote(t){ const el = document.getElementById('g-note'); if (el) el.textContent = t || ''; }
+function mountGoogle(){
+  const box = document.getElementById('gbox');
+  if (!box || !CLIENT_ID) return;
+  const go = () => {
+    if (!window.google || !google.accounts || !google.accounts.id) return;
+    google.accounts.id.initialize({client_id:CLIENT_ID, callback:onGoogle, auto_select:false, cancel_on_tap_outside:true});
+    google.accounts.id.renderButton(box, {theme:'outline', size:'large', width:320, text:'signin_with', locale:'th'});
+  };
+  if (window.google && window.google.accounts) return go();
+  const sc = document.createElement('script');
+  sc.src = 'https://accounts.google.com/gsi/client'; sc.async = true;
+  sc.onload = go;
+  sc.onerror = () => loginNote('เปิดหน้าเข้าสู่ระบบของ Google ไม่ได้ ตรวจอินเทอร์เน็ตแล้วลองใหม่');
+  document.head.appendChild(sc);
+}
+async function onGoogle(res){
+  loginNote('กำลังตรวจสอบบัญชีกับ Google…');
+  try {
+    const r = await fetch(SUPA.url + '/functions/v1/auth-google', {method:'POST',
+      headers:{'Content-Type':'application/json', apikey:SUPA.key},
+      body:JSON.stringify({action:'google', credential:res.credential})});
+    const d = await r.json();
+    if (!r.ok) throw new Error(ERRS[d.error] || d.error || 'เข้าสู่ระบบไม่สำเร็จ');
+    const {error} = await sb.auth.verifyOtp({type:'magiclink', token_hash:d.token_hash});
+    if (error) throw error;
+    loginNote('');
+    await afterLogin();
+  } catch (e) { loginNote(e.message || String(e)); }
+}
+async function saveClientId(){
+  const key = document.getElementById('su-key').value.trim(), id = document.getElementById('su-id').value.trim();
+  const note = document.getElementById('su-note');
+  note.textContent = 'กำลังบันทึก…';
+  try {
+    const r = await fetch(SUPA.url + '/functions/v1/setup', {method:'POST',
+      headers:{'Content-Type':'application/json', apikey:SUPA.key}, body:JSON.stringify({key, client_id:id})});
+    const d = await r.json();
+    if (!r.ok) throw new Error(ERRS[d.error] || d.error);
+    CLIENT_ID = d.google_client_id;
+    note.textContent = 'บันทึกแล้ว กำลังเปิดปุ่มเข้าสู่ระบบ…';
+    renderAll();
+  } catch (e) { note.textContent = e.message || String(e); }
+}
 const EMPTY = {id:'', status:'draft', ver:'0.1', values:{}, people:{}, comments:[], hist:[], approvals:{}, reports:{}};
 const D = () => S.books.find(b => b.id === S.cur) || EMPTY;
 const vis = b => !b.only || b.only.includes('dressage');
@@ -1529,7 +1679,7 @@ function renderStatus(){
     return `${i ? '<span class="ln"></span>' : ''}<span class="st ${c}"><i>${c === 'done' ? '✓' : td(i + 1)}</i>${label}</span>`;
   }).join('');
   const btn = (a, t, k = 'primary') => `<button type="button" class="btn ${k}" data-act="${a}">${t}</button>`;
-  const wait = rs => rs.map(r => `<span class="wait">รอ${esc(roleName(r, b))}</span><button type="button" class="btn sim" data-as="${r}">สลับเป็น${esc(roleName(r, b))}</button>`).join('');
+  const wait = rs => rs.map(r => `<span class="wait">รอ${esc(roleName(r, b))}</span>${ONLINE ? '' : `<button type="button" class="btn sim" data-as="${r}">สลับเป็น${esc(roleName(r, b))}</button>`}`).join('');
   const w = waitingFor(b), mine = isMine(b), back = btn('return', 'ส่งกลับแก้ไข', '');
   let acts = '';
   if (st === 'draft' || st === 'returned') acts = mine ? btn('submit', st === 'returned' ? 'ส่งฉบับแก้ไข' : 'ส่งให้ TEF Admin') : wait(w);
@@ -2307,21 +2457,40 @@ function renderMail(){
     ${all.length ? `<div class="mail-list">${all.map(card).join('')}</div>` : '<div class="panel empty">ยังไม่มีอีเมล</div>'}`;
 }
 function renderLogin(){
+  const box = document.getElementById('login');
+  if (ONLINE && !BOOTED) { box.innerHTML = '<div class="login-mock"><div class="seal">TEF</div><p>กำลังเปิดระบบ…</p></div>'; return; }
+  const head = `<div class="seal">TEF</div><h3>THC Online Draft Schedule</h3><p>ระบบคู่มือการแข่งขัน ประเภทศิลปะบังคับม้า (Dressage)</p>`;
+  if (ONLINE) {
+    const setup = CLIENT_ID ? '' : `<div class="demo"><span class="eyebrow">สำหรับผู้ติดตั้งระบบ</span>
+      <p class="hint" style="margin:0">ยังไม่ได้ใส่ Google Client ID ใส่รหัสติดตั้งและ Client ID จาก Google Cloud แล้วกดบันทึก ทำครั้งเดียว</p>
+      <input class="inp" id="su-key" placeholder="รหัสติดตั้ง" autocomplete="off">
+      <input class="inp" id="su-id" placeholder="xxxx.apps.googleusercontent.com" autocomplete="off">
+      <button type="button" class="btn primary" data-do="save-cid">บันทึก Client ID</button>
+      <span class="hint" id="su-note"></span></div>`;
+    box.innerHTML = `<div class="login-mock">${head}
+      <div id="gbox" style="margin:10px 0;min-height:44px;display:grid;place-items:center"></div>
+      <small>ใช้บัญชี Google ของคุณ ระบบไม่เห็นรหัสผ่าน · ผู้ใช้ใหม่ต้องรอ TEF Admin อนุมัติก่อนสร้างคู่มือ</small>
+      <span class="hint" id="g-note" role="status"></span>${setup}</div>`;
+    mountGoogle();
+    return;
+  }
   const accts = S.users.filter(x => x.role !== 'rejected');
-  document.getElementById('login').innerHTML = `<div class="login-mock"><div class="seal">TEF</div><h3>THC Online Draft Schedule</h3><p>ระบบคู่มือการแข่งขัน ประเภทศิลปะบังคับม้า (Dressage)</p>
+  box.innerHTML = `<div class="login-mock">${head}
     <button type="button" class="btn primary gbtn" data-do="google">เข้าสู่ระบบด้วย Google</button><small>ใช้บัญชี Gmail ระบบไม่เห็นรหัสผ่าน · ผู้ใช้ใหม่ต้องรอ TEF Admin อนุมัติก่อนสร้างคู่มือ</small>
     <div class="demo"><span class="eyebrow">บัญชีทดลอง (จำลอง) · คลิกเพื่อเข้าในบัญชีนั้น</span><div id="demo-accounts">${accts.map(x => `<button type="button" class="acct" data-do="as" data-arg="${x.id}"><b>${esc(x.name)}</b><small>${esc(ROLES[x.role].th)}${x.email ? ' · ' + esc(x.email) : ''}</small></button>`).join('')}</div></div></div>`;
 }
+
 function renderPending(){
   const u = me(), no = u.role === 'rejected';
   document.getElementById('pending').innerHTML = `<div class="login-mock"><div class="seal">TEF</div><h3>${no ? 'ไม่ได้รับอนุมัติ' : 'รอ TEF Admin อนุมัติ'}</h3><p>${esc(u.name)} · ${esc(u.email)}</p>
     <small>${no ? 'ติดต่อ TEF หากต้องการสิทธิ์ผู้จัดการแข่งขัน' : `ส่งคำขอเมื่อ ${fmtTs(u.at)} เมื่ออนุมัติแล้วคุณจะได้รับอีเมล และสร้างคู่มือในฐานะผู้จัดการแข่งขันได้`}</small>
     <button type="button" class="btn" data-do="logout" style="margin-top:8px">ออกจากระบบ</button>
-    ${no ? '' : '<div class="demo"><span class="eyebrow">ทดลอง</span><button type="button" class="acct" data-do="as" data-arg="u-admin"><b>สลับเป็น TEF Admin เพื่ออนุมัติ</b></button></div>'}</div>`;
+    ${no || ONLINE ? '' : '<div class="demo"><span class="eyebrow">ทดลอง</span><button type="button" class="acct" data-do="as" data-arg="u-admin"><b>สลับเป็น TEF Admin เพื่ออนุมัติ</b></button></div>'}</div>`;
 }
 function googleDialog(){
+  if (ONLINE) { mountGoogle(); return; }
   const f = document.getElementById('dlg-form');
-  f.innerHTML = `<h3>Sign in with Google (จำลอง)</h3><p class="hint" style="margin:0">ระบบจริงเปิดหน้าต่าง Google ให้เลือกบัญชี ต้นแบบนี้ให้พิมพ์ชื่อและอีเมล Gmail แทน</p>
+  f.innerHTML = `<h3>Sign in with Google (จำลอง)</h3><p class="hint" style="margin:0">ต้นแบบที่ไม่ได้ต่อระบบจริง ให้พิมพ์ชื่อและอีเมลแทน</p>
     <label class="fld"><span class="lab">ชื่อ-นามสกุล</span><input class="inp" name="name" required></label>
     <label class="fld"><span class="lab">อีเมล Gmail</span><input class="inp" name="email" type="email" required placeholder="name@gmail.com"></label>
     <div class="dlg-acts"><button type="button" class="btn" id="g-cancel">ยกเลิก</button><button type="submit" class="btn primary">ดำเนินการต่อ</button></div>`;
@@ -2356,12 +2525,20 @@ function renderHeader(v){
   who.innerHTML = `<div class="av" aria-hidden="true">${esc(u.name.replace(/^คุณ/, '').trim().charAt(0))}</div><div class="who-t"><b>${esc(u.name)}</b><small>${esc(ROLES[u.role].th)}</small></div><button type="button" class="btn" data-do="logout">ออกจากระบบ</button>`;
 }
 function renderStrip(){
-  document.getElementById('strip').innerHTML = `<b>โหมดทดลอง</b><span>ข้อมูลเก็บในเบราว์เซอร์นี้เท่านั้น อีเมลไม่ได้ส่งจริง</span><span class="sp"></span><span>วันที่จำลอง ${fmtD(now())}</span><button type="button" class="btn" data-do="clock" data-arg="1">+๑ วัน</button><button type="button" class="btn" data-do="clock" data-arg="3">+๓ วัน</button><button type="button" class="btn" data-do="clock" data-arg="0">วันนี้</button><button type="button" class="btn" data-do="wipe">ล้างข้อมูลทดลอง</button><a class="btn" href="prototype.html">ต้นแบบ 3 ประเภท</a>`;
+  const el = document.getElementById('strip');
+  if (ONLINE) {
+    el.hidden = !NETMSG;
+    el.innerHTML = NETMSG ? `<b>แจ้งเตือน</b><span>${esc(NETMSG)}</span>` : '';
+    return;
+  }
+  el.hidden = false;
+  el.innerHTML = `<b>โหมดทดลอง</b><span>ข้อมูลเก็บในเบราว์เซอร์นี้เท่านั้น อีเมลไม่ได้ส่งจริง</span><span class="sp"></span><span>วันที่จำลอง ${fmtD(now())}</span><button type="button" class="btn" data-do="clock" data-arg="1">+๑ วัน</button><button type="button" class="btn" data-do="clock" data-arg="3">+๓ วัน</button><button type="button" class="btn" data-do="clock" data-arg="0">วันนี้</button><button type="button" class="btn" data-do="wipe">ล้างข้อมูลทดลอง</button>`;
 }
+
 function renderAll(){
   syncRole(); S.books.forEach(b => { notesOf(b); syncComments(b); }); tick();
   const u = me();
-  let v = S.applyFor ? 'apply' : !u ? 'login' : ['pending','rejected'].includes(u.role) ? 'pending' : S.view;
+  let v = S.applyFor && (u || !ONLINE) ? 'apply' : !u ? 'login' : ['pending','rejected'].includes(u.role) ? 'pending' : S.view;
   if (v === 'edit' && !canSee(D())) v = 'books';
   if ((v === 'users' || v === 'staff') && (!u || u.role !== 'admin')) v = 'books';
   if (!VIEWS[v]) v = 'books';
@@ -2420,8 +2597,12 @@ document.addEventListener('click', e => {
   else if (d === 'sched-up') document.getElementById('sched-file').click();
   else if (d === 'ret-sched') openReturn('sched');
   else if (d === 'xlsx') downloadEntry();
-  else if (d === 'as') { S.me = arg; S.view = 'books'; save(); renderAll(); }
-  else if (d === 'logout') { S.me = null; save(); renderAll(); }
+  else if (d === 'save-cid') { saveClientId(); }
+  else if (d === 'as') { if (ONLINE) return; S.me = arg; S.view = 'books'; save(); renderAll(); }
+  else if (d === 'logout') {
+    if (ONLINE) { sb.auth.signOut().then(() => { S = fresh(); S.me = null; BOOTED = true; renderAll(); }); return; }
+    S.me = null; save(); renderAll();
+  }
   else if (d === 'clock') { S.clock = arg === '0' ? 0 : S.clock + Number(arg); save(); renderAll(); }
   else if (d === 'wipe') { if (confirm('ล้างข้อมูลทดลองทั้งหมดในเบราว์เซอร์นี้?')) { S = fresh(); save(); renderAll(); } }
   else if (d === 'new' && u && u.role === 'organizer') {
@@ -2468,9 +2649,24 @@ document.getElementById('doc').addEventListener('click', e => {
 }, true);
 /* links in emails use #<handbook id> */
 applyRoute();
-const hashId = location.hash.replace('#', '');
-if (hashId && S.books.some(b => b.id === hashId)) { S.cur = hashId; S.view = 'edit'; }
-renderAll();
+function openFromHash(){
+  const h = location.hash.replace('#', '');
+  if (h && S.books.some(b => b.id === h)) { S.cur = h; S.view = 'edit'; }
+}
+if (!ONLINE) { BOOTED = true; openFromHash(); renderAll(); }
+else {
+  renderAll();
+  (async () => {
+    try {
+      const {data} = await sb.from('app_config').select('value').eq('key', 'google_client_id').maybeSingle();
+      CLIENT_ID = (data && data.value) || '';
+    } catch (e) { console.error(e); }
+    await afterLogin();
+    openFromHash();
+    renderAll();
+  })();
+  sb.auth.onAuthStateChange((ev) => { if (ev === 'SIGNED_OUT' && S.me) { S = fresh(); renderAll(); } });
+}
 })();
 </script>
 
