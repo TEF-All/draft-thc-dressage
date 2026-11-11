@@ -2305,7 +2305,7 @@ function openReturn(preset){
 function doReturn(list){
   const b = D(), u = me(), ev = eventName(b), label = cmtLabel;
   b.returnTo = b.status === 'approval' ? 'approval' : b.status === 'review' ? 'review' : 'admin';
-  b.returnedBy = u.name; b.returnedAt = now(); b.due = now() + 3 * DAY; b.status = 'returned';
+  b.returnedBy = u.name; b.returnedAt = now(); b.due = now() + 3 * DAY; b.status = 'returned'; b.pplOk = {};
   list.forEach(c => addNote(b, c.key, c.text));
   const open = notesOf(b).filter(n => n.state === 'open');
   syncComments(b);
@@ -2366,7 +2366,7 @@ function pplPanel(b, u){
   const state = okd.length ? okd.map(r => `<span class="okc">✓ ${esc(roleName(r, b))} อนุมัติรายชื่อแล้ว ${fmtTs(b.pplOk[r])}</span>`).join(' · ')
     : '<span class="muted">ยังไม่มีใครอนุมัติรายชื่อ</span>';
   const acts = isApprover && b.status === 'approval' && !(b.pplOk || {})[u.role]
-    ? `<div class="row-acts" style="margin-top:8px"><button type="button" class="btn primary" data-act="ppl-ok">อนุมัติรายชื่อกรรมการ</button><button type="button" class="btn" data-act="return">ไม่ผ่าน ส่งกลับให้แก้รายชื่อ</button></div>` : '';
+    ? `<div class="row-acts" style="margin-top:8px"><button type="button" class="btn primary" data-do="ppl-ok">อนุมัติรายชื่อกรรมการ</button><button type="button" class="btn" data-do="ppl-back">ไม่ผ่าน ส่งกลับให้แก้รายชื่อ</button></div>` : '';
   return `<div class="panel"><div class="head-row"><div><div class="eyebrow">รายชื่อคนทำงานในเล่มนี้</div><h3 style="margin:2px 0 0">กรรมการและเจ้าหน้าที่</h3></div><span>${state}</span></div>
     <div class="tbl-wrap" style="margin-top:8px"><table><thead><tr><th>ตำแหน่ง</th><th>ชื่อ</th></tr></thead><tbody>${list}</tbody></table></div>
     <p class="hint" style="margin:8px 0 0">ผู้อนุมัติตรวจรายชื่อชุดนี้ก่อน ถ้าไม่ผ่านให้กดส่งกลับพร้อมคอมเมนต์ว่าต้องแก้ใคร</p>${acts}</div>`;
@@ -3327,6 +3327,8 @@ document.addEventListener('click', e => {
     sendMail({to:[x], cc:holders('admin'), subject: d === 'allow' ? '[อนุมัติแล้ว] เข้าใช้งานในฐานะผู้จัดการแข่งขัน' : '[ไม่อนุมัติ] คำขอเข้าใช้งาน', body: d === 'allow' ? `เรียน ${x.name}\n\nTEF Admin อนุมัติให้คุณเข้าใช้งานในฐานะผู้จัดการแข่งขันแล้ว เข้าสู่ระบบด้วย Gmail เดิมเพื่อสร้างคู่มือ` : `เรียน ${x.name}\n\nคำขอเข้าใช้งานไม่ได้รับอนุมัติ กรุณาติดต่อ TEF`});
     save(); renderAll();
   }
+  else if (d === 'ppl-ok') { act('ppl-ok'); return; }
+  else if (d === 'ppl-back') { act('return'); return; }
   else if (d === 'org-out' && u.role === 'admin') { dlgOrgOut(arg); }
   else if (d === 'org-back' && u.role === 'admin') {
     const x = S.users.find(y => y.id === arg); if (!x) return;
