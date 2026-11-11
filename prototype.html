@@ -984,7 +984,7 @@ const LOCKED_ALL = {
    "arrival_head": "VENUE ARRIVAL INFORMATION & FITNESS TO COMPETE",
    "passports": "PASSPORTS: All Horses competing at the Events must be registered with TEF/FEI. Athletes who do not present a Horse’s Passport or one that is not correctly validated or fail to meet other passport requirements will be subject to Sanctions in accordance with the Veterinary Regulations and may not be allowed to compete.",
    "passports_nb": "NB for Horses permanently resident in a venue, must have a TEF/FEI passport in compliance with TEF Regulations.",
-   "vaccinations": "VACCINATIONS: Horses competing at the Events must comply with the requirements of the TEF Veterinary Regulations 2025.",
+   "vaccinations": "VACCINATIONS: Horses competing at the Events must comply with the requirements of the TEF Veterinary Regulations 2026.",
    "examination": "EXAMINATION ON ARRIVAL: On arrival at an Event venue, all Horses must undergo an examination by a veterinarian to confirm their identification from their passport and microchip (where present), their vaccination status and meet the health requirements to access the Stables Area. To protect all horses attending events, any Horse with a questionable health status concerning vaccination, infectious disease or other concerns, must be stabled within the isolation facilities provided by the Organising Committee pending a decision on entering the venue.",
    "inspections": "HORSE INSPECTIONS: All Horses will be assessed for their fitness to compete during the Horse Inspection. Any Horse demonstrating questionable fitness may be referred to the Holding Box for further veterinary examination. Horses not deemed fit to compete by the Inspection Panel will not be permitted to compete."
   },
@@ -1060,7 +1060,7 @@ const LOCKED_ALL = {
     ]
    },
    {
-    "h": "FEI Veterinary Regulations, 15th Edition, 1 January 2023, updates effective 01 January 2025",
+    "h": "FEI Veterinary Regulations, 15th Edition, 1 January 2023, updates effective 01 January 2026",
     "items": [
      "Article 1035 - Presentation of Horses (p.31)"
     ]
@@ -1200,7 +1200,7 @@ RULES_EN.splice(4, 0,
 const TOC_EN = [
   ['DENOMINATION OF EVENT'], ['GENERAL CONDITIONS'], ['THE FEI CODE OF CONDUCT FOR THE WELFARE OF THE HORSE'],
   ['GENERAL INFORMATION'], ['ORGANISER', 1], ['ORGANISING COMMITTEE', 1], ['EVENT DIRECTOR', 1],
-  ['OFFICIALS'], ['ENTRIES'], ['ENTRY DATE AND FEE', 1], ['NO-SHOWA/LATE WITHDRAWALS', 1],
+  ['OFFICIALS'], ['ENTRIES'], ['ENTRY DATE AND FEE', 1], ['NO-SHOWS/LATE WITHDRAWALS', 1],
   ['TIMETABLE AND COMPETITION DETAILS'], ['LOGISTICAL/ADMINISTRATIVE/TECHNICAL INFORMATION'],
   ['COMPETITION ARENA(S)', 1], ['PRACTICE ARENA(S)', 1], ['PRIZE AND REWARDS', 1], ['PRIZE GIVING CEREMONY', 1], ['PARKING', 1],
   ['VETERINARY MATTERS'], ['HEALTH REQUIREMENTS', 1], ['NATIONAL REQUIREMENTS', 1], ['TRANSPORT OF HORSES', 1],
@@ -1573,7 +1573,7 @@ function block(b){
       return `<div class="lockblk" data-lock="cover">${LOCK_TAG}<div class="d-sub">Technical Handbook Guideline</div>
         <div class="d-title en">Technical Handbook</div></div>
         <div class="d-disc propblk" title="Proposed: name the discipline on the cover">${esc(dn.en)}</div>
-        <div class="d-h" style="text-align:left">1. DOMINATION OF EVENT</div>`;
+        <div class="d-h" style="text-align:left">1. DENOMINATION OF EVENT</div>`;
     }
     case 'chk': {
       const v = d.values.arena_type || '', on = x => v === x || v === 'Indoor and Outdoor';

@@ -554,6 +554,56 @@ td .inp{min-width:180px}
 .egrid tr.same td{border-top:0}.egrid tr.same .w-name .inp,.egrid tr.same .w-fid .inp,.egrid tr.same .w-yob .inp,.egrid tr.same .w-cat select{color:var(--ink-3)}
 .egrid tr.same .sk0{color:transparent}
 .egrid .inp.bad{box-shadow:var(--press),0 0 0 2px var(--lock)}
+/* ---- แบบแจ้งความประสงค์ขอเป็นผู้จัดการแข่งขัน ---- */
+.bid-fs{border:0;margin:14px 0 0;padding:16px 18px;background:var(--surface);border-radius:18px;box-shadow:var(--raise-sm)}
+.bid-fs legend{font-weight:700;font-size:15px;padding:0 6px}
+.bid-fs:disabled .inp,.bid-fs:disabled textarea{opacity:.75}
+.bid-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:720px){.bid-grid{grid-template-columns:minmax(0,1fr)}}
+.bid-l{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--ink-2)}
+.bid-2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.bid-ck{display:inline-flex;gap:7px;align-items:center;font-size:14px;color:var(--ink)}
+.bid-ck input{width:17px;height:17px;accent-color:var(--accent-2)}
+.bid-ck-row{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center}
+.bid-t{width:100%;font-size:13.5px}
+.bid-t th{font-size:12px;color:var(--ink-3);text-align:left;padding:4px 6px;white-space:nowrap}
+.bid-t td{padding:3px 5px;vertical-align:middle}
+.bid-t td:first-child{white-space:nowrap;color:var(--ink-2)}
+.bid-t .inp{padding:5px 8px;font-size:13px;min-width:80px}
+.bid-signs{display:flex;flex-wrap:wrap;gap:18px}
+.bid-sign{flex:1 1 220px;text-align:center}
+.bid-sign-l{font-size:13px;color:var(--ink-2);margin-top:4px}
+.sigbox{height:62px;border-radius:12px;border:1px dashed var(--line-strong);background:var(--field);display:grid;place-items:center;color:var(--ink-3);font-size:12.5px;cursor:pointer}
+.sigbox.has{border-style:solid;color:var(--ok);font-family:"Sarabun",cursive;font-size:21px;font-weight:700;background:var(--surface)}
+.bid-steps{margin:0;padding-left:20px;font-size:14px;color:var(--ink-2)}
+.bid-steps li{margin:3px 0}
+.bid-files{list-style:none;margin:8px 0 0;padding:0;font-size:13.5px;display:flex;flex-direction:column;gap:4px}
+.bid-modes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:720px){.bid-modes{grid-template-columns:minmax(0,1fr)}}
+.bid-modes .rcard{cursor:pointer;text-align:left}
+.bid-track{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:8px;font-size:13.5px;color:var(--ink-3)}
+.bid-track .st{display:flex;align-items:center;gap:5px}
+.bid-track .st.done{color:var(--ok);font-weight:600}
+.bid-track small{color:var(--ink-3);font-weight:400;margin-left:4px}
+.err{background:var(--lock-soft);color:var(--lock);border-radius:14px;padding:9px 13px;font-size:13.5px;margin-top:10px}
+.err ul{margin:4px 0 0;padding-left:18px}
+.bid-paper{background:var(--paper);color:var(--paper-ink);border-radius:10px;padding:22px 26px;margin-top:10px;font:14px/1.7 var(--font-doc);box-shadow:var(--raise-sm)}
+.bid-paper h2{font-size:17px;text-align:center;margin:0 0 2px}
+.bid-paper h3{font-size:15px;margin:14px 0 4px}
+.bid-paper .c{text-align:center;margin:0 0 10px}
+.bid-paper .sm{font-size:12.5px;color:var(--paper-muted);margin:4px 0}
+.bid-paper .bl{display:inline-block;min-width:90px;border-bottom:1px dotted var(--paper-line)}
+.bid-paper-signs{display:flex;gap:24px;flex-wrap:wrap;margin-top:18px;text-align:center}
+.bid-paper-signs>div{flex:1 1 220px}
+.bid-paper-signs .ln{border-bottom:1px solid var(--paper-line);min-height:1.8em;font-family:"Sarabun",cursive;font-size:19px}
+@media print{
+  body.printing>*{display:none!important}
+  body.printing #v-bid{display:block!important}
+  body.printing #v-bid>*:not(#bid){display:none}
+  body.printing #bid>*:not(details){display:none}
+  body.printing details.more>summary{display:none}
+  body.printing .bid-paper{box-shadow:none;border-radius:0;padding:0}
+}
 .ap-bar{position:sticky;bottom:0;z-index:5;display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;background:var(--surface);box-shadow:0 -10px 22px -14px var(--sh-dark);border:1px solid var(--edge);border-radius:18px;padding:10px 16px}
 </style>
 
@@ -570,6 +620,7 @@ td .inp{min-width:180px}
 <section id="v-login" hidden><div class="login-wrap" id="login"></div></section>
 <section id="v-pending" hidden><div class="login-wrap" id="pending"></div></section>
 <section id="v-books" hidden><div class="read" id="books"></div></section>
+<section id="v-bid" hidden><div class="read" id="bid"></div><input type="file" id="bid-file" accept=".pdf,image/*" hidden></section>
 <section id="v-builder" hidden>
   <div class="bar">
     <button type="button" class="btn" data-go="books">← รายการคู่มือ</button>
@@ -883,7 +934,7 @@ const LOCKED_ALL = {
    "arrival_head": "VENUE ARRIVAL INFORMATION & FITNESS TO COMPETE",
    "passports": "PASSPORTS: All Horses competing at the Events must be registered with TEF/FEI. Athletes who do not present a Horse’s Passport or one that is not correctly validated or fail to meet other passport requirements will be subject to Sanctions in accordance with the Veterinary Regulations and may not be allowed to compete.",
    "passports_nb": "NB for Horses permanently resident in a venue, must have a TEF/FEI passport in compliance with TEF Regulations.",
-   "vaccinations": "VACCINATIONS: Horses competing at the Events must comply with the requirements of the TEF Veterinary Regulations 2025.",
+   "vaccinations": "VACCINATIONS: Horses competing at the Events must comply with the requirements of the TEF Veterinary Regulations 2026.",
    "examination": "EXAMINATION ON ARRIVAL: On arrival at an Event venue, all Horses must undergo an examination by a veterinarian to confirm their identification from their passport and microchip (where present), their vaccination status and meet the health requirements to access the Stables Area. To protect all horses attending events, any Horse with a questionable health status concerning vaccination, infectious disease or other concerns, must be stabled within the isolation facilities provided by the Organising Committee pending a decision on entering the venue.",
    "inspections": "HORSE INSPECTIONS: All Horses will be assessed for their fitness to compete during the Horse Inspection. Any Horse demonstrating questionable fitness may be referred to the Holding Box for further veterinary examination. Horses not deemed fit to compete by the Inspection Panel will not be permitted to compete."
   },
@@ -959,7 +1010,7 @@ const LOCKED_ALL = {
     ]
    },
    {
-    "h": "FEI Veterinary Regulations, 15th Edition, 1 January 2023, updates effective 01 January 2025",
+    "h": "FEI Veterinary Regulations, 15th Edition, 1 January 2023, updates effective 01 January 2026",
     "items": [
      "Article 1035 - Presentation of Horses (p.31)"
     ]
@@ -1099,7 +1150,7 @@ RULES_EN.splice(4, 0,
 const TOC_EN = [
   ['DENOMINATION OF EVENT'], ['GENERAL CONDITIONS'], ['THE FEI CODE OF CONDUCT FOR THE WELFARE OF THE HORSE'],
   ['GENERAL INFORMATION'], ['ORGANISER', 1], ['ORGANISING COMMITTEE', 1], ['EVENT DIRECTOR', 1],
-  ['OFFICIALS'], ['ENTRIES'], ['ENTRY DATE AND FEE', 1], ['NO-SHOWA/LATE WITHDRAWALS', 1],
+  ['OFFICIALS'], ['ENTRIES'], ['ENTRY DATE AND FEE', 1], ['NO-SHOWS/LATE WITHDRAWALS', 1],
   ['TIMETABLE AND COMPETITION DETAILS'], ['LOGISTICAL/ADMINISTRATIVE/TECHNICAL INFORMATION'],
   ['COMPETITION ARENA(S)', 1], ['PRACTICE ARENA(S)', 1], ['PRIZE AND REWARDS', 1], ['PRIZE GIVING CEREMONY', 1], ['PARKING', 1],
   ['VETERINARY MATTERS'], ['HEALTH REQUIREMENTS', 1], ['NATIONAL REQUIREMENTS', 1], ['TRANSPORT OF HORSES', 1],
@@ -1390,7 +1441,7 @@ function block(b){
       return `<div class="lockblk" data-lock="cover">${LOCK_TAG}<div class="d-sub">Technical Handbook Guideline</div>
         <div class="d-title en">Technical Handbook</div></div>
         <div class="d-disc propblk" title="Proposed: name the discipline on the cover">${esc(dn.en)}</div>
-        <div class="d-h" style="text-align:left">1. DOMINATION OF EVENT</div>`;
+        <div class="d-h" style="text-align:left">1. DENOMINATION OF EVENT</div>`;
     }
     case 'chk': {
       const v = d.values.arena_type || '', on = x => v === x || v === 'Indoor and Outdoor';
@@ -1971,7 +2022,7 @@ const ST = {
 /* ---------- state ---------- */
 const KEY = 'tef-dressage-app-v1';
 const clone = o => JSON.parse(JSON.stringify(o));
-function fresh(){ return {v:2, disc:'dressage', marks:true, me:null, view:'books', cur:null, clock:0, mineOnly:false, users:clone(TEAM), books:[], mail:[], reg:[]}; }
+function fresh(){ return {v:2, disc:'dressage', marks:true, me:null, view:'books', cur:null, clock:0, mineOnly:false, users:clone(TEAM), books:[], bids:[], mail:[], reg:[]}; }
 
 const CLUBS = [["หน่วยม้าทรงประจำพระองค์ฯ","RSU"],["ชมรมขี่ม้า ทหารม้ารักษาพระองค์","HG"],["สมาคมราชกรีฑาสโมสรโปโลคลับ","RBSC"],["ชมรมกีฬาขี่ม้า ค่ายทองฑีฆายุ"],["ชมรมขี่ม้าค่ายอดิศร / ชมรมกีฬาขี่ม้ากองทัพบก","CC"],["ชมรมนักขี่ม้า กองพันสัตว์ต่าง","P.S.R.C."],["สโมสรขี่ม้าและตีคลีในพระบรมราชูปถัมภ์"],["ชมรมขี่ม้า อีเควสเทรี่ยนพาราไดซ์","EP"],["ชมรมขี่ม้า วินดี้ เชียงใหม่","W.E.C"],["สโมสร เดอะฮอร์สชูพอย์ทรีสอร์ท แอนด์ คันทรี่คลับ","HSP"],["สโมสร โจโจ้ ฮอร์ส คลับ","JOJO"],["ศูนย์ฝึกขี่ม้า กรมทหารราบที่ 21 รักษาพระองค์","NQG"],["สโมสร คนรักม้า","HLC"],["ชมรมขี่ม้า ลัดดาแลนด์","LEC"],["สโมสร นิว อีเควสเทรียน โซไซตี้ คลับ","NESC"],["ชมรมขี่ม้า ฟินิกซ์ไรดิ้ง อาคาเดอมี","PRA"],["ชมรมขี่ม้า ค่ายสุรนารี","SRC"],["สโมสรขี่ม้า บ้านริมน้ำ","BRN"],["สโมสร เช็คเมท ฮอร์ส คลับ","CMHC"],["สโมสร เซนต์แอนดรูส์ อีเควสเทรี่ยน เซ็นเตอร์","ST.AEC"],["ชมรม กีฬาขี่ม้าชมวิวระยอง","CV"],["สโมสร ไทย โปโล แอนด์ อีเควียสเตรียน คลับ","Thai Polo"],["สโมสร แม็กซ์วิน","Maxwin"],["ชมรม เค เอ็ม แอล สตัดท์","KML STUD"],["ชมรมขี่ม้า MCC แสนสุข","MCC"],["ชมรม สมานฟาร์ม","SM"],["สโมสร กีฬาขี่ม้าโกลด์เด้นฮอร์ส","GHRC"],["ชมรมขี่ม้า วิว ชาเล่ต์","VCH"],["ชมรมขี่ม้า เดอะฮอร์สเซส","The Horses"],["ชมรมขี่ม้า เปรมปรีดิ์บายใจ"],["สโมสร ปิยะชาติ ฮอร์สไรด์ดิ้ง คลับ","PHRC"],["ชมรมขี่ม้า ไอซ์ธารา พัทยา","ITP"],["สโมสรขี่ม้า เฮ้าส์ ออฟ ฮอร์ส","HOH"],["ชมรมขี่ม้า สกายไวท์ ฮอร์ส ไรดิ้ง คลับ","SWHR"],["ชมรมขี่ม้า เอ็นพี อีเควสเตรียนคลับ บาย มานะ","NPEC"],["ชมรมขี่ม้า อุบล โพนี่ คลับ","UPC"],["ชมรม กีฬาขี่ม้านครศรีธรรมราช","N.SRC"],["สโมสรขี่ม้า เลิศนิมิต บ้านเลี้ยงม้า","LNM"],["ชมรมขี่ม้า FARO FARM 101","FF101"],["ชมรม 22nd Horse Club","22HC"],["สโมสรขี่ม้า กรุงเทพอีเควสเตรียนเซ็นเตอร์","B.E.C."],["ชมรมขี่ม้า ออชาร์ดปาร์ค","OP"],["ชมรมขี่ม้า ภูผาหมอก","PPM"],["ชมรม อนุรักษ์ม้าไทยแสนรู้"],["ชมรมขี่ม้าฮอร์ส คลับ ไทยแลนด์"],["ชมรม มวกเหล็ก ไรดิ้ง คลับ"],["ชมรมขี่ม้า ฮอร์ส โกลด์ คิม"],["สโมสร แจ้งวัฒนะฮอสสปอร์ทคลับ","CWN"],["ชมรม สปิริต ฮอร์ส ไรด์ดิ้ง","SHR"],["ชมรมขี่ม้า โรดิโอ ฮอร์ส ไรด์ดิ้ง","R.H.R"],["สโมสร Cattymax Horse Riding","CMHR"],["โรงเรียนสอนขี่ม้าอัศวิน","KEA"],["สโมสร เดอะฮอร์สแลนด์ไรด์ดิ้งคลับ","THRC"],["ชมรมขี่ม้า สุภาวดี แรนซ์"],["ชมรมขี่ม้า ลาดกระบังอีเควสเทรียน"],["ชมรมขี่ม้า พจนา ฟาร์ม","PN"],["ชมรมขี่ม้า หาดใหญ่ ฮอร์ส สปอร์ต","HHS"],["ชมรมขี่ม้า รักม้ารักษ์ป่า ลลิตาฟาร์ม","LLL"],["สโมสร นอร์ท สตาร์","NS"],["สโมสรขี่ม้า ไอ แอม ฮอร์ส ไรดิ้ง","I AM"],["ชมรม สปินนิ่ง ฮอร์ส ไทยแลนด์","SHTH"],["ชมรมขี่ม้า เขาใหญ่ฮอร์สแมน","KYHM"],["ชมรมขี่ม้า กองพันทหารม้าที่ 19","C.S.C."],["สโมสร บีบี อาราเบียน ฟาร์ม","BBA"],["ชมรม ไร่เหมือนฝัน กาญจนบุรี","RMK"],["ชมรมขี่ม้า อุดรธานี","U.D.E.C"],["ชมรมขี่ม้า ปีโป้ โพนี่ คลับ"],["ชมรมขี่ม้า กองการสัตว์และเกษตรกรรมที่ 1"],["ชมรมขี่ม้า เจทีทีดับเบิ้ลยูฮอร์สฟาร์ม"],["ชมรมขี่ม้า P.O. Ranch","P.O."],["ชมรมขี่ม้า จังหวัดพะเยา","PYRC"],["ชมรมขี่ม้า ฟาร์มสวีท ฮอร์ส","SHFarm"],["ชมรมขี่ม้า จรัญ 92 ฮอร์สไรด์ดิ้ง","C92HR"],["สโมสรขี่ม้า อัศวแพทย์แห่งมหาวิทยาลัยเทคโนโลยีมหานคร"],["สโมสรขี่ม้า ฟ้าใส","FSHRC"],["ชมรมขี่ม้า The Herd","THT"],["ชมรมขี่ม้า สมุยไรดิ้ง คลับ"],["ชมรมขี่ม้า มหาวิทยาลัยเกษตรศาสตร์ กำแพงแสน","KU.KPS.HRC"],["ชมรมขี่ม้า สโล บันนี่","SLO"],["ชมรมขี่ม้า วังเพชรฟาร์ม"],["ชมรมขี่ม้า เลฟอร์ท อีเควสเทรียน คลับ"],["ชมรมขี่ม้า บัวทองแก้วฟาร์ม","BTK"],["ชมรมขี่ม้า มอนทาน่า สุรินทร์"],["ชมรมขี่ม้า โรงเรียน อบจ.สงขลาพิทยานุสรณ์"],["ชมรมขี่ม้า ฮอร์สซ์ ยูไนเต็ด","H.U.C"],["ชมรมขี่ม้า สงขลา บาเรล เรสซิ่ง คลับ (ดี.ดี.ฟาร์ม-สงขลา บาเรล เรสซิ่ง คลับ)"],["ชมรมขี่ม้า บ้านคอกม้า คาวบอยฟาร์ม","B.B.C.F"],["ชมรมขี่ม้า เพ็ชรไทย ฟาร์ม","PT"],["ชมรมขี่ม้า ซี ทู","C2"],["ชมรมขี่ม้า ตำรวจม้า 191","M.P.C."],["ชมรมขี่ม้า ฮอสมาสเตอร์ไทยแลนด์","HMT"],["ชมรมขี่ม้า ฟาร์มม้าอรุณ","ARHF"],["ชมรมขี่ม้า บริษัท อีเควสเตรียน เอ็ดดูเคชั่น เซ็นเตอร์ เชียงใหม่","EEC"],["ชมรมขี่ม้า ชายหาดระยอง","RBHR"],["ชมรมขี่ม้า ธนัชฟาร์มม้าและสวนเกษตรพอเพียง","TFH"],["ชมรมขี่ม้า เพื่อสุขภาพ กิ้กกะก้อ"],["ชมรมขี่ม้า The Wind of Heaven Horse Riding Club"],["ชมรม กีฬาขี่ม้าจังหวัดสตูล","S.H.C"],["ชมรม กีฬาขี่ม้าชมวิวบางกอก","CBC"],["ชมรมขี่ม้า กู๊ดฟิวส์ อีเควสเตรียน คลับ","Good Feel"],["ชมรมขี่ม้า บ้านม้าควนพลา","Ban-Ma"],["ชมรม กีฬาขี่ม้าจังหวัดปัตตานี","P.H.C"],["ชมรม กีฬาขี่ม้าจังหวัดพังงา","P.N.H.C."],["ชมรม กีฬาขี่ม้าจังหวัดสุราษฎร์ธานี (ชมทัศน์ ฟาร์ม)","SRT"],["ชมรมขี่ม้า ลอยเด่น ฮอร์ส มาสเตอร์"],["ชมรมขี่ม้า สุพรรณ ฮอร์ส สปอร์ท คลับ","SP Club"],["ชมรมขี่ม้า สร้างเงินอะคาเดมี่"],["ชมรมขี่ม้า เอลกาบาโญ่ คลับ","Caballo"],["สโมสรขี่ม้า ลิตเติ้ลบิทฮอร์สคลับ"],["ชมรมขี่ม้า สมุทรปราการ ฮอร์ส ไรดิ้ง คลับ","SPHRC"],["ชมรมขี่ม้า เชาวณัฏฟาร์ม","CHF"],["ชมรมขี่ม้า BH Farm Horse Club"],["ชมรมขี่ม้า ไร่คาราวาน"],["ชมรมขี่ม้า MM Rice and Ranch"],["ชมรมขี่ม้า Phatthalung Mountain View Ranch","P.M.V.R."],["ชมรมขี่ม้า บ้านคอกม้าบางพลี","BRPC"],["ชมรมขี่ม้า ภูสายลม","PSLC"],["ชมรมขี่ม้า ภูสิน ฟาร์ม","P.S."],["ชมรมขี่ม้า SK Horse Stable Sakonnakhon","SKHS"],["ชมรมขี่ม้า เอสซี อีเควสเทรียน คลับ","SCEC"],["ชมรมขี่ม้า เดอะ เฮย์-อีเควสเทรี่ยน เซ็นเตอร์","The Hay"],["สโมสรขี่ม้า เอฟ ดี แอล ไรดิ้งคลับ","FDL"],["ชมรมขี่ม้า Pari Passu บ้านสวนตะวัน","PPT"],["ชมรมขี่ม้า ภูดิศ ฮอร์ส คลับ เขาใหญ่"],["ชมรมขี่ม้า สถาบันสอนขี่ม้ามอราเซีย","MHA"],["ชมรมขี่ม้า ฮอส แฟมิลี่"],["สโมสรขี่ม้า ฮอสเฮเว่น","HORSE HAVEN"],["ชมรมขี่ม้า บีเบล ระยอง","B’BELL"],["ชมรมขี่ม้า ฮาร์โมเนีย","HM"],["สโมสร ดรีมเมอร์ สตั๊ด ฟาร์ม","D.S.F."],["ชมรมขี่ม้า บ้านม้าริมคลอง","BAANMA"],["สโมสรขี่ม้า ชาวาลลิโน อีเควสเทรียน เซ็นเตอร์","CHA"],["ชมรมขี่ม้า เคพี อีเควสเตรียนเซ็นเตอร์","KPEC"],["ชมรมขี่ม้า Jumping Academy"],["สโมสรขี่ม้า นิรันดร์","NECP"],["ชมรมขี่ม้า LL Pegasus Club","LL Pegasus"],["ชมรมขี่ม้า คอกม้ากุลชา","KLC"],["ชมรมขี่ม้า แฮปปี้ ฟาร์ม สุราษฏร์ธานี","HFS"],["สโมสรขี่ม้า บ้านมนตรี","BMEC"],["ชมรมขี่ม้า บีบี ฮอร์ส สเตเบิ้ล ไทยแลนด์","BB.HS"],["ชมรมขี่ม้า เบรฟฮอร์สไทยแลนด์","BHT"],["สโมสรขี่ม้า คอกม้ามิตรภาพ","R2HSC"]];
 /* Member clubs of TEF, from the association's directory (member V2nov26.xlsx, 11 Nov 2026).
@@ -2002,6 +2053,7 @@ if (!ONLINE) {
   try { S = JSON.parse(localStorage.getItem(KEY)); } catch(e) { S = null; }
 }
 if (!S || S.v !== 2 || !Array.isArray(S.books)) S = fresh();
+if (!Array.isArray(S.bids)) S.bids = [];   /* added with the organiser application, Nov 2026 */
 S.disc = 'dressage';
 
 function save(){
@@ -3106,7 +3158,11 @@ function renderBooks(){
   const pend = holders('pending').length;
   let html = `<div class="head-row"><div><div class="eyebrow">${esc(ROLES[u.role].th)}</div><h1>${u.role === 'organizer' ? 'คู่มือของฉัน' : 'คู่มือการแข่งขัน Dressage'}</h1>
     <p class="lead">${u.role === 'organizer' ? 'สร้างคู่มือ กรอกให้ครบ แล้วส่งให้ TEF อย่างน้อย 45 วันก่อนวันแข่ง ถ้าถูกส่งกลับ มีเวลาแก้ 3 วัน' : 'คู่มือผ่าน TEF Admin → คุณสุขุมาลี (ตรวจทาน) → TEF Admin → พลตรี สมพงษ์ (และคุณวีระพงค์ถ้ามีรุ่นโพนี) → info แจ้งทางอีเมล → คุณหยกประกาศทาง Facebook'}</p></div>
-    ${u.role === 'organizer' ? '<button type="button" class="btn primary" data-do="new">+ สร้างคู่มือ Dressage ใหม่</button>' : ''}</div>`;
+    ${u.role === 'organizer' ? `<button type="button" class="btn primary" data-do="new">+ สร้างคู่มือ Dressage ใหม่</button>` : ''}</div>`;
+  if (u.role === 'organizer' && !bidOk()) {
+    const q = myBid();
+    html += `<div class="banner warn"><b>ต้องได้รับอนุมัติให้เป็นผู้จัดการแข่งขันก่อน</b>${q ? `คำขอของคุณอยู่ในขั้น “${esc(BID_ST[q.status])}”` : 'ยื่นแบบแจ้งความประสงค์ขอเป็นผู้จัดการแข่งขันก่อน แล้วรอการตรวจและอนุมัติ'}<button type="button" class="add" data-go="bid">ไปที่แบบแจ้งความประสงค์ →</button></div>`;
+  }
   if (u.role === 'admin' && pend) html += `<div class="banner warn"><b>มีผู้ขอเข้าใช้งาน ${td(pend)} คน</b><button type="button" class="add" data-go="users">ไปอนุมัติ →</button></div>`;
   if (!all.length) html += `<div class="panel empty">${u.role === 'organizer' ? 'ยังไม่มีคู่มือ กด “สร้างคู่มือ Dressage ใหม่” เพื่อเริ่ม' : 'ยังไม่มีคู่มือในระบบ'}</div>`;
   else {
@@ -3222,14 +3278,329 @@ function dlgOrgOut(id){
   dlg.showModal();
 }
 
+/* ---------- แบบแจ้งความประสงค์ขอเป็นผู้จัดการแข่งขัน ----------
+   ด่านก่อนสร้างคู่มือ: ชมรมยื่น → คุณสุขุมาลีตรวจเอกสาร → พลตรี สมพงษ์อนุมัติ
+   (มีรุ่นโพนีต้องผ่านคุณวีระพงค์ด้วย) ยื่นได้สองแบบ ลงนามอิเล็กทรอนิกส์ หรือพิมพ์ไปเซ็นแล้วอัปโหลดกลับ */
+const BID_ST = {draft:'ร่าง', check:'รอตรวจเอกสาร', approve:'รออนุมัติ', approved:'อนุมัติแล้ว', returned:'ส่งกลับแก้ไข'};
+const BID_FAC = ['ห้องอำนวยการ', 'ห้องพักกรรมการ', 'สถานที่รับรองนักกีฬาและผู้เข้าชม', 'ห้องน้ำ', 'ร้านอาหาร / เครื่องดื่ม', 'ร้านค้า'];
+const BID_TXT = [['applicant', 'ผู้ขอ', 1], ['club', 'สังกัด ชมรม/สโมสร', 1], ['tel', 'เบอร์โทรติดต่อ', 1],
+  ['line', 'Line', 0], ['email', 'Email address', 1], ['venue', 'สถานที่จัดการแข่งขัน', 1]];
+
+function bidNew(u){ return {id:rid('q'), owner:u.id, created:now(), status:'draft', mode:'e', pony:false,
+  approvals:{}, hist:[], sign:{}, files:[], d:{applicant:u.name, email:u.email, arenas:[{}, {}, {}, {}, {}], perm:[{}, {}], temp:[{}, {}], fac:{}, owns:'yes'}}; }
+const myBid = () => S.bids.find(q => q.owner === S.me);
+const bidOk = () => S.bids.some(q => q.owner === S.me && q.status === 'approved');
+const bidOwner = q => S.users.find(x => x.id === q.owner) || {name:'—', email:''};
+function bidMine(q, u){
+  if (u.role === 'organizer') return q.owner === u.id && ['draft', 'returned'].includes(q.status);
+  if (u.role === 'reviewer' || u.role === 'admin') return q.status === 'check';
+  if (u.role === 'approver') return q.status === 'approve' && !q.approvals.approver;
+  if (u.role === 'approver_pony') return q.status === 'approve' && q.pony && !q.approvals.approver_pony;
+  return false;
+}
+function bidLog(q, t){ (q.hist = q.hist || []).unshift({t, by:me().name, at:now()}); }
+const getP = (o, path) => path.split('.').reduce((t, k) => (t == null ? undefined : t[k]), o);
+function setP(o, path, v){
+  const ks = path.split('.');
+  let t = o;
+  for (let i = 0; i < ks.length - 1; i++) { const k = ks[i]; if (t[k] == null) t[k] = /^\d+$/.test(ks[i + 1]) ? [] : {}; t = t[k]; }
+  t[ks[ks.length - 1]] = v;
+}
+function bidProblems(q){
+  const d = q.d, out = [];
+  BID_TXT.forEach(([k, l, req]) => { if (req && !String(d[k] || '').trim()) out.push('ยังไม่กรอก ' + l); });
+  if (!d.from || !d.to) out.push('ยังไม่กรอกห้วงวันที่ขอจัดการแข่งขัน');
+  if (!String(d.address || '').trim()) out.push('ยังไม่กรอกที่อยู่สถานที่จัดการแข่งขัน');
+  if (d.owns === 'no' && !d.consent) out.push('ไม่ใช่ผู้ถือกรรมสิทธิ์ ต้องแนบหนังสือยินยอมจากเจ้าของสถานที่');
+  if (!d.arenas.some(a => a && a.w && a.l)) out.push('ต้องกรอกขนาดสนามอย่างน้อย 1 สนาม');
+  if (q.mode === 'e') {
+    if (!q.sign.applicant) out.push('ผู้ขอยังไม่ลงนาม');
+    if (!q.sign.chair) out.push('ประธานชมรม/สโมสร หรือผู้จัดการ ยังไม่ลงนาม');
+    if (!q.stampNone && !q.stamp) out.push('ยังไม่แนบตราประทับ ถ้าไม่มีให้ติ๊ก “ไม่มีตราประทับ”');
+  } else if (!q.files.length) out.push('ยังไม่อัปโหลดแบบฟอร์มที่เซ็นแล้ว');
+  return out;
+}
+
+/* ---- form pieces ---- */
+const bidIn = (q, path, ph, extra) => `<input class="inp" data-b="${path}" value="${esc(getP(q.d, path) || '')}" placeholder="${esc(ph || '')}"${extra || ''}>`;
+function bidForm(q){
+  const d = q.d, dis = ['draft', 'returned'].includes(q.status) ? '' : ' disabled';
+  const row = (l, inner) => `<label class="bid-l">${l}${inner}</label>`;
+  const arenas = d.arenas.map((a, i) => `<tr><td>สนาม ${td(i + 1)}</td>
+    <td>${bidIn(q, 'arenas.' + i + '.w', 'กว้าง', dis)}</td><td>${bidIn(q, 'arenas.' + i + '.l', 'ยาว', dis)}</td>
+    <td>${bidIn(q, 'arenas.' + i + '.surf', 'พื้นผิว', dis)}</td><td>${bidIn(q, 'arenas.' + i + '.use', 'เช่น แข่งขัน, ซ้อม, 10 min Arena, ตีวง', dis)}</td></tr>`).join('');
+  const boxRows = (key, label) => `<tr><td rowspan="2">${label}</td><td rowspan="2">${bidIn(q, key + 'Total', 'รวมทั้งหมด', dis)}</td>
+      <td>${bidIn(q, key + '.0.size', 'ขนาด ม. x ม.', dis)}</td><td>${bidIn(q, key + '.0.n', 'จำนวน', dis)}</td></tr>
+    <tr><td>${bidIn(q, key + '.1.size', 'ขนาด ม. x ม.', dis)}</td><td>${bidIn(q, key + '.1.n', 'จำนวน', dis)}</td></tr>`;
+  const fac = BID_FAC.map((f, i) => `<label class="bid-ck"><input type="checkbox" data-b="fac.${i}"${d.fac[i] ? ' checked' : ''}${dis}> ${esc(f)}</label>`).join('');
+  return `<fieldset class="bid-fs"${dis}><legend>รายละเอียดผู้ขอจัดการแข่งขัน</legend>
+      <div class="bid-grid">
+        ${row('ผู้ขอ', bidIn(q, 'applicant', 'ชื่อ-นามสกุล', dis))}
+        ${row('สังกัด ชมรม/สโมสร', bidIn(q, 'club', 'พิมพ์ชื่อแล้วเลือกจากรายการ', ' list="clubs"' + dis))}
+        ${row('เบอร์โทรติดต่อ', bidIn(q, 'tel', '08x-xxx-xxxx', dis))}
+        ${row('Line', bidIn(q, 'line', '', dis))}
+        ${row('Email address', bidIn(q, 'email', '', dis))}
+        ${row('ขอจัดการแข่งขันห้วงวันที่', `<span class="bid-2"><input class="inp" type="date" data-b="from" value="${esc(d.from || '')}"${dis}><input class="inp" type="date" data-b="to" value="${esc(d.to || '')}"${dis}></span>`)}
+        ${row('สถานที่จัดการแข่งขัน', bidIn(q, 'venue', '', dis))}
+      </div>
+      <label class="bid-l" style="margin-top:8px">ที่อยู่<textarea class="inp" rows="2" data-b="address"${dis}>${esc(d.address || '')}</textarea></label>
+      <div class="bid-ck-row" style="margin-top:8px">
+        <label class="bid-ck"><input type="radio" name="owns" data-b="owns" value="yes"${d.owns !== 'no' ? ' checked' : ''}${dis}> ผู้ขอเป็นผู้ถือกรรมสิทธิ์ของสถานที่</label>
+        <label class="bid-ck"><input type="radio" name="owns" data-b="owns" value="no"${d.owns === 'no' ? ' checked' : ''}${dis}> ไม่ใช่ผู้ถือกรรมสิทธิ์</label></div>
+      ${d.owns === 'no' ? `<div class="banner warn" style="margin-top:6px"><b>ต้องแนบหนังสือแสดงความยินยอมจากเจ้าของสถานที่</b>
+        ${q.d.consent ? `<span class="okc">แนบแล้ว: ${esc(q.d.consent)}</span>` : '<span class="muted">ยังไม่แนบ</span>'}
+        ${dis ? '' : ' <button type="button" class="add" data-do="bid-up" data-arg="consent">แนบไฟล์</button>'}</div>` : ''}
+    </fieldset>
+
+    <fieldset class="bid-fs"${dis}><legend>รายละเอียดสถานที่ · จำนวนสนามและขนาด</legend>
+      <p class="hint" style="margin:0 0 6px">กรุณาระบุการใช้แต่ละสนามให้ชัดเจน เช่น แข่งขัน, ซ้อม, 10 min Arena, ตีวง, ปล่อยแปลง</p>
+      <div class="tbl-wrap"><table class="bid-t"><thead><tr><th></th><th>กว้าง (ม.)</th><th>ยาว (ม.)</th><th>พื้นผิว</th><th>ใช้สำหรับ</th></tr></thead><tbody>${arenas}</tbody></table></div>
+      <h4 style="margin:12px 0 4px">จำนวนคอก</h4>
+      <div class="tbl-wrap"><table class="bid-t"><thead><tr><th></th><th>รวมทั้งหมด</th><th>ขนาด</th><th>จำนวน</th></tr></thead><tbody>${boxRows('perm', 'คอกถาวร')}${boxRows('temp', 'คอกชั่วคราว')}</tbody></table></div>
+      <h4 style="margin:12px 0 4px">อาคาร / สิ่งอำนวยความสะดวก</h4>
+      <div class="bid-ck-row">${fac}</div>
+      <div class="bid-grid" style="margin-top:6px">
+        ${row('ที่จอดรถ (คัน)', bidIn(q, 'park', '', dis))}
+        ${row('ที่จอดรถม้า (คัน)', bidIn(q, 'parkHorse', '', dis))}</div>
+      <label class="bid-l" style="margin-top:8px">อื่นๆ<input class="inp" data-b="facOther" value="${esc(d.facOther || '')}"${dis}></label>
+      <h4 style="margin:12px 0 4px">อุปกรณ์ประกอบ</h4>
+      <div class="bid-grid">
+        ${row('รั้วสนามแข่งและตัวอักษร สำหรับสนามขนาด 20x60 (ชุด)', bidIn(q, 'fence', '', dis))}
+        ${row('โต๊ะกรรมการตัดสิน พร้อมแท่นยกสูง 50 ซม. (ชุด)', bidIn(q, 'tables', '', dis))}</div>
+      <p class="hint" style="margin:4px 0 0">อนุโลมให้ดัดแปลงได้ แต่ต้องมีพื้นที่ทำงานและวิสัยทัศน์เสมือนใช้แท่นยกสูง</p>
+      <label class="bid-l" style="margin-top:10px">รายละเอียดเพิ่มเติมอื่นๆ (ถ้ามี)<textarea class="inp" rows="3" data-b="more"${dis}>${esc(d.more || '')}</textarea></label>
+      <label class="bid-ck" style="margin-top:10px"><input type="checkbox" data-b="ponyFlag"${q.pony ? ' checked' : ''}${dis}> รายการนี้มีรุ่นโพนี (Pony) ต้องให้คุณวีระพงค์อนุมัติด้วย</label>
+    </fieldset>`;
+}
+function bidSignBlock(q){
+  const dis = ['draft', 'returned'].includes(q.status);
+  const box = (k, who) => {
+    const sg = q.sign[k];
+    return `<div class="bid-sign"><div class="sigbox${sg ? ' has' : ''}"${dis ? ` data-do="bid-sign" data-arg="${k}"` : ''}>${sg ? esc(sg.name) : (dis ? 'กดเพื่อลงนาม' : 'ยังไม่ลงนาม')}</div>
+      <div class="bid-sign-l">${who}</div>${sg ? `<div class="hint">${esc(sg.name)} · ${fmtTs(sg.at)}</div>` : ''}</div>`;
+  };
+  return `<fieldset class="bid-fs"><legend>รับรองเอกสาร</legend>
+    <div class="bid-signs">${box('applicant', 'ผู้ขอเป็นผู้จัดการแข่งขัน')}${box('chair', 'ประธานชมรม/สโมสร หรือผู้จัดการ')}</div>
+    <p class="hint" style="margin:8px 0 0">ลายเซ็นอิเล็กทรอนิกส์เป็นรูปภาพ ระบบบันทึกชื่อผู้ลงนาม เวลา และบัญชีที่ใช้ไว้เป็นหลักฐาน · จุดที่สองต้องเป็นประธานชมรม/สโมสร หรือผู้จัดการเท่านั้น</p>
+    <div class="bid-ck-row" style="margin-top:10px">
+      <span>${q.stamp ? `<span class="okc">ตราประทับ: ${esc(q.stamp)}</span>` : '<span class="muted">ยังไม่แนบตราประทับ</span>'}
+        ${dis && !q.stampNone ? ' <button type="button" class="add" data-do="bid-up" data-arg="stamp">แนบรูปตราประทับ</button>' : ''}</span>
+      <label class="bid-ck"><input type="checkbox" data-do="bid-nostamp"${q.stampNone ? ' checked' : ''}${dis ? '' : ' disabled'}> ไม่มีตราประทับ</label></div>`;
+}
+function bidUpBlock(q){
+  const dis = ['draft', 'returned'].includes(q.status);
+  return `<fieldset class="bid-fs"><legend>พิมพ์ไปลงนามด้วยปากกา แล้วอัปโหลดกลับ</legend>
+    <ol class="bid-steps"><li>กด <b>พิมพ์แบบฟอร์มที่กรอกแล้ว</b> ระบบพิมพ์หน้าเดียวกับไฟล์ของสมาคม พร้อมข้อมูลที่กรอกไว้</li>
+      <li>ให้ผู้ขอและประธานชมรม/สโมสร (หรือผู้จัดการ) ลงนามด้วยปากกา และประทับตรา ถ้าไม่มีตราให้ติ๊กช่อง “ไม่มี” ในแบบฟอร์ม</li>
+      <li>สแกนหรือถ่ายรูป แล้วอัปโหลดกลับมาที่นี่</li></ol>
+    <div class="row-acts" style="margin-top:8px"><button type="button" class="btn" data-do="bid-print">พิมพ์แบบฟอร์มที่กรอกแล้ว</button>
+      ${dis ? '<button type="button" class="btn primary" data-do="bid-up" data-arg="file">อัปโหลดไฟล์ที่เซ็นแล้ว</button>' : ''}</div>
+    ${q.files.length ? `<ul class="bid-files">${q.files.map((f, i) => `<li><span class="okc">${esc(f.name)}</span> <small class="muted">${fmtTs(f.at)}</small>${dis ? ` <button type="button" class="rm" data-do="bid-rmfile" data-arg="${i}" aria-label="ลบ">×</button>` : ''}</li>`).join('')}</ul>` : '<p class="hint" style="margin:8px 0 0">ยังไม่มีไฟล์</p>'}</fieldset>`;
+}
+/* กระดาษสำหรับพิมพ์ หน้าตาเหมือนไฟล์ Word ของสมาคม */
+function bidPaper(q){
+  const d = q.d, v = x => esc(x || '').toString() || '<span class="bl"></span>';
+  const tick = on => on ? '☑' : '☐';
+  const arena = (a, i) => `<div>สนาม ${td(i + 1)} ขนาด ${v(a.w)} m. x ${v(a.l)} m. พื้นผิว ${v(a.surf)} ใช้สำหรับ ${v(a.use)}</div>`;
+  return `<div class="bid-paper"><h2>แบบแจ้งความประสงค์ขอเป็นผู้จัดการแข่งขันกีฬาขี่ม้า ประเภทศิลปะบังคับม้า</h2>
+    <p class="c">ภายใต้การกำกับของสมาคมกีฬาขี่ม้าแห่งประเทศไทย ในพระบรมราชูปถัมภ์</p>
+    <h3>รายละเอียดผู้ขอจัดการแข่งขัน</h3>
+    <div>ผู้ขอ ${v(d.applicant)} สังกัด ชมรม/สโมสร ${v(d.club)}</div>
+    <div>เบอร์โทรติดต่อ ${v(d.tel)} Line ${v(d.line)} Email address ${v(d.email)}</div>
+    <div>ขอจัดการแข่งขันห้วงวันที่ ${d.from ? td(fmtD(Date.parse(d.from + 'T00:00:00'))) : ''}${d.to ? ' ถึง ' + td(fmtD(Date.parse(d.to + 'T00:00:00'))) : ''}</div>
+    <div>สถานที่จัดการแข่งขัน ${v(d.venue)} ที่อยู่ ${v(d.address)}</div>
+    <div>ผู้ขอเป็น ${tick(d.owns !== 'no')} ผู้ถือกรรมสิทธิ์ของสถานที่ ${tick(d.owns === 'no')} ไม่ใช่ผู้ถือกรรมสิทธิ์</div>
+    <p class="sm">หากผู้ขอไม่มีกรรมสิทธิ์ในสถานที่จัดการแข่งขัน กรุณาแนบหนังสือแสดงความยินยอมจากเจ้าของสถานที่ มาพร้อมแบบแจ้งความประสงค์นี้</p>
+    <h3>รายละเอียดสถานที่</h3>
+    <div><b>จำนวนสนามและขนาดของสนามทั้งหมด</b></div>${d.arenas.map(arena).join('')}
+    <div style="margin-top:6px"><b>จำนวนคอก</b></div>
+    <div>คอกถาวร รวมทั้งหมด ${v(d.permTotal)} · ขนาด ${v(getP(d, 'perm.0.size'))} จำนวน ${v(getP(d, 'perm.0.n'))} · ขนาด ${v(getP(d, 'perm.1.size'))} จำนวน ${v(getP(d, 'perm.1.n'))}</div>
+    <div>คอกชั่วคราว รวมทั้งหมด ${v(d.tempTotal)} · ขนาด ${v(getP(d, 'temp.0.size'))} จำนวน ${v(getP(d, 'temp.0.n'))} · ขนาด ${v(getP(d, 'temp.1.size'))} จำนวน ${v(getP(d, 'temp.1.n'))}</div>
+    <div style="margin-top:6px"><b>อาคาร/สิ่งอำนวยความสะดวก</b></div>
+    <div>${BID_FAC.map((f, i) => `${tick(d.fac[i])} ${esc(f)}`).join(' &nbsp; ')}</div>
+    <div>ที่จอดรถ จำนวน ${v(d.park)} คัน · ที่จอดรถม้า ${v(d.parkHorse)} คัน</div>
+    <div>อื่นๆ ${v(d.facOther)}</div>
+    <div style="margin-top:6px"><b>อุปกรณ์ประกอบ</b></div>
+    <div>รั้วสนามแข่งและตัวอักษร สำหรับสนามแข่งขัน ขนาด 20x60 จำนวน ${v(d.fence)} ชุด</div>
+    <div>โต๊ะกรรมการตัดสิน พร้อมแท่นยกสูง 50 ซม. จำนวน ${v(d.tables)} ชุด</div>
+    <div style="margin-top:6px"><b>รายละเอียดเพิ่มเติมอื่นๆ (ถ้ามี)</b></div><div>${v(d.more)}</div>
+    <h3>รับรองเอกสาร</h3>
+    <div class="bid-paper-signs">
+      <div><div class="ln">${q.sign.applicant ? esc(q.sign.applicant.name) : ''}</div>( ${q.sign.applicant ? esc(q.sign.applicant.name) : ''} )<div>ผู้ขอเป็นผู้จัดการแข่งขัน</div><div>วันที่ ${q.sign.applicant ? td(fmtD(q.sign.applicant.at)) : ''}</div></div>
+      <div><div class="ln">${q.sign.chair ? esc(q.sign.chair.name) : ''}</div>( ${q.sign.chair ? esc(q.sign.chair.name) : ''} )<div>ประธานชมรม/สโมสร</div><div>วันที่ ${q.sign.chair ? td(fmtD(q.sign.chair.at)) : ''}</div></div>
+    </div>
+    <div style="margin-top:10px">ตราประทับชมรม/สโมสร ${q.stampNone ? '☑ ไม่มี' : (q.stamp ? '(แนบแล้ว)' : '☐ ไม่มี')}</div></div>`;
+}
+/* ---- the three cards an applicant sees ---- */
+function bidStatusCard(q){
+  const need = q.pony ? ['approver', 'approver_pony'] : ['approver'];
+  const line = need.map(r => `${esc(roleName(r, {}))} ${q.approvals[r] ? `<span class="okc">✓ อนุมัติ ${fmtD(q.approvals[r])}</span>` : '<span class="muted">รอ</span>'}`).join(' · ');
+  const steps = [['ยื่นแบบ', q.submittedAt], ['ตรวจเอกสาร', q.checkedAt], ['อนุมัติ', q.approvedAt]];
+  return `<div class="panel"><div class="head-row"><div><div class="eyebrow">สถานะคำขอ</div><h3 style="margin:2px 0 0">${esc(BID_ST[q.status])}</h3></div>
+      <span class="pill s-${q.status === 'approved' ? 'approved' : q.status === 'returned' ? 'returned' : 'review'}">${esc(BID_ST[q.status])}</span></div>
+    <div class="bid-track">${steps.map(([t, at]) => `<span class="st ${at ? 'done' : ''}"><i>${at ? '✓' : '·'}</i>${t}${at ? `<small>${fmtD(at)}</small>` : ''}</span>`).join('')}</div>
+    ${['approve', 'approved'].includes(q.status) ? `<p class="hint" style="margin:8px 0 0">ผู้อนุมัติ: ${line}</p>` : ''}
+    ${q.why ? `<div class="flash" style="margin-top:8px"><b>ส่งกลับแก้ไข:</b> ${esc(q.why)}</div>` : ''}
+    ${q.hist && q.hist.length ? `<details class="more" style="margin-top:8px"><summary>บันทึกการดำเนินการ (${td(q.hist.length)})</summary>
+      <ul class="hist">${q.hist.map(h => `<li>${esc(h.t)} <time>${esc(h.by)} · ${fmtTs(h.at)}</time></li>`).join('')}</ul></details>` : ''}</div>`;
+}
+function renderBid(){
+  const u = me(), el = document.getElementById('bid');
+  if (u.role === 'organizer') {
+    const q = myBid();
+    if (!q) {
+      el.innerHTML = `<div><div class="eyebrow">ขั้นที่ 1 ก่อนสร้างคู่มือ</div><h1>แบบแจ้งความประสงค์ขอเป็นผู้จัดการแข่งขัน</h1>
+        <p class="lead">ชมรม/สโมสรต้องยื่นแบบนี้และได้รับอนุมัติก่อน จึงจะสร้างคู่มือการแข่งขันได้ ตรวจเอกสารโดยคุณสุขุมาลี แล้วเสนอพลตรี สมพงษ์อนุมัติ ถ้ารายการมีรุ่นโพนีต้องผ่านคุณวีระพงค์ด้วย</p></div>
+        <div class="panel"><h3 style="margin:0 0 8px">เลือกวิธียื่น</h3>
+          <div class="bid-modes">
+            <button type="button" class="rcard" data-do="bid-new" data-arg="e"><b>แบบที่ 1 ลงนามอิเล็กทรอนิกส์</b><small>กรอกในเว็บแล้วลงนามในจอ แนบรูปตราประทับหรือติ๊กว่าไม่มี ส่งได้ทันที</small></button>
+            <button type="button" class="rcard" data-do="bid-new" data-arg="print"><b>แบบที่ 2 พิมพ์ไปเซ็นด้วยปากกา</b><small>กรอกในเว็บ พิมพ์แบบฟอร์มที่กรอกแล้ว เซ็นและประทับตรา แล้วอัปโหลดกลับ</small></button>
+          </div></div>`;
+      return;
+    }
+    const open = ['draft', 'returned'].includes(q.status), errs = q.showErr ? bidProblems(q) : [];
+    el.innerHTML = `<div class="head-row"><div><div class="eyebrow">${q.mode === 'e' ? 'แบบที่ 1 ลงนามอิเล็กทรอนิกส์' : 'แบบที่ 2 พิมพ์ไปเซ็นด้วยปากกา'}</div>
+        <h1>แบบแจ้งความประสงค์ขอเป็นผู้จัดการแข่งขัน</h1></div>
+      ${open ? `<button type="button" class="btn" data-do="bid-mode">สลับเป็น${q.mode === 'e' ? 'แบบพิมพ์ไปเซ็น' : 'แบบลงนามอิเล็กทรอนิกส์'}</button>` : ''}</div>
+      ${bidStatusCard(q)}
+      ${q.status === 'approved' ? '<div class="banner ok"><b>อนุมัติแล้ว</b>สร้างคู่มือการแข่งขันได้ที่หน้า “คู่มือของฉัน”</div>' : ''}
+      ${bidForm(q)}
+      ${q.mode === 'e' ? bidSignBlock(q) : bidUpBlock(q)}
+      ${errs.length ? `<div class="err"><b>ยังส่งไม่ได้ ${td(errs.length)} เรื่อง</b><ul>${errs.map(e => `<li>${esc(e)}</li>`).join('')}</ul></div>` : ''}
+      ${open ? `<div class="ap-bar"><span class="hint">ระบบบันทึกให้อัตโนมัติ</span><button type="button" class="btn primary" data-do="bid-submit">ยื่นให้ TEF ตรวจ</button></div>` : ''}
+      <details class="more" style="margin-top:14px"><summary>ดูแบบฟอร์มที่กรอกแล้ว (หน้าตาตอนพิมพ์)</summary>${bidPaper(q)}</details>`;
+    return;
+  }
+  /* TEF side */
+  const mine = S.bids.filter(q => bidMine(q, u)), rest = S.bids.filter(q => !bidMine(q, u));
+  const card = q => {
+    const o = bidOwner(q), can = bidMine(q, u);
+    return `<div class="panel" data-bid="${q.id}"><div class="head-row"><div><div class="eyebrow">${esc(o.name)} · ${esc(q.d.club || '—')}</div>
+        <h3 style="margin:2px 0 0">${esc(q.d.venue || 'ยังไม่ระบุสถานที่')}</h3>
+        <p class="hint" style="margin:3px 0 0">ห้วงวันที่ ${q.d.from ? td(fmtD(Date.parse(q.d.from + 'T00:00:00'))) : '—'}${q.d.to ? ' – ' + td(fmtD(Date.parse(q.d.to + 'T00:00:00'))) : ''} · ยื่นเมื่อ ${q.submittedAt ? fmtTs(q.submittedAt) : '—'}${q.pony ? ' · <b>มีรุ่นโพนี</b>' : ''} · ${q.mode === 'e' ? 'ลงนามอิเล็กทรอนิกส์' : 'เซ็นด้วยปากกาแล้วอัปโหลด'}</p></div>
+        <span class="pill s-${q.status === 'approved' ? 'approved' : q.status === 'returned' ? 'returned' : 'review'}">${esc(BID_ST[q.status])}</span></div>
+      <details class="more" style="margin-top:8px"><summary>ดูแบบฟอร์มทั้งใบ</summary>${bidPaper(q)}
+        ${q.files.length ? `<div style="margin-top:8px">ไฟล์ที่อัปโหลด: ${q.files.map(f => `<span class="att">${esc(f.name)}</span>`).join('')}</div>` : ''}
+        ${q.d.consent ? `<div style="margin-top:6px">หนังสือยินยอมจากเจ้าของสถานที่: <span class="att">${esc(q.d.consent)}</span></div>` : ''}</details>
+      ${can ? `<div class="row-acts" style="margin-top:10px">
+        ${q.status === 'check' ? `<button type="button" class="btn primary" data-do="bid-pass" data-arg="${q.id}">เอกสารครบ เสนอผู้อนุมัติ</button>` : ''}
+        ${q.status === 'approve' ? `<button type="button" class="btn primary" data-do="bid-ok" data-arg="${q.id}">อนุมัติ</button>` : ''}
+        <button type="button" class="btn" data-do="bid-back" data-arg="${q.id}">ส่งกลับให้แก้</button></div>` : ''}</div>`;
+  };
+  el.innerHTML = `<div><div class="eyebrow">${esc(ROLES[u.role].th)}</div><h1>คำขอจัดการแข่งขัน</h1>
+      <p class="lead">ชมรมยื่นแบบแจ้งความประสงค์ → คุณสุขุมาลีตรวจเอกสาร → พลตรี สมพงษ์อนุมัติ (มีรุ่นโพนีต้องผ่านคุณวีระพงค์ด้วย) → ชมรมจึงสร้างคู่มือได้</p></div>
+    <div><h2>รอคุณดำเนินการ (${td(mine.length)})</h2>${mine.length ? mine.map(card).join('') : '<div class="panel empty">ไม่มีคำขอที่รอคุณ</div>'}</div>
+    ${rest.length ? `<div><h2>ทั้งหมด (${td(rest.length)})</h2>${rest.map(card).join('')}</div>` : ''}`;
+}
+/* ---- actions ---- */
+function bidAct(d, arg){
+  const u = me();
+  if (d === 'bid-new') { const q = bidNew(u); q.mode = arg; S.bids.push(q); bidLog(q, 'เริ่มกรอกแบบแจ้งความประสงค์'); save(); renderAll(); return true; }
+  const q = ['bid-pass', 'bid-ok', 'bid-back'].includes(d) ? S.bids.find(x => x.id === arg) : myBid();
+  if (!q) return true;
+  if (d === 'bid-mode') { q.mode = q.mode === 'e' ? 'print' : 'e'; save(); renderAll(); return true; }
+  if (d === 'bid-nostamp') { q.stampNone = !q.stampNone; save(); renderAll(); return true; }
+  if (d === 'bid-sign') {
+    q.sign[arg] = q.sign[arg] ? null : {name:arg === 'applicant' ? (q.d.applicant || u.name) : (q.d.chairName || 'ประธานชมรม/สโมสร'), at:now(), by:u.email};
+    if (!q.sign[arg]) delete q.sign[arg];
+    save(); renderAll(); return true;
+  }
+  if (d === 'bid-up') { BID_UP = arg; document.getElementById('bid-file').value = ''; document.getElementById('bid-file').click(); return true; }
+  if (d === 'bid-rmfile') { q.files.splice(+arg, 1); save(); renderAll(); return true; }
+  if (d === 'bid-print') { document.body.classList.add('printing'); window.print(); setTimeout(() => document.body.classList.remove('printing'), 500); return true; }
+  if (d === 'bid-submit') {
+    const errs = bidProblems(q);
+    if (errs.length) { q.showErr = true; save(); renderAll(); return true; }
+    q.showErr = false; q.status = 'check'; q.submittedAt = now(); q.why = '';
+    bidLog(q, 'ยื่นแบบแจ้งความประสงค์ให้ TEF ตรวจ');
+    sendMail({to:holders('reviewer'), cc:holders('admin'), subject:`[แจ้งความประสงค์] ${q.d.club || u.name}`,
+      body:`${u.name} (${q.d.club || '—'}) ยื่นแบบแจ้งความประสงค์ขอเป็นผู้จัดการแข่งขัน\nสถานที่ ${q.d.venue || '—'}\nห้วงวันที่ ${q.d.from || '—'} ถึง ${q.d.to || '—'}\n\nตรวจเอกสารได้ที่หน้า “คำขอจัดการแข่งขัน”`});
+    save(); renderAll(); return true;
+  }
+  if (d === 'bid-pass') {
+    q.status = 'approve'; q.checkedAt = now(); q.approvals = {};
+    bidLog(q, 'ตรวจเอกสารครบ เสนอผู้อนุมัติ');
+    const ap = (q.pony ? ['approver', 'approver_pony'] : ['approver']).flatMap(holders);
+    sendMail({to:ap, cc:holders('admin'), subject:`[ขออนุมัติผู้จัด] ${q.d.club || ''}`,
+      body:`คุณสุขุมาลีตรวจเอกสารของ ${bidOwner(q).name} (${q.d.club || '—'}) ครบแล้ว ขอเสนออนุมัติให้เป็นผู้จัดการแข่งขัน\nสถานที่ ${q.d.venue || '—'}${q.pony ? '\nรายการนี้มีรุ่นโพนี ต้องผ่านคุณวีระพงค์ด้วย' : ''}`});
+    save(); renderAll(); return true;
+  }
+  if (d === 'bid-ok') {
+    const need = q.pony ? ['approver', 'approver_pony'] : ['approver'];
+    if (!need.includes(u.role) || q.approvals[u.role]) return true;
+    q.approvals[u.role] = now(); bidLog(q, 'อนุมัติ');
+    if (need.every(r => q.approvals[r])) {
+      q.status = 'approved'; q.approvedAt = now();
+      sendMail({to:[bidOwner(q)], cc:holders('admin').concat(holders('reviewer')), subject:'[อนุมัติแล้ว] ขอเป็นผู้จัดการแข่งขัน',
+        body:`เรียน ${bidOwner(q).name}\n\nสมาคมอนุมัติให้ ${q.d.club || 'ชมรมของท่าน'} เป็นผู้จัดการแข่งขันแล้ว สร้างคู่มือการแข่งขันได้ที่หน้า “คู่มือของฉัน”`});
+    }
+    save(); renderAll(); return true;
+  }
+  if (d === 'bid-back') { dlgBidBack(q); return true; }
+  return false;
+}
+function dlgBidBack(q){
+  const f = document.getElementById('dlg-form');
+  f.innerHTML = `<h3>ส่งกลับให้ ${esc(bidOwner(q).name)} แก้</h3>
+    <p class="hint" style="margin:0">ชมรมจะกลับมาแก้แบบแจ้งความประสงค์ได้อีกครั้ง และยื่นใหม่ได้ทันที</p>
+    <label class="bid-l">สิ่งที่ต้องแก้<textarea class="inp" name="why" rows="3" placeholder="เช่น ขนาดสนามไม่ครบ หรือยังไม่แนบหนังสือยินยอมจากเจ้าของสถานที่"></textarea></label>
+    <p class="late" id="q-err" hidden>ใส่สิ่งที่ต้องแก้ก่อน</p>
+    <div class="dlg-acts"><button type="button" class="btn" id="q-cancel">ยกเลิก</button><button type="submit" class="btn primary">ส่งกลับให้แก้</button></div>`;
+  document.getElementById('q-cancel').onclick = () => dlg.close();
+  f.onsubmit = e => {
+    e.preventDefault();
+    const why = f.why.value.trim();
+    if (!why) { document.getElementById('q-err').hidden = false; return; }
+    dlg.close();
+    q.status = 'returned'; q.why = why; q.approvals = {};
+    bidLog(q, 'ส่งกลับให้แก้: ' + why);
+    sendMail({to:[bidOwner(q)], cc:holders('admin'), subject:'[ส่งกลับแก้ไข] แบบแจ้งความประสงค์',
+      body:`เรียน ${bidOwner(q).name}\n\nแบบแจ้งความประสงค์ของท่านถูกส่งกลับให้แก้ไข\n\nสิ่งที่ต้องแก้: ${why}\n\nแก้แล้วกดยื่นใหม่ได้ที่หน้า “แจ้งความประสงค์”`});
+    save(); renderAll();
+  };
+  dlg.showModal();
+}
+let BID_UP = 'file';
+document.getElementById('bid-file').addEventListener('change', e => {
+  const f = e.target.files[0], q = myBid();
+  if (!f || !q) return;
+  if (BID_UP === 'consent') q.d.consent = f.name;
+  else if (BID_UP === 'stamp') { q.stamp = f.name; q.stampNone = false; }
+  else q.files.push({name:f.name, at:now()});
+  save(); renderAll();
+});
+/* keep every field of the form in the record as it is typed */
+document.addEventListener('input', e => {
+  const el = e.target.closest('[data-b]'); if (!el) return;
+  const q = myBid(); if (!q || !['draft', 'returned'].includes(q.status)) return;
+  const path = el.dataset.b;
+  if (el.type === 'checkbox') {
+    if (path === 'ponyFlag') { q.pony = el.checked; save(); return; }
+    setP(q.d, path, el.checked);
+  } else setP(q.d, path, el.value);
+  save();
+});
+document.addEventListener('change', e => {
+  const el = e.target.closest('[data-b]'); if (!el) return;
+  const q = myBid(); if (!q || !['draft', 'returned'].includes(q.status)) return;
+  if (el.type === 'radio' || el.type === 'checkbox') {
+    if (el.dataset.b === 'ponyFlag') { q.pony = el.checked; }
+    else if (el.type === 'radio') setP(q.d, el.dataset.b, el.value);
+    else setP(q.d, el.dataset.b, el.checked);
+    save(); renderBid();
+  }
+});
+
 /* ---------- header, demo strip, routing ---------- */
-const VIEWS = {apply:'v-apply', login:'v-login', pending:'v-pending', books:'v-books', edit:'v-builder', users:'v-users', staff:'v-staff', mail:'v-mail'};
+const VIEWS = {apply:'v-apply', login:'v-login', pending:'v-pending', books:'v-books', bid:'v-bid', edit:'v-builder', users:'v-users', staff:'v-staff', mail:'v-mail'};
 function hdrHeight(){ const h = document.querySelector('.top'); if (h) document.documentElement.style.setProperty('--hdr', (h.offsetHeight + 8) + 'px'); }
 window.addEventListener('resize', hdrHeight);
 function renderHeader(v){
   const u = me(), nav = document.getElementById('nav'), who = document.getElementById('who');
   if (!u || ['pending','rejected'].includes(u.role)) { nav.innerHTML = ''; who.innerHTML = u ? `<button type="button" class="btn" data-do="logout">ออกจากระบบ</button>` : ''; return; }
   const tabs = [['books', u.role === 'organizer' ? 'คู่มือของฉัน' : 'คู่มือ']];
+  const bidWait = S.bids.filter(q => bidMine(q, u)).length;
+  tabs.push(['bid', (u.role === 'organizer' ? 'แจ้งความประสงค์' : 'คำขอจัดการแข่งขัน') + (bidWait ? `<span class="badge">${td(bidWait)}</span>` : '')]);
   if (u.role === 'admin') tabs.push(['users', 'ผู้ใช้' + (holders('pending').length ? `<span class="badge">${td(holders('pending').length)}</span>` : '')], ['staff', 'ทะเบียนคนทำงาน']);
   tabs.push(['mail', 'อีเมล']);
   nav.innerHTML = tabs.map(([k, t]) => `<a href="#" data-go="${k}"${(v === k || (v === 'edit' && k === 'books')) ? ' aria-current="page"' : ''}>${t}</a>`).join('');
@@ -3261,6 +3632,7 @@ function renderAll(){
   else if (v === 'login') renderLogin();
   else if (v === 'pending') renderPending();
   else if (v === 'books') renderBooks();
+  else if (v === 'bid') renderBid();
   else if (v === 'users') renderUsers();
   else if (v === 'staff') renderStaff();
   else if (v === 'mail') renderMail();
@@ -3317,6 +3689,9 @@ document.addEventListener('click', e => {
   }
   else if (d === 'clock') { S.clock = arg === '0' ? 0 : S.clock + Number(arg); save(); renderAll(); }
   else if (d === 'wipe') { if (confirm('ล้างข้อมูลทดลองทั้งหมดในเบราว์เซอร์นี้?')) { S = fresh(); save(); renderAll(); } }
+  else if (d === 'new' && u && u.role === 'organizer' && !bidOk()) {
+    S.view = 'bid'; save(); renderAll();
+  }
   else if (d === 'new' && u && u.role === 'organizer') {
     const nb = {id:rid('b'), owner:u.id, created:now(), status:'draft', ver:'0.1', values:{}, people:{}, comments:[], hist:[], approvals:{}, reports:{}, pony:false, round:0};
     S.books.unshift(nb); S.cur = nb.id; log(nb, 'สร้างคู่มือ'); openBook(nb.id);
@@ -3327,6 +3702,7 @@ document.addEventListener('click', e => {
     sendMail({to:[x], cc:holders('admin'), subject: d === 'allow' ? '[อนุมัติแล้ว] เข้าใช้งานในฐานะผู้จัดการแข่งขัน' : '[ไม่อนุมัติ] คำขอเข้าใช้งาน', body: d === 'allow' ? `เรียน ${x.name}\n\nTEF Admin อนุมัติให้คุณเข้าใช้งานในฐานะผู้จัดการแข่งขันแล้ว เข้าสู่ระบบด้วย Gmail เดิมเพื่อสร้างคู่มือ` : `เรียน ${x.name}\n\nคำขอเข้าใช้งานไม่ได้รับอนุมัติ กรุณาติดต่อ TEF`});
     save(); renderAll();
   }
+  else if (d.startsWith('bid-')) { if (bidAct(d, arg)) return; }
   else if (d === 'ppl-ok') { act('ppl-ok'); return; }
   else if (d === 'ppl-back') { act('return'); return; }
   else if (d === 'org-out' && u.role === 'admin') { dlgOrgOut(arg); }
