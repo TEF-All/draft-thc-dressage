@@ -689,6 +689,7 @@ td .inp{min-width:180px}
 </section>
 <section id="v-apply" hidden><div class="read" id="apply"></div><input type="file" id="slip-file" accept="image/*,.pdf" hidden></section>
 <section id="v-users" hidden><div class="read" id="users"></div></section>
+<section id="v-locked" hidden><div class="read" id="locked"></div></section>
 <section id="v-staff" hidden><div class="read" id="staff"></div></section>
 <section id="v-mail" hidden><div class="read" id="mail"></div></section>
 </main>
@@ -1268,12 +1269,12 @@ const B_EN = [
   {p:1, s:'event', t:'kvi', f:'event_dates', d:'DATE'},
   {p:1, s:'event', t:'kvi', f:'club', d:'CLUB'},
   {p:1, s:'event', t:'chk'},
-  {p:1, t:'n1', n:'II.', x:'GENERAL CONDITIONS', u:true},
+  {p:1, t:'n1', n:'II.', k:'rules_head', u:true},
   {p:1, t:'cond'},
   /* หน้า 2 */
   {p:2, t:'toc'},
   /* หน้า 3 */
-  {p:3, t:'n1', n:'III.', x:'THE FEI CODE OF CONDUCT FOR THE WELFARE OF THE HORSE'},
+  {p:3, t:'n1', n:'III.', k:'coc_head'},
   {p:3, t:'coc2'},
   {p:3, t:'n1', n:'IV.', x:'GENERAL INFORMATION'},
   {p:3, t:'n2', n:'1.', x:'ORGANISER'},
@@ -1600,7 +1601,10 @@ function block(b){
     case 'sh': return `<div class="d-sh${b.prop ? ' propblk' : ''}">${esc(b.x)}</div>`;
     case 'f': return '';
     /* หัวข้อหลักมีเลขโรมันห้อยซ้าย ตามไฟล์ Word */
-    case 'n1': return `<div class="d-n1"><span class="nm">${esc(b.n || '')}</span><span>${b.u ? `<u>${esc(b.x)}</u>` : esc(b.x)}${b.tail ? `<span class="tail">${esc(b.tail)}</span>` : ''}</span></div>`;
+    case 'n1': {
+      const hx = b.k ? b.k.split('.').reduce((o, k) => o[k], LOCKED) : b.x;
+      return `<div class="d-n1"><span class="nm">${esc(b.n || '')}</span><span>${b.u ? `<u>${esc(hx)}</u>` : esc(hx)}${b.tail ? `<span class="tail">${esc(b.tail)}</span>` : ''}</span></div>`;
+    }
     case 'n2': return `<div class="d-n2"><span class="nm">${esc(b.n || '')}</span><span>${esc(b.x)}</span></div>`;
     case 'n3': return `<div class="d-n3${b.i4 ? ' i4' : ''}">${esc(b.x)}</div>`;
     /* ชื่อช่องกับค่าอยู่บรรทัดเดียวกัน ไม่ใช่ตารางสองคอลัมน์ */
@@ -2197,6 +2201,7 @@ if (!Array.isArray(S.bids)) S.bids = [];   /* added with the organiser applicati
 S.disc = 'dressage';
 
 function save(){
+  if (!ONLINE && LOCK_DB) S.lockDb = LOCK_DB;
   if (ONLINE) { if (S.me) { dirty = true; clearTimeout(pushTimer); pushTimer = setTimeout(pushNow, 400); } return true; }
   try { localStorage.setItem(KEY, JSON.stringify(S)); return true; } catch(e) { return false; }
 }
@@ -2208,13 +2213,17 @@ function netErr(e){
   console.error(e);
 }
 async function pull(){
-  const [prof, bks, ml, rg] = await Promise.all([
+  const [prof, bks, ml, rg, lk] = await Promise.all([
     sb.from('profiles').select('id,name,email,role,requested_at,decided_at').order('requested_at'),
     sb.from('handbooks').select('id,rev,data').order('created_at', {ascending:false}),
     sb.from('mail_log').select('id,book,recipients,data').order('at', {ascending:false}).limit(300),
-    sb.from('app_docs').select('data').eq('key', 'reg').maybeSingle()
+    sb.from('app_docs').select('data').eq('key', 'reg').maybeSingle(),
+    sb.from('app_docs').select('data').eq('key', 'locked_en').maybeSingle()
   ]);
   for (const r of [prof, bks, ml, rg]) if (r.error) throw r.error;
+  /* ข้อความล็อกชุดที่ TEF Admin แก้ไว้ ถ้ายังไม่ได้รันสคริปต์ 0002 ตารางจะไม่มีคีย์นี้ ใช้ชุดที่มากับหน้าเว็บแทน */
+  LOCK_DB = !lk || lk.error ? null : (lk.data && lk.data.data && lk.data.data.data ? lk.data.data : null);
+  SNAP.locked = LOCK_DB ? JSON.stringify(LOCK_DB) : '';
   REV = {}; SNAP = {};
   S.users = (prof.data || []).map(x => ({id:x.id, name:x.name, email:x.email, role:x.role,
     at:Date.parse(x.requested_at), okAt:x.decided_at ? Date.parse(x.decided_at) : null}));
@@ -2259,6 +2268,11 @@ async function pushNow(){
         const {error} = await sb.from('profiles').update({role:u.role}).eq('id', u.id);
         if (error) throw error;
         SNAP['u:' + u.id] = u.role;
+      }
+      if (LOCK_DB && SNAP.locked !== JSON.stringify(LOCK_DB)) {
+        const {error} = await sb.from('app_docs').upsert({key:'locked_en', data:LOCK_DB, updated_at:new Date().toISOString()});
+        if (error) throw error;
+        SNAP.locked = JSON.stringify(LOCK_DB);
       }
       const rj = JSON.stringify(S.reg);
       if (SNAP.reg !== rj) {
@@ -2438,6 +2452,9 @@ function act(a){
 }
 /* every approver has approved: confirmation to info@ (cc everyone involved) and the announcement request to หยก */
 function finalize(b){
+  /* ตรึงข้อความล็อกชุดที่ผู้อนุมัติเห็นไว้กับเล่ม เล่มนี้จะไม่เปลี่ยนตามการแก้ข้อความครั้งหลัง */
+  b.lockedSnap = JSON.parse(JSON.stringify(lockedNow()));
+  b.lockedVer = lockVer();
   const ev = eventName(b), owner = ownerOf(b), signers = needApprovers(b).flatMap(holders);
   b.status = 'approved'; b.approvedAt = now(); if (b.ver.startsWith('0.')) b.ver = '1.0';
   log(b, 'อนุมัติครบ info ส่งอีเมลยืนยันถึงผู้จัด (cc ทุกคน) แล้วส่งต่อคุณหยกประกาศทาง Facebook');
@@ -3746,8 +3763,80 @@ document.addEventListener('change', e => {
   }
 });
 
+/* ---------- ข้อความล็อก (ไฮไลต์แดง) ----------
+   ลำดับที่ใช้: ชุดที่ตรึงไว้กับเล่ม (ตอนอนุมัติ) → ชุดที่ TEF Admin แก้ล่าสุด → ชุดที่มากับหน้าเว็บจากไฟล์ Word
+   เล่มที่อนุมัติหรือประกาศแล้วจะไม่เปลี่ยนตามการแก้ครั้งหลัง เพราะผู้อนุมัติเซ็นรับรองข้อความชุดนั้นไปแล้ว */
+let LOCK_DB = (!ONLINE && S.lockDb) ? S.lockDb : null;   /* โหมดทดลองเก็บไว้ในเบราว์เซอร์ */
+const lockedNow = () => (LOCK_DB && LOCK_DB.data) || LOCKED_ALL.en;
+const lockVer = () => (LOCK_DB && LOCK_DB.ver) || 1;
+const useModelBase = useModel;
+useModel = function(){
+  useModelBase();
+  const b = D();
+  LOCKED = (b && b.lockedSnap) || lockedNow();
+};
+
+/* เดินข้อความล็อกทุกชิ้นเป็นรายการแก้ไข: ข้อความเดี่ยว, รายการบรรทัดละข้อ และกลุ่มในภาคผนวก */
+const LOCK_TH = {
+  rules_head:'หัวข้อกติกา', rules:'กติกาที่ใช้ (บรรทัดละข้อ)', rules_note:'หมายเหตุ ** ท้ายกติกา',
+  approved:'บรรทัด Approved by the TEF', sign:'บล็อกลายเซ็นผู้อนุมัติ', sign_pony:'บล็อกลายเซ็นฝ่ายโพนี',
+  coc_head:'หัวข้อจรรยาบรรณ', coc_intro:'คำนำจรรยาบรรณ', coc_items:'ข้อจรรยาบรรณ (บรรทัดละข้อ)', coc_note:'แหล่งที่มาจรรยาบรรณ',
+  entries_intro:'ข้อความใต้หัวข้อ ENTRIES', payment_note:'ข้อความยืนยันการชำระเงิน', noshow:'NO-SHOWS / LATE WITHDRAWALS',
+  timetable_note:'หมายเหตุตารางการแข่งขัน', briefing_note:'หมายเหตุ Technical Briefing', protest:'การประท้วงและอุทธรณ์',
+  annex1_head:'หัวข้อ ANNEX I', annex1_intro:'คำนำ ANNEX I', annex2_head:'หัวข้อ ANNEX II',
+  'vet.health':'HEALTH REQUIREMENTS', 'vet.national':'NATIONAL REQUIREMENTS', 'vet.national_items':'เอกสารที่ต้องมี (บรรทัดละข้อ)',
+  'vet.transport':'TRANSPORT OF HORSES', 'vet.arrival_head':'VENUE ARRIVAL INFORMATION', 'vet.passports':'PASSPORTS',
+  'vet.passports_nb':'PASSPORTS (NB)', 'vet.vaccinations':'VACCINATIONS', 'vet.examination':'EXAMINATION ON ARRIVAL',
+  'vet.inspections':'HORSE INSPECTIONS', source:'ไฟล์ต้นทาง'
+};
+function lockFields(o, base){
+  const out = [];
+  Object.keys(o).forEach(k => {
+    const path = base ? base + '.' + k : k, v = o[k];
+    if (typeof v === 'string') out.push({path, v, kind:'s'});
+    else if (Array.isArray(v) && v.every(x => typeof x === 'string')) out.push({path, v:v.join('\n'), kind:'a'});
+    else if (Array.isArray(v)) v.forEach((g, i) => out.push(...lockFields(g, path + '.' + i)));
+    else if (v && typeof v === 'object') out.push(...lockFields(v, path));
+  });
+  return out;
+}
+const lockLabel = f => LOCK_TH[f.path] || f.path.replace(/annex(\d)\.(\d+)\.(h|items)/, (m, a, i, k) =>
+  `ANNEX ${a === '1' ? 'I' : 'II'} กลุ่มที่ ${td(+i + 1)} ${k === 'h' ? 'หัวข้อ' : 'ข้อย่อย (บรรทัดละข้อ)'}`);
+function renderLocked(){
+  const el = document.getElementById('locked'), cur = lockedNow();
+  const fs = lockFields(cur, '').filter(f => f.path !== 'source');
+  const used = S.books.filter(b => b.lockedSnap).length, next = S.books.filter(b => !b.lockedSnap).length;
+  el.innerHTML = `<div><div class="eyebrow">TEF Admin</div><h1>ข้อความล็อก (ไฮไลต์แดง)</h1>
+      <p class="lead">ข้อความชุดนี้ผู้จัดแก้ไม่ได้ พิมพ์ออกในเล่มตรงตามที่กรอกไว้ที่นี่ แก้แล้วกดบันทึกจะได้เวอร์ชันใหม่ทันที</p></div>
+    <div class="banner info"><b>เวอร์ชันปัจจุบัน ${td(lockVer())}${LOCK_DB && LOCK_DB.at ? ` · แก้ล่าสุด ${fmtTs(LOCK_DB.at)} โดย ${esc(LOCK_DB.by || '—')}` : ' · ยังไม่เคยแก้ ใช้ชุดที่มาจากไฟล์ Word'}</b>
+      เล่มที่อนุมัติหรือประกาศแล้ว ${td(used)} เล่มตรึงข้อความชุดเดิมไว้ ไม่เปลี่ยนตามการแก้ครั้งนี้ · เล่มที่ยังทำอยู่ ${td(next)} เล่มจะใช้ชุดใหม่</div>
+    ${ONLINE && !LOCK_DB ? '<div class="banner warn"><b>ยังบันทึกลงฐานข้อมูลไม่ได้</b>ต้องรันสคริปต์ supabase/migrations/0002_locked_text.sql ใน Supabase ก่อนหนึ่งครั้ง แก้ในหน้านี้ได้แต่จะยังไม่ถูกบันทึกข้ามเครื่อง</div>' : ''}
+    <div class="panel"><div class="form-grid" style="grid-template-columns:minmax(0,1fr)">
+      ${fs.map(f => `<label class="bid-l"><b>${esc(lockLabel(f))}</b>
+        <textarea class="inp" data-lk="${esc(f.path)}" data-kind="${f.kind}" rows="${Math.min(10, Math.max(2, f.v.split('\n').length))}">${esc(f.v)}</textarea></label>`).join('')}
+    </div>
+    <div class="row-acts" style="margin-top:12px"><button type="button" class="btn primary" data-do="lk-save">บันทึกเป็นเวอร์ชันใหม่</button>
+      <button type="button" class="btn" data-do="lk-reset">คืนค่าจากไฟล์ Word</button>
+      <span class="hint" id="lk-note"></span></div></div>
+    ${LOCK_DB && LOCK_DB.hist && LOCK_DB.hist.length ? `<details class="more"><summary>ประวัติการแก้ (${td(LOCK_DB.hist.length)})</summary>
+      <ul class="hist">${LOCK_DB.hist.map(h => `<li>เวอร์ชัน ${td(h.ver)} <time>${esc(h.by)} · ${fmtTs(h.at)}</time></li>`).join('')}</ul></details>` : ''}`;
+}
+function lockSave(){
+  const cur = JSON.parse(JSON.stringify(lockedNow()));
+  document.querySelectorAll('[data-lk]').forEach(t => {
+    const ks = t.dataset.lk.split('.');
+    let o = cur;
+    for (let i = 0; i < ks.length - 1; i++) o = o[ks[i]];
+    o[ks[ks.length - 1]] = t.dataset.kind === 'a' ? t.value.split('\n').map(x => x.trim()).filter(Boolean) : t.value.trim();
+  });
+  const hist = (LOCK_DB && LOCK_DB.hist) || [];
+  LOCK_DB = {ver:lockVer() + 1, at:now(), by:me().name, data:cur, hist:[{ver:lockVer() + 1, at:now(), by:me().name}].concat(hist).slice(0, 20)};
+  save(); renderAll();
+  const n = document.getElementById('lk-note'); if (n) n.innerHTML = `<span class="okc">บันทึกเป็นเวอร์ชัน ${td(LOCK_DB.ver)} แล้ว</span>`;
+}
+
 /* ---------- header, demo strip, routing ---------- */
-const VIEWS = {apply:'v-apply', login:'v-login', pending:'v-pending', books:'v-books', bid:'v-bid', edit:'v-builder', users:'v-users', staff:'v-staff', mail:'v-mail'};
+const VIEWS = {apply:'v-apply', login:'v-login', pending:'v-pending', books:'v-books', bid:'v-bid', edit:'v-builder', users:'v-users', staff:'v-staff', locked:'v-locked', mail:'v-mail'};
 function hdrHeight(){ const h = document.querySelector('.top'); if (h) document.documentElement.style.setProperty('--hdr', (h.offsetHeight + 8) + 'px'); }
 window.addEventListener('resize', hdrHeight);
 function renderHeader(v){
@@ -3756,7 +3845,7 @@ function renderHeader(v){
   const tabs = [['books', u.role === 'organizer' ? 'คู่มือของฉัน' : 'คู่มือ']];
   const bidWait = S.bids.filter(q => bidMine(q, u)).length;
   tabs.push(['bid', (u.role === 'organizer' ? 'แจ้งความประสงค์' : 'คำขอจัดการแข่งขัน') + (bidWait ? `<span class="badge">${td(bidWait)}</span>` : '')]);
-  if (u.role === 'admin') tabs.push(['users', 'ผู้ใช้' + (holders('pending').length ? `<span class="badge">${td(holders('pending').length)}</span>` : '')], ['staff', 'ทะเบียนคนทำงาน']);
+  if (u.role === 'admin') tabs.push(['users', 'ผู้ใช้' + (holders('pending').length ? `<span class="badge">${td(holders('pending').length)}</span>` : '')], ['staff', 'ทะเบียนคนทำงาน'], ['locked', 'ข้อความล็อก']);
   tabs.push(['mail', 'อีเมล']);
   nav.innerHTML = tabs.map(([k, t]) => `<a href="#" data-go="${k}"${(v === k || (v === 'edit' && k === 'books')) ? ' aria-current="page"' : ''}>${t}</a>`).join('');
   who.innerHTML = `<div class="av" aria-hidden="true">${esc(u.name.replace(/^คุณ/, '').trim().charAt(0))}</div><div class="who-t"><b>${esc(u.name)}</b><small>${esc(ROLES[u.role].th)}</small></div><button type="button" class="btn" data-do="logout">ออกจากระบบ</button>`;
@@ -3790,6 +3879,7 @@ function renderAll(){
   else if (v === 'bid') renderBid();
   else if (v === 'users') renderUsers();
   else if (v === 'staff') renderStaff();
+  else if (v === 'locked') renderLocked();
   else if (v === 'mail') renderMail();
   else { renderDocTabs(); syncOpts(); if (S.tab === 'handbook') { renderRail(); renderDoc(); } renderStatus(); }
   save();
@@ -3858,6 +3948,11 @@ document.addEventListener('click', e => {
     save(); renderAll();
   }
   else if (d.startsWith('bid-')) { if (bidAct(d, arg)) return; }
+  else if (d === 'lk-save' && u.role === 'admin') { lockSave(); return; }
+  else if (d === 'lk-reset' && u.role === 'admin') {
+    LOCK_DB = {ver:lockVer() + 1, at:now(), by:me().name, data:JSON.parse(JSON.stringify(LOCKED_ALL.en)), hist:((LOCK_DB && LOCK_DB.hist) || [])};
+    save(); renderAll(); return;
+  }
   else if (d === 'sig-up') { const fi = document.getElementById('sig-file'); fi.value = ''; fi.click(); return; }
   else if (d === 'ppl-ok') { act('ppl-ok'); return; }
   else if (d === 'ppl-back') { act('return'); return; }

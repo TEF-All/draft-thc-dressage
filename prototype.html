@@ -1317,12 +1317,12 @@ const B_EN = [
   {p:1, s:'event', t:'kvi', f:'event_dates', d:'DATE'},
   {p:1, s:'event', t:'kvi', f:'club', d:'CLUB'},
   {p:1, s:'event', t:'chk'},
-  {p:1, t:'n1', n:'II.', x:'GENERAL CONDITIONS', u:true},
+  {p:1, t:'n1', n:'II.', k:'rules_head', u:true},
   {p:1, t:'cond'},
   /* หน้า 2 */
   {p:2, t:'toc'},
   /* หน้า 3 */
-  {p:3, t:'n1', n:'III.', x:'THE FEI CODE OF CONDUCT FOR THE WELFARE OF THE HORSE'},
+  {p:3, t:'n1', n:'III.', k:'coc_head'},
   {p:3, t:'coc2'},
   {p:3, t:'n1', n:'IV.', x:'GENERAL INFORMATION'},
   {p:3, t:'n2', n:'1.', x:'ORGANISER'},
@@ -1731,7 +1731,10 @@ function block(b){
     case 'sh': return `<div class="d-sh${b.prop ? ' propblk' : ''}">${esc(b.x)}</div>`;
     case 'f': return '';
     /* หัวข้อหลักมีเลขโรมันห้อยซ้าย ตามไฟล์ Word */
-    case 'n1': return `<div class="d-n1"><span class="nm">${esc(b.n || '')}</span><span>${b.u ? `<u>${esc(b.x)}</u>` : esc(b.x)}${b.tail ? `<span class="tail">${esc(b.tail)}</span>` : ''}</span></div>`;
+    case 'n1': {
+      const hx = b.k ? b.k.split('.').reduce((o, k) => o[k], LOCKED) : b.x;
+      return `<div class="d-n1"><span class="nm">${esc(b.n || '')}</span><span>${b.u ? `<u>${esc(hx)}</u>` : esc(hx)}${b.tail ? `<span class="tail">${esc(b.tail)}</span>` : ''}</span></div>`;
+    }
     case 'n2': return `<div class="d-n2"><span class="nm">${esc(b.n || '')}</span><span>${esc(b.x)}</span></div>`;
     case 'n3': return `<div class="d-n3${b.i4 ? ' i4' : ''}">${esc(b.x)}</div>`;
     /* ชื่อช่องกับค่าอยู่บรรทัดเดียวกัน ไม่ใช่ตารางสองคอลัมน์ */
