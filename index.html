@@ -440,12 +440,13 @@ fieldset{gap:16px}
 fieldset:disabled .btn.up{display:none}
 /* ---- FEI-format handbook ---- */
 .doc.en{--kvw:15em}
+.tabgap{display:inline-block;width:1.7em}
 .d-sub{text-align:center;font-size:.95em;color:var(--paper-muted)}
 .d-ul{margin:.25em 0 .5em;padding-left:1.5em}
 .d-ul li{margin:.08em 0}
-.d-toc{margin:.3em 0;padding-left:1.8em}
-.d-toc li{margin:.1em 0}
-.d-toc li.sub{list-style:lower-alpha;margin-left:1.4em}
+.d-toc{margin:.3em 0}
+.d-toc>div{margin:.1em 0}
+.d-toc>div.sub{margin-left:2.2em}
 .d-rule{border-bottom:1px dotted var(--paper-ink);margin:.8em 0 .6em}
 .d-sign{margin:.9em 0 0;text-align:center;line-height:1.45}
 .d-sign.pony{margin-top:1.4em}
@@ -1230,96 +1231,95 @@ const SECS_EN = [
    from tools/locked.json; only TEF Admin changes it, by editing the Word file. */
 const B_EN = [
   {p:1, s:'event', t:'cover2'},
-  {p:1, s:'event', t:'kv', f:'event_name'},
-  {p:1, s:'event', t:'kv', f:'venue'},
-  {p:1, s:'event', t:'kv', f:'event_dates'},
-  {p:1, s:'event', t:'kv', f:'club'},
+  {p:1, s:'event', t:'kv', f:'event_name', d:'NAME OF EVENT'},
+  {p:1, s:'event', t:'kv', f:'venue', d:'VENUE'},
+  {p:1, s:'event', t:'kv', f:'event_dates', d:'DATE'},
+  {p:1, s:'event', t:'kv', f:'club', d:'CLUB'},
   {p:1, s:'event', t:'chk'},
   {p:1, t:'cond'},
 
   {p:2, t:'toc'},
 
-  {p:3, t:'h', x:'3. THE FEI CODE OF CONDUCT FOR THE WELFARE OF THE HORSE'},
+  {p:3, t:'h', x:'THE FEI CODE OF CONDUCT FOR THE WELFARE OF THE HORSE'},
   {p:3, t:'coc2'},
-  {p:3, t:'h', x:'4. GENERAL INFORMATION'},
-  {p:3, t:'h3', x:'4.1 ORGANISER'},
-  {p:3, s:'organiser', t:'kv', f:'org_name'},
-  {p:3, s:'organiser', t:'kv', f:'org_address'},
-  {p:3, s:'organiser', t:'kv', f:'org_phone'},
-  {p:3, s:'organiser', t:'kv', f:'org_email'},
-  {p:3, s:'organiser', t:'kv', f:'org_website'},
-  {p:3, t:'h3', x:'Contact details of show ground'},
-  {p:3, s:'organiser', t:'kv', f:'ground_address'},
-  {p:3, s:'organiser', t:'kv', f:'ground_phone'},
-  {p:3, s:'organiser', t:'kv', f:'ground_email'},
-  {p:3, t:'h3', x:'4.2 ORGANISING COMMITTEE'},
+  {p:3, t:'h', x:'GENERAL INFORMATION'},
+  {p:3, t:'h3', x:'ORGANISER'},
+  {p:3, s:'organiser', t:'kv', f:'org_name', d:'Name'},
+  {p:3, s:'organiser', t:'kv', f:'org_address', d:'Address'},
+  {p:3, s:'organiser', t:'kv', f:'org_phone', d:'Telephone'},
+  {p:3, s:'organiser', t:'kv', f:'org_email', d:'Email'},
+  {p:3, s:'organiser', t:'kv', f:'org_website', d:'Website'},
+  {p:3, t:'h3', x:'Contact Details of Show Ground'},
+  {p:3, s:'organiser', t:'kv', f:'ground_address', d:'Address'},
+  {p:3, s:'organiser', t:'kv', f:'ground_phone', d:'Telephone'},
+  {p:3, s:'organiser', t:'kv', f:'ground_email', d:'Email'},
+  {p:3, t:'h3', x:'ORGANISING COMMITTEE'},
   {p:3, s:'committee', t:'ppl', r:'hon_president', l:'Honorary President', min:1, opt:true},
   {p:3, s:'committee', t:'ppl', r:'president', l:'President of Event', min:1},
   {p:3, s:'committee', t:'ppl', r:'secretary', l:'Show Secretary', min:1},
-  {p:3, s:'committee', t:'kv', f:'sec_phone'},
-  {p:3, s:'committee', t:'kv', f:'sec_email'},
-  {p:3, t:'h3', x:'4.3 EVENT DIRECTOR'},
+  {p:3, s:'committee', t:'kv', f:'sec_phone', d:'Telephone'},
+  {p:3, s:'committee', t:'kv', f:'sec_email', d:'Email'},
+  {p:3, t:'h3', x:'EVENT DIRECTOR'},
   {p:3, s:'committee', t:'ppl', r:'director', l:'Name', min:1},
-  {p:3, s:'committee', t:'kv', f:'dir_phone'},
-  {p:3, s:'committee', t:'kv', f:'dir_email'},
+  {p:3, s:'committee', t:'kv', f:'dir_phone', d:'Telephone'},
+  {p:3, s:'committee', t:'kv', f:'dir_email', d:'Email'},
 
-  {p:4, t:'h', x:'5. OFFICIALS (Name, FEI ID, Level, NF)'},
-  {p:4, s:'officials', t:'ppl', r:'gj_president', l:'Ground Jury — President', min:1},
-  {p:4, s:'officials', t:'ppl', r:'judge', l:'Ground Jury — Member', min:2},
-  {p:4, s:'officials', t:'ppl', r:'chief_steward', l:'Stewards — Chief Steward', min:1},
-  {p:4, s:'officials', t:'ppl', r:'steward', l:'Stewards — Steward', min:2},
-  {p:4, s:'officials', t:'ppl', r:'steward_trainee', l:'Stewards — Steward Trainee', min:1, opt:true},
-  {p:4, s:'officials', t:'ppl', r:'vet_delegate', l:'Veterinarian — Veterinary Delegate', min:1},
-  {p:4, s:'officials', t:'ppl', r:'treating_vet', l:'Veterinarian — Treating Veterinarian', min:1},
+  {p:4, t:'h', x:'OFFICIALS (Name, FEI ID, Level, NF)'},
+  {p:4, s:'officials', t:'ppl', r:'gj_president', l:'Ground Jury — President', d:'Ground Jury\tPresident', min:1},
+  {p:4, s:'officials', t:'ppl', r:'judge', l:'Ground Jury — Member', d:'\t\tMember', min:2},
+  {p:4, s:'officials', t:'ppl', r:'chief_steward', l:'Stewards — Chief Steward', d:'Stewards\tChief Steward', min:1},
+  {p:4, s:'officials', t:'ppl', r:'steward', l:'Stewards — Steward', d:'\t\tSteward', min:2},
+  {p:4, s:'officials', t:'ppl', r:'steward_trainee', l:'Stewards — Steward Trainee', d:'\t\tSteward Trainee', min:1, opt:true},
+  {p:4, s:'officials', t:'ppl', r:'vet_delegate', l:'Veterinarian — Veterinary Delegate', d:'Veterinarian\tVeterinary Delegate', min:1},
+  {p:4, s:'officials', t:'ppl', r:'treating_vet', l:'Veterinarian — Treating Veterinarian', d:'\t\tTreating Veterinarian', min:1},
   {p:4, s:'officials', t:'ppl', r:'medical', l:'Medical Service', min:1},
   {p:4, s:'officials', t:'ppl', r:'farrier', l:'Farrier', min:1},
   {p:4, s:'officials', t:'ppl', r:'scriber', l:'Scribe', min:1},
-  {p:4, t:'h', x:'6. ENTRIES'},
+  {p:4, t:'h', x:'ENTRIES'},
   {p:4, t:'lock', k:'entries_intro'},
-  {p:4, t:'h3', x:'6.1 ENTRY DATES, STABLING AND FEES'},
-  {p:4, t:'h3', x:'Deadlines of entries', sub:true},
-  {p:4, s:'entries', t:'kv', f:'pay_deadline'},
-  {p:4, s:'entries', t:'kv', f:'subst_date'},
-  {p:4, s:'entries', t:'kv', f:'entry_fee'},
+  {p:4, t:'h3', x:'ENTRY DATES, STABLING AND FEES'},
+  {p:4, t:'h3', x:'Deadlines of Entries', sub:true},
+  {p:4, s:'entries', t:'kv', f:'pay_deadline', d:'Closed Date with Payment'},
+  {p:4, s:'entries', t:'kv', f:'subst_date', d:'Last Date for Substitutions'},
+  {p:4, s:'entries', t:'kv', f:'entry_fee', d:'Entry Fee per horse'},
   {p:4, t:'h3', x:'Bank details are as below:', sub:true},
-  {p:4, s:'entries', t:'kv', f:'bank'},
-  {p:4, s:'entries', t:'kv', f:'account_name'},
-  {p:4, s:'entries', t:'kv', f:'account_no'},
-  {p:4, s:'entries', t:'kv', f:'slip_email'},
+  {p:4, s:'entries', t:'kv', f:'bank', d:'Bank'},
+  {p:4, s:'entries', t:'kv', f:'account_name', d:'Account Name'},
+  {p:4, s:'entries', t:'kv', f:'account_no', d:'Account Number'},
   {p:4, t:'lock', k:'payment_note'},
-  {p:4, t:'h3', x:'6.2 STABLES'},
-  {p:4, s:'stables', t:'kv', f:'booking_deadline'},
-  {p:4, s:'stables', t:'kv', f:'fee_perm'},
-  {p:4, s:'stables', t:'kv', f:'fee_temp'},
-  {p:4, s:'stables', t:'kv', f:'fee_tack'},
-  {p:4, s:'stables', t:'kv', f:'box_size'},
+  {p:4, t:'h3', x:'STABLES'},
+  {p:4, s:'stables', t:'kv', f:'booking_deadline', d:'Closed Date with Payment'},
+  {p:4, s:'stables', t:'kv', f:'fee_perm', d:'Stabling Fees'},
+  {p:4, s:'stables', t:'f', f:'fee_temp'},
+  {p:4, s:'stables', t:'kv', f:'fee_tack', d:'Tack Box Fees'},
+  {p:4, s:'stables', t:'kv', f:'box_size', d:'Size of boxes'},
   {p:4, s:'stables', t:'ppl', r:'stable_mgr', l:'Stable Manager', min:1},
-  {p:4, s:'stables', t:'kv', f:'stable_phone'},
-  {p:4, s:'stables', t:'kv', f:'stable_email'},
-  {p:4, t:'h3', x:'6.3 NO-SHOWS / LATE WITHDRAWALS'},
+  {p:4, s:'stables', t:'kv', f:'stable_phone', d:'Phone'},
+  {p:4, s:'stables', t:'kv', f:'stable_email', d:'Email'},
+  {p:4, t:'h3', x:'NO-SHOWS/LATE WITHDRAWALS:'},
   {p:4, t:'lock', k:'noshow'},
 
-  {p:5, t:'h', x:'7. TIMETABLE AND COMPETITIONS DETAILS'},
+  {p:5, t:'h', x:'TIMETABLE AND COMPETITIONS DETAILS'},
   {p:5, t:'lock', k:'timetable_note'},
-  {p:5, s:'timetable', t:'kv', f:'stable_open'},
-  {p:5, s:'timetable', t:'kv', f:'horse_inspection'},
-  {p:5, s:'timetable', t:'kv', f:'briefing'},
+  {p:5, s:'timetable', t:'kv', f:'stable_open', d:'Opening of stables'},
+  {p:5, s:'timetable', t:'kv', f:'horse_inspection', d:'Horse Inspection'},
+  {p:5, s:'timetable', t:'kv', f:'briefing', d:'Technical Briefing / Declaration of Starters'},
   {p:5, t:'lock', k:'briefing_note'},
   {p:5, t:'h3', x:'COMPETITION SCHEDULE'},
   {p:5, s:'timetable', t:'blk', f:'schedule'},
-  {p:5, t:'h', x:'8. LOGISTICAL / ADMINISTRATIVE / TECHNICAL INFORMATION'},
-  {p:5, t:'h3', x:'8.1 COMPETITION ARENA(S) — indoor/outdoor, dimensions, type of footing'},
-  {p:5, s:'tech', t:'kv', f:'arena_main'},
-  {p:5, t:'h3', x:'8.2 PRACTICE ARENA(S) — number, indoor/outdoor, dimensions, type of footing'},
-  {p:5, s:'tech', t:'kv', f:'arena_warm'},
-  {p:5, t:'h3', x:'8.3 PRIZE AND REWARD'},
+  {p:5, t:'h', x:'LOGISTICAL/ADMINISTRATIVE/TECHNICAL INFORMATION'},
+  {p:5, t:'h3', x:'COMPETITION ARENA(S) Indoor/Outdoor, Dimensions, Type of Footing'},
+  {p:5, s:'tech', t:'blk', f:'arena_main'},
+  {p:5, t:'h3', x:'PRACTICE ARENA(S) Number, Indoor/Outdoor, Dimensions, Type of Footing'},
+  {p:5, s:'tech', t:'blk', f:'arena_warm'},
+  {p:5, t:'h3', x:'PRIZE AND REWARD'},
   {p:5, s:'tech', t:'blk', f:'prize'},
-  {p:5, t:'h3', x:'8.4 PRIZE GIVING CEREMONY'},
+  {p:5, t:'h3', x:'PRIZE GIVING CEREMONY'},
   {p:5, s:'tech', t:'blk', f:'prize_ceremony'},
-  {p:5, t:'h3', x:'8.5 PARKING'},
+  {p:5, t:'h3', x:'PARKING'},
   {p:5, s:'tech', t:'blk', f:'parking'},
 
-  {p:6, t:'h', x:'9. VETERINARY MATTERS'},
+  {p:6, t:'h', x:'VETERINARY MATTERS'},
   {p:6, t:'lock', k:'vet.health'},
   {p:6, t:'lock', k:'vet.national'},
   {p:6, t:'ul', k:'vet.national_items'},
@@ -1330,7 +1330,7 @@ const B_EN = [
   {p:6, t:'lock', k:'vet.vaccinations'},
   {p:6, t:'lock', k:'vet.examination'},
   {p:6, t:'lock', k:'vet.inspections'},
-  {p:6, t:'h', x:'10. PROTESTS / APPEALS'},
+  {p:6, t:'h', x:'PROTESTS/APPEALS'},
   {p:6, t:'lock', k:'protest'},
 
   {p:7, t:'annex1'},
@@ -1506,7 +1506,7 @@ function block(b){
       return `<div class="lockblk" data-lock="cover">${LOCK_TAG}<div class="d-sub">Technical Handbook Guideline</div>
         <div class="d-title en">Technical Handbook</div></div>
         <div class="d-disc propblk" title="Proposed: name the discipline on the cover">${esc(dn.en)}</div>
-        <div class="d-h" style="text-align:left">1. DENOMINATION OF EVENT</div>`;
+        <div class="d-h" style="text-align:left">DENOMINATION OF EVENT</div>`;
     }
     case 'chk': {
       const v = d.values.arena_type || '', on = x => v === x || v === 'Indoor and Outdoor';
@@ -1529,7 +1529,7 @@ function block(b){
       const list = RULES.filter(r => r.only.includes(S.disc));
       const pony = D().pony;
       const sign = (lines, cls) => `<div class="d-sign ${cls}">${lines.map(t => `<div>${esc(t)}</div>`).join('')}</div>`;
-      return `<div class="lockblk" data-lock="rules"><div class="d-h">2. ${esc(LOCKED.rules_head)}</div>${LOCK_TAG}
+      return `<div class="lockblk" data-lock="rules"><div class="d-h">${esc(LOCKED.rules_head)}</div>${LOCK_TAG}
         <ul class="d-ul">${list.map(r => `<li${r.prop ? ' class="px" title="Proposed, waiting for TEF to confirm"' : ''}>${esc(r.t)}</li>`).join('')}</ul>
         <div class="coc-p" style="margin-left:0">${esc(LOCKED.rules_note)}</div>
         <div class="d-rule"></div>
@@ -1539,7 +1539,7 @@ function block(b){
     }
     case 'toc': {
       return `<div class="lockblk" data-lock="toc">${LOCK_TAG}<div class="d-h">TABLE OF CONTENTS</div>
-        <ol class="d-toc">${TOC_EN.map(([t, sub]) => `<li class="${sub ? 'sub' : ''}">${esc(t)}</li>`).join('')}</ol></div>`;
+        <div class="d-toc">${TOC_EN.map(([t, sub]) => `<div class="${sub ? 'sub' : ''}">${esc(t)}</div>`).join('')}</div></div>`;
     }
     case 'annex1': {
       return `<div class="lockblk" data-lock="annex1">${LOCK_TAG}<div class="d-h">${esc(LOCKED.annex1_head)}</div>
@@ -1559,12 +1559,13 @@ function block(b){
     case 'sign': return typeof approvalSign === 'function' ? approvalSign() : ''; /* approver e-signatures, Dressage app only */
     case 'h': return `<div class="d-h">${esc(b.x)}</div>`;
     case 'sh': return `<div class="d-sh${b.prop ? ' propblk' : ''}">${esc(b.x)}</div>`;
+    case 'f': return '';
     case 'h3': return `<div class="d-h3">${esc(b.x)}</div>`;
     /* ไฮไลต์เขียวในไฟล์ Word: ส่วนต่อท้ายนี้ขึ้นเฉพาะรายการที่มีรุ่นโพนี */
     case 'shp': return `<div class="d-sh">${esc(b.x)}${d.pony ? ` <span class="ponyblk">${esc(b.px)}</span>` : ''}</div>`;
     /* เห็นเฉพาะผู้จัดกับ TEF ไม่พิมพ์ออกเมื่อเล่มเผยแพร่แล้ว */
     case 'intl': return d.status === 'published' ? '' : `<div class="d-intl">${esc(b.x)}<a href="${esc(b.url)}" target="_blank" rel="noopener">${esc(b.url)}</a><small>ไม่แสดงเมื่อเอกสารได้รับอนุมัติแล้ว เฉพาะผู้จัดกับแอดมินเท่านั้นที่เห็น</small></div>`;
-    case 'kv': return kv(esc(b.l || F[b.f].label), vspan(b.f), F[b.f].mark === 'prop' ? ' propblk' : '');
+    case 'kv': return kv(esc(b.d || b.l || F[b.f].label), vspan(b.f), F[b.f].mark === 'prop' ? ' propblk' : '');
     case 'ppl': {
       if (roleOff(b.r)) return '';
       const arr = d.people[b.r] || [], n = Math.max(pplLines(b), arr.length), any = arr.some(x => x && x.trim());
@@ -1573,7 +1574,7 @@ function block(b){
       for (let i = 0; i < n; i++) {
         const name = arr[i] || '';
         if (!M && !name.trim() && (any || !first)) continue;
-        rows += kv(first ? esc(b.l) : '', pspan(b.r, i, name), (b.prop ? ' propblk' : '') + chg);
+        rows += kv(first ? esc(b.d || b.l).replace(/\t/g, '<span class="tabgap"></span>') : '', pspan(b.r, i, name), (b.prop ? ' propblk' : '') + chg);
         first = false;
       }
       return rows;
@@ -2663,7 +2664,7 @@ function renderEntry(){
         <span class="muted">ห้องเก็บอุปกรณ์</span><span>${hb('fee_tack', ' บาท/งาน')}</span>
         <span class="muted">กำหนดจองคอก</span><span>${hb('booking_deadline')}</span>
         <span class="muted">บัญชีรับโอน</span><span>${hb('bank')} ${hb('account_name')} ${hb('account_no')}</span>
-        <span class="muted">ส่งหลักฐานที่</span><span>${hb('slip_email')}</span></div>
+        <span class="muted">ส่งหลักฐานที่</span><span>${hb('sec_email')}</span></div>
         <button type="button" class="add" data-tab="handbook" style="margin-top:8px">แก้ในคู่มือ →</button></div>
       <div class="panel"><h3>รุ่นอายุ (นับจากปีเกิด) · รอ TEF ยืนยัน</h3><table><tbody>${AGES.map(a => `<tr><td><b>${a[0]}</b></td><td>${a[3]}</td></tr>`).join('')}</tbody></table>
         <p class="hint" style="margin:6px 0 0">นักกีฬาเลือกรุ่นที่แจ้ง ไฟล์ Excel ตรวจให้ว่าอายุตรงรุ่นหรือไม่ (Young Rider แก้จากใบสมัคร RSU ให้เป็น 16–21 ปี)</p></div>
@@ -2729,7 +2730,7 @@ async function entryWorkbook(b){
   ['ชมรม/สโมสร (Club)', 'ผู้ติดต่อ (Contact person)', 'อีเมล (Email)', 'โทรศัพท์ (Mobile)'].forEach((l, i) => {
     put(en, 'H' + (2 + i), l, {font:{bold:true}}); fill(en, `I${2 + i}:${colL(Math.max(C0 + 2, C0 + k - 1))}${2 + i}`, a => inputBox(en, a));
   });
-  fill(en, `B6:${feeC}6`, a => put(en, a, `ชำระค่าสมัครโดยโอนเข้า ${v.bank || '…'} ชื่อบัญชี ${v.account_name || '…'} เลขที่ ${v.account_no || '…'} แล้วส่งหลักฐานที่ ${v.slip_email || '…'} ภายในวันปิดรับสมัคร`));
+  fill(en, `B6:${feeC}6`, a => put(en, a, `ชำระค่าสมัครโดยโอนเข้า ${v.bank || '…'} ชื่อบัญชี ${v.account_name || '…'} เลขที่ ${v.account_no || '…'} แล้วส่งหลักฐานที่ ${v.sec_email || '…'} ภายในวันปิดรับสมัคร`));
   fill(en, `B7:${feeC}7`, a => put(en, a, 'กรอกเฉพาะช่องสีเหลือง · ปีเกิดเป็น ค.ศ. · เลือกรุ่นอายุที่แจ้ง (ช่องตรวจรุ่นบอกว่าอายุตรงหรือไม่) · ใส่ 1 ในช่องคลาสที่สมัคร', {font:{color:{argb:'FF4A5566'}}}));
   [['A', 'ลำดับ\nNo.'], ['B', 'ชื่อ-สกุลนักกีฬา\nRider'], ['C', 'TEF / FEI ID'], ['D', 'ปีเกิด ค.ศ.\nYOB'], ['E', `อายุ\n(ปี ${year})`], ['F', 'รุ่นอายุที่แจ้ง\nCategory'], ['G', 'ตรวจรุ่น'], ['H', 'ชื่อม้า\nHorse'], ['I', 'TEF / FEI\nPassport'], ['J', 'อายุม้า']].forEach(([c, t]) => fill(en, `${c}8:${c}10`, a => head(en, a, t)));
   cls.forEach((c, i) => {
@@ -2801,7 +2802,7 @@ async function entryWorkbook(b){
   cell(sb, 'J31', {formula:'IF(H31="",0,H31*I31)'}, {fill:TOT, fmt:'#,##0'});
   fill(sb, 'G32:I32', a => put(sb, a, 'รวมทั้งหมด (บาท)', {box:true, fill:TOT, font:{bold:true}, align:{horizontal:'right'}}));
   cell(sb, 'J32', {formula:'J30+J31'}, {fill:TOT, font:{bold:true}, fmt:'#,##0'});
-  fill(sb, 'B34:J34', a => put(sb, a, `โอนเข้า ${v.bank || '…'} ชื่อบัญชี ${v.account_name || '…'} เลขที่ ${v.account_no || '…'} แล้วส่งหลักฐานที่ ${v.slip_email || '…'}`));
+  fill(sb, 'B34:J34', a => put(sb, a, `โอนเข้า ${v.bank || '…'} ชื่อบัญชี ${v.account_name || '…'} เลขที่ ${v.account_no || '…'} แล้วส่งหลักฐานที่ ${v.sec_email || '…'}`));
   sb.pageSetup.printArea = 'A1:J34';
 
   wb.views = [{activeTab:1}];
