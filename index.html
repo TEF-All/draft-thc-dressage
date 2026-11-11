@@ -2310,6 +2310,24 @@ function mountGoogle(){
   sc.onerror = () => loginNote('เปิดหน้าเข้าสู่ระบบของ Google ไม่ได้ ตรวจอินเทอร์เน็ตแล้วลองใหม่');
   document.head.appendChild(sc);
 }
+/* ทางเข้าสำหรับทดสอบ: ฟังก์ชัน auth-google แอ็กชัน dev รับเฉพาะอีเมลโดเมนทดสอบและรหัสที่ตั้งไว้ในฐานข้อมูล */
+async function devLogin(){
+  const note = t => { const n = document.getElementById('dv-note'); if (n) n.textContent = t; };
+  const email = (document.getElementById('dv-mail').value || '').trim().toLowerCase();
+  const secret = document.getElementById('dv-key').value || '';
+  if (!email.endsWith('@thc-test.invalid')) { note('ใช้ได้เฉพาะอีเมลที่ลงท้ายด้วย @thc-test.invalid'); return; }
+  note('กำลังเข้าสู่ระบบทดสอบ…');
+  try {
+    const r = await fetch(SUPA.url + '/functions/v1/auth-google', {method:'POST',
+      headers:{'Content-Type':'application/json', apikey:SUPA.key},
+      body:JSON.stringify({action:'dev', email, secret, name:email.split('@')[0]})});
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.error === 'forbidden' ? 'รหัสทดสอบไม่ถูก หรือทางเข้านี้ถูกปิดแล้ว' : (d.error || 'เข้าสู่ระบบไม่สำเร็จ'));
+    const {error} = await sb.auth.verifyOtp({type:'magiclink', token_hash:d.token_hash});
+    if (error) throw error;
+    note(''); await afterLogin();
+  } catch (e) { note(e.message || String(e)); }
+}
 async function onGoogle(res){
   loginNote('กำลังตรวจสอบบัญชีกับ Google…');
   try {
@@ -3370,7 +3388,13 @@ function renderLogin(){
     box.innerHTML = `<div class="login-mock">${head}
       <div id="gbox" style="margin:10px 0;min-height:44px;display:grid;place-items:center"></div>
       <small>ใช้บัญชี Google ของคุณ ระบบไม่เห็นรหัสผ่าน · ผู้ใช้ใหม่ต้องรอ TEF Admin อนุมัติก่อนสร้างคู่มือ</small>
-      <span class="hint" id="g-note" role="status"></span>${setup}</div>`;
+      <span class="hint" id="g-note" role="status"></span>${setup}
+      <details class="demo" style="text-align:left"><summary style="cursor:pointer;font-size:13px">ทางเข้าสำหรับทดสอบ (ชั่วคราว)</summary>
+        <p class="hint" style="margin:6px 0">ใช้ได้เฉพาะอีเมลที่ลงท้ายด้วย <b>@thc-test.invalid</b> และต้องมีรหัสทดสอบ ปิดทางนี้เมื่อไรก็ได้โดยลบ dev_login_secret ในฐานข้อมูล</p>
+        <input class="inp" id="dv-mail" placeholder="club1@thc-test.invalid" autocomplete="off">
+        <input class="inp" id="dv-key" type="password" placeholder="รหัสทดสอบ" autocomplete="off" style="margin-top:6px">
+        <button type="button" class="btn" data-do="dev-login" style="margin-top:8px">เข้าสู่ระบบทดสอบ</button>
+        <span class="hint" id="dv-note" role="status"></span></details></div>`;
     mountGoogle();
     return;
   }
@@ -3950,6 +3974,7 @@ document.addEventListener('click', e => {
     save(); renderAll();
   }
   else if (d.startsWith('bid-')) { if (bidAct(d, arg)) return; }
+  else if (d === 'dev-login') { devLogin(); return; }
   else if (d === 'lk-save' && u.role === 'admin') { lockSave(); return; }
   else if (d === 'lk-reset' && u.role === 'admin') {
     LOCK_DB = {ver:lockVer() + 1, at:now(), by:me().name, data:JSON.parse(JSON.stringify(LOCKED_ALL.en)), hist:((LOCK_DB && LOCK_DB.hist) || [])};
