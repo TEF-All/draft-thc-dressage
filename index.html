@@ -2222,7 +2222,8 @@ async function pull(){
   ]);
   for (const r of [prof, bks, ml, rg]) if (r.error) throw r.error;
   /* ข้อความล็อกชุดที่ TEF Admin แก้ไว้ ถ้ายังไม่ได้รันสคริปต์ 0002 ตารางจะไม่มีคีย์นี้ ใช้ชุดที่มากับหน้าเว็บแทน */
-  LOCK_DB = !lk || lk.error ? null : (lk.data && lk.data.data && lk.data.data.data ? lk.data.data : null);
+  LOCK_OK = !!(lk && !lk.error);
+  LOCK_DB = !LOCK_OK ? null : (lk.data && lk.data.data && lk.data.data.data ? lk.data.data : null);
   SNAP.locked = LOCK_DB ? JSON.stringify(LOCK_DB) : '';
   REV = {}; SNAP = {};
   S.users = (prof.data || []).map(x => ({id:x.id, name:x.name, email:x.email, role:x.role,
@@ -3767,6 +3768,7 @@ document.addEventListener('change', e => {
    ลำดับที่ใช้: ชุดที่ตรึงไว้กับเล่ม (ตอนอนุมัติ) → ชุดที่ TEF Admin แก้ล่าสุด → ชุดที่มากับหน้าเว็บจากไฟล์ Word
    เล่มที่อนุมัติหรือประกาศแล้วจะไม่เปลี่ยนตามการแก้ครั้งหลัง เพราะผู้อนุมัติเซ็นรับรองข้อความชุดนั้นไปแล้ว */
 let LOCK_DB = (!ONLINE && S.lockDb) ? S.lockDb : null;   /* โหมดทดลองเก็บไว้ในเบราว์เซอร์ */
+let LOCK_OK = !ONLINE;   /* ฐานข้อมูลเปิดให้เก็บข้อความล็อกแล้วหรือยัง (ตาราง app_docs คีย์ locked_en) */
 const lockedNow = () => (LOCK_DB && LOCK_DB.data) || LOCKED_ALL.en;
 const lockVer = () => (LOCK_DB && LOCK_DB.ver) || 1;
 const useModelBase = useModel;
@@ -3810,7 +3812,7 @@ function renderLocked(){
       <p class="lead">ข้อความชุดนี้ผู้จัดแก้ไม่ได้ พิมพ์ออกในเล่มตรงตามที่กรอกไว้ที่นี่ แก้แล้วกดบันทึกจะได้เวอร์ชันใหม่ทันที</p></div>
     <div class="banner info"><b>เวอร์ชันปัจจุบัน ${td(lockVer())}${LOCK_DB && LOCK_DB.at ? ` · แก้ล่าสุด ${fmtTs(LOCK_DB.at)} โดย ${esc(LOCK_DB.by || '—')}` : ' · ยังไม่เคยแก้ ใช้ชุดที่มาจากไฟล์ Word'}</b>
       เล่มที่อนุมัติหรือประกาศแล้ว ${td(used)} เล่มตรึงข้อความชุดเดิมไว้ ไม่เปลี่ยนตามการแก้ครั้งนี้ · เล่มที่ยังทำอยู่ ${td(next)} เล่มจะใช้ชุดใหม่</div>
-    ${ONLINE && !LOCK_DB ? '<div class="banner warn"><b>ยังบันทึกลงฐานข้อมูลไม่ได้</b>ต้องรันสคริปต์ supabase/migrations/0002_locked_text.sql ใน Supabase ก่อนหนึ่งครั้ง แก้ในหน้านี้ได้แต่จะยังไม่ถูกบันทึกข้ามเครื่อง</div>' : ''}
+    ${ONLINE && !LOCK_OK ? '<div class="banner warn"><b>ยังบันทึกลงฐานข้อมูลไม่ได้</b>ต้องรันสคริปต์ supabase/migrations/0002_locked_text.sql ใน Supabase ก่อนหนึ่งครั้ง แก้ในหน้านี้ได้แต่จะยังไม่ถูกบันทึกข้ามเครื่อง</div>' : ''}
     <div class="panel"><div class="form-grid" style="grid-template-columns:minmax(0,1fr)">
       ${fs.map(f => `<label class="bid-l"><b>${esc(lockLabel(f))}</b>
         <textarea class="inp" data-lk="${esc(f.path)}" data-kind="${f.kind}" rows="${Math.min(10, Math.max(2, f.v.split('\n').length))}">${esc(f.v)}</textarea></label>`).join('')}
